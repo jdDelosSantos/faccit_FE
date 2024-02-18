@@ -1,0 +1,289 @@
+.base_bg{
+    background-color: #dcdfe3;
+}
+
+.upper_bg{
+    background-color: whitesmoke;
+}
+
+.search-container {
+    display: flex;
+    position: relative;
+    align-items: center;
+    background-color: #fff;
+    width: 50px;
+    height: 50px;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-container input[type="text"] {
+    border: none;
+    padding: 8px;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-container button {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.searchbtn{
+    width: 40px;
+    margin-right: 20px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border: none;
+    outline: none;
+    background: #052c65;
+    transition: 0.5s ease;
+}
+
+.searchbtn:hover{
+    background: #1b66d6;
+}
+
+.inputBox1{
+    position: relative;
+    margin-top: 15px;
+}
+
+.inputBox1 input{
+    border: 1px solid rgb(67, 33, 60);
+    width: 100%;
+    padding: 10px;
+    background: none;
+    outline: rgb(67, 33, 60);
+    border-radius: 7px;
+    color: black;
+    font-size: 15px;
+}
+
+.inputBox1 span{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    padding: 10px;
+    pointer-events: none;
+    font-size: 15px;
+    color: #323436;
+    
+    transition: 0.25s;
+}
+
+.inputBox1 input:valid~span,
+.inputBox1 input:focus~span{
+color: #fff;
+transform: translateX(10px) translateY(-7px);
+font-size: 0.50em;
+padding: 2px 10px;
+background: rgb(67, 33, 60);
+border-radius: 5px;
+text-transform: uppercase;
+}
+
+.inputBox1 input:valid,
+.inputBox1 input:focus{
+border: 1px solid rgb(67, 33, 60);
+border-radius: 7px;
+}
+
+
+.loadcontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loadingspinner {
+    --square: 26px;
+    --offset: 30px;
+
+    --duration: 2.4s;
+    --delay: 0.2s;
+    --timing-function: ease-in-out;
+
+    --in-duration: 0.4s;
+    --in-delay: 0.1s;
+    --in-timing-function: ease-out;
+
+    width: calc( 3 * var(--offset) + var(--square));
+    height: calc( 2 * var(--offset) + var(--square));
+    padding: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    position: relative;
+  }
+
+  .loadingspinner div {
+    display: inline-block;
+    background: #052c65;
+    /*background: var(--text-color);*/
+    /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);*/
+    border: none;
+    border-radius: 2px;
+    width: var(--square);
+    height: var(--square);
+    position: absolute;
+    padding: 0px;
+    margin: 0px;
+    font-size: 6pt;
+    color: black;
+  }
+
+  .loadingspinner #square1 {
+    left: calc( 0 * var(--offset) );
+    top:  calc( 0 * var(--offset) );
+    animation: square1 var(--duration) var(--delay) var(--timing-function) infinite,
+               squarefadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+  }
+
+  .loadingspinner #square2 {
+    left: calc( 0 * var(--offset) );
+    top:  calc( 1 * var(--offset) );
+    animation: square2 var(--duration) var(--delay) var(--timing-function) infinite,
+              squarefadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+  }
+  
+  .loadingspinner #square3 {
+    left: calc( 1 * var(--offset) );
+    top:  calc( 1 * var(--offset) );
+    animation: square3 var(--duration) var(--delay) var(--timing-function) infinite,
+               squarefadein var(--in-duration) calc(2 * var(--in-delay)) var(--in-timing-function) both;
+  }
+
+  .loadingspinner #square4 {
+    left: calc( 2 * var(--offset) );
+    top:  calc( 1 * var(--offset) );
+    animation: square4 var(--duration) var(--delay) var(--timing-function) infinite,
+               squarefadein var(--in-duration) calc(3 * var(--in-delay)) var(--in-timing-function) both;
+  }
+
+  .loadingspinner #square5 {
+    left: calc( 3 * var(--offset) );
+    top:  calc( 1 * var(--offset) );
+    animation: square5 var(--duration) var(--delay) var(--timing-function) infinite,
+               squarefadein var(--in-duration) calc(4 * var(--in-delay)) var(--in-timing-function) both;
+  }
+
+  @keyframes square1 {
+    0%      {left: calc( 0 * var(--offset) ); top: calc( 0 * var(--offset) ); }
+    8.333%  {left: calc( 0 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    100%    {left: calc( 0 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+  }
+
+  @keyframes square2 {
+    0%      {left: calc( 0 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    8.333%  {left: calc( 0 * var(--offset) ); top: calc( 2 * var(--offset) ); }
+    16.67%  {left: calc( 1 * var(--offset) ); top: calc( 2 * var(--offset) ); }
+    25.00%  {left: calc( 1 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    83.33%  {left: calc( 1 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    91.67%  {left: calc( 1 * var(--offset) ); top: calc( 0 * var(--offset) ); }
+    100%    {left: calc( 0 * var(--offset) ); top: calc( 0 * var(--offset) ); }
+  }
+
+  @keyframes square3 {
+    0%,100% {left: calc( 1 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    16.67%  {left: calc( 1 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    25.00%  {left: calc( 1 * var(--offset) ); top: calc( 0 * var(--offset) ); }
+    33.33%  {left: calc( 2 * var(--offset) ); top: calc( 0 * var(--offset) ); }
+    41.67%  {left: calc( 2 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    66.67%  {left: calc( 2 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    75.00%  {left: calc( 2 * var(--offset) ); top: calc( 2 * var(--offset) ); }
+    83.33%  {left: calc( 1 * var(--offset) ); top: calc( 2 * var(--offset) ); }
+    91.67%  {left: calc( 1 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+  }
+
+  @keyframes square4 {
+    0%      {left: calc( 2 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    33.33%  {left: calc( 2 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    41.67%  {left: calc( 2 * var(--offset) ); top: calc( 2 * var(--offset) ); }
+    50.00%  {left: calc( 3 * var(--offset) ); top: calc( 2 * var(--offset) ); }
+    58.33%  {left: calc( 3 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    100%    {left: calc( 3 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+  }
+
+  @keyframes square5 {
+    0%      {left: calc( 3 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    50.00%  {left: calc( 3 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    58.33%  {left: calc( 3 * var(--offset) ); top: calc( 0 * var(--offset) ); }
+    66.67%  {left: calc( 2 * var(--offset) ); top: calc( 0 * var(--offset) ); }
+    75.00%  {left: calc( 2 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+    100%    {left: calc( 2 * var(--offset) ); top: calc( 1 * var(--offset) ); }
+  }
+
+  @keyframes squarefadein {
+    0%      {transform: scale(0.75); opacity: 0.0;}
+    100%    {transform: scale(1.0); opacity: 1.0;}
+  }
+
+  .image-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border: 1px dashed #ccc;
+    padding: 8px;
+  }
+  
+  .img-thumbnail {
+    width: 120px; /* Adjust the width of each image as needed */
+    height: auto;
+    border-radius: 4px;
+  }
+  
+  .add-photo-container {
+    margin-top: 8px;
+    align-self: flex-start;
+  }
+  
+  .add-photo-button {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #f0f2f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .toastcontainer{
+    max-width: 400px;
+    height: 45px;
+    position: absolute;
+    left: 2300px;
+    top: -35px;
+  }
+
+  .toastimg{
+    width: 30px;
+    height: 30px;
+  }
+
+  .selectcontainer1{
+    width: 49%;
+  }
+
+  .selectcontainer2{
+    width: 49%;
+  }
+
+  select{
+    border: 1px solid rgb(67, 33, 60) !important;
+  }
+
+  /* .ellipsis_btn{
+    width: 15px;
+    margin-left: 15px;
+    
+    border: none;
+    outline: none;
+    background: none;
+    transition: 0.5s ease;
+} */

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./AdminSidebar.css";
 
-function SuperAdminSidebar() {
+function AdminSidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleSidebar = () => {
@@ -134,4 +134,4 @@ function SuperAdminSidebar() {
   );
 }
 
-export default SuperAdminSidebar;
+export default AdminSidebar;

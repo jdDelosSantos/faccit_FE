@@ -12,6 +12,8 @@ import {
   Outlet,
 } from "react-router-dom";
 import LoginPage from "./Components/LoginPage/LoginPage";
+import AdminSubjectManagement from "./Components/AdminSubjectManagement/AdminSubjectManagement";
+import AdminSidebar from "./Components/AdminSidebar/AdminSidebar";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -23,7 +25,7 @@ function App() {
 
   const AdminSidebarFunction = () => (
     <div className="flex-container">
-      <AdminSide />
+      <AdminSidebar />
       <Outlet />
     </div>
   );

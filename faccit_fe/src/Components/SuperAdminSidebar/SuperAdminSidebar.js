@@ -122,7 +122,7 @@ function SuperAdminSidebar() {
             </li>
           </ul>
           <div className="sidebar-footer">
-            <a href="#" className="sidebar-link">
+            <a href="/" className="sidebar-link">
               <i className="lni lni-exit"></i>
               <span>Logout</span>
             </a>

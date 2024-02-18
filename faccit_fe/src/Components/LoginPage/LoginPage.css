@@ -1,0 +1,125 @@
+img {
+    width: 100%;
+}
+
+.login {
+    min-height: 100vh !important;
+    background: linear-gradient(31deg, rgba(67, 33, 60, 1) 0%, rgba(74, 36, 61, 1) 35%, rgba(122, 51, 69, 1) 52%, rgba(175, 70, 78, 1) 73%, rgba(210, 82, 83, 1) 100%);
+}
+
+
+
+.left-side{
+    background: rgb(67, 33, 60);
+}
+
+.left-img{
+    width: auto;
+    height: 370px;
+    padding-top: 22px;
+}
+
+.left-h2{
+margin-top: -45px;
+padding-bottom: 50px;
+font-family: 'Nova Square', sans-serif;
+color: #fff;
+}
+
+.right-container{
+    padding: 60px;
+    margin-top: 20px;
+}
+
+.main-container{
+    background: rgba(210, 82, 83, 0.5);
+    
+}
+
+@media (max-width: 991px) {
+    .left-container {
+        display: none !important;
+    }
+    .right-container{
+        max-width: 100% !important;
+
+        padding: 0 10px 0 10px !important;
+
+    }
+    .main-container{
+        display: none;
+    }
+}
+
+@media (max-width: 991px) {
+    
+    .right-container{
+        min-width: 100% !important;
+
+        padding: 0 10px 0 10px !important;
+        margin-bottom: 13px;
+    }   
+
+    .main-container{
+        padding: 10px 20px;
+    }
+}
+
+::placeholder{
+    color:#f7f4f2;
+}
+
+.btn-submit {
+ 
+    margin-top: 30px;
+    padding-left: 20px;
+    color: #ffffff;
+
+}
+.btn-submit:hover{
+    background: whitesmoke;
+}
+
+.inputBox{
+    position: relative;
+    margin-top: 15px;
+}
+
+.inputBox input{
+    border: none;
+    border-bottom: 1px solid #fff;
+    width: 100%;
+    padding: 10px;
+    background: none;
+    outline: none;
+    color: #fff;
+    font-size: 15px;
+}
+
+.inputBox span{
+    position: absolute;
+    left: 10px;
+    top: 0px;
+    padding: 10px;
+    pointer-events: none;
+    font-size: 15px;
+    color:  #fff;
+    text-transform: uppercase;
+    transition: 0.25s;
+}
+
+.inputBox input:valid~span,
+.inputBox input:focus~span{
+color: #fff;
+transform: translateX(3px) translateY(-7px);
+font-size: 0.50em;
+padding: 2px 10px;
+background: rgb(67, 33, 60);
+border-radius: 5px;
+}
+
+.inputBox input:valid,
+.inputBox input:focus{
+border: 1px solid rgb(67, 33, 60);
+border-radius: 7px;
+}

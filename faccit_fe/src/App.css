@@ -1,3 +1,7 @@
+.flex-container{
+  display: flex;
+}
+
 .App {
   text-align: center;
 }

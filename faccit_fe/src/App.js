@@ -21,6 +21,13 @@ function App() {
     </div>
   );
 
+  const AdminSidebarFunction = () => (
+    <div className="flex-container">
+      <AdminSide />
+      <Outlet />
+    </div>
+  );
+
   return (
     <div>
       <Toaster position="bottom-right" reverseOrder={false} />
@@ -33,6 +40,15 @@ function App() {
               path="/SuperAdminStudentManagement"
               element={<SuperAdminStudentManagement />}
             />
+            <Route path="/" element={<LoginPage />} />
+          </Route>
+
+          <Route element={<AdminSidebarFunction />}>
+            <Route
+              path="/AdminSubjectManagement"
+              element={<AdminSubjectManagement />}
+            />
+            <Route path="/" element={<LoginPage />} />
           </Route>
         </Routes>
       </Router>

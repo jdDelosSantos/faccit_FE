@@ -52,10 +52,9 @@ function SuperAdminStudentManagement() {
       "base64"
     );
 
-    const folderName = `${faithID}/`;
     const params = {
       Bucket: bucket,
-      Key: `${folderName}${index + 1}.jpg`, // Use the index to generate sequential names
+      Key: `${faithID}/${index + 1}.jpg`, // Use the index to generate sequential names
       Body: base64Data,
       ContentType: "image/jpeg",
     };

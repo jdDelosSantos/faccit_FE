@@ -3,7 +3,6 @@ import "./SuperAdminStudentManagement.css";
 import Webcam from "react-webcam";
 import { Carousel, Dropdown, Button } from "react-bootstrap";
 import AWS from "aws-sdk";
-import { accessKeyId, bucket, region, secretAccessKey } from "../../key";
 
 function SuperAdminStudentManagement() {
   const [faithID, setFaithID] = useState("");
@@ -41,9 +40,9 @@ function SuperAdminStudentManagement() {
   const { Buffer } = AWS.util;
 
   const s3 = new AWS.S3({
-    accessKeyId: accessKeyId,
-    secretAccessKey: secretAccessKey,
-    region: region,
+    accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+    region: process.env.REACT_APP_AWS_REGION,
   });
 
   const uploadToS3 = (screenshotData, index) => {
@@ -53,7 +52,7 @@ function SuperAdminStudentManagement() {
     );
 
     const params = {
-      Bucket: bucket,
+      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
       Key: `${faithID}/${index + 1}.jpg`, // Use the index to generate sequential names
       Body: base64Data,
       ContentType: "image/jpeg",

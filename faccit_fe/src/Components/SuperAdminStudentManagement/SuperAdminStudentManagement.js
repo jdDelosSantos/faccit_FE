@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import "./SuperAdminStudentManagement.css";
 import Webcam from "react-webcam";
 import { Carousel, Dropdown, Button } from "react-bootstrap";
+import AWS from "aws-sdk";
+import { accessKeyId, bucket, region, secretAccessKey } from "../../key";
 
 function SuperAdminStudentManagement() {
   const [faithID, setFaithID] = useState("");
@@ -18,6 +20,11 @@ function SuperAdminStudentManagement() {
     setSelectedDeviceId(deviceId);
   };
 
+  const handleSearchBar = (e) => {
+    e.preventDefault();
+    // Implement search functionality if needed
+  };
+
   const capture = () => {
     // Check if the number of screenshots is less than 3
     if (screenshots.length < 3) {
@@ -31,13 +38,46 @@ function SuperAdminStudentManagement() {
     setScreenshots([]);
   };
 
-  const handleSearchBar = (e) => {
-    e.preventDefault();
-    // Implement search functionality if needed
+  const { Buffer } = AWS.util;
+
+  const s3 = new AWS.S3({
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey,
+    region: region,
+  });
+
+  const uploadToS3 = (screenshotData, index) => {
+    const base64Data = new Buffer.from(
+      screenshotData.replace(/^data:image\/\w+;base64,/, ""),
+      "base64"
+    );
+
+    const folderName = `${faithID}/`;
+    const params = {
+      Bucket: bucket,
+      Key: `${folderName}${index + 1}.jpg`, // Use the index to generate sequential names
+      Body: base64Data,
+      ContentType: "image/jpeg",
+    };
+
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.error("Error uploading screenshot to S3:", err);
+      } else {
+        console.log(
+          `Screenshot ${index + 1} uploaded successfully:`,
+          data.Location
+        );
+      }
+    });
   };
 
-  const handleStudentSubmit = () => {
-    console.log("Heelo");
+  const handleStudentSubmit = (e) => {
+    e.preventDefault();
+
+    screenshots.forEach((screenshot, index) => uploadToS3(screenshot, index));
+    // Reset screenshots state after uploading
+    setScreenshots([]);
   };
 
   const clark = "Clark";
@@ -139,7 +179,7 @@ function SuperAdminStudentManagement() {
               </h1>
             </div>
 
-            <form onSubmit={handleStudentSubmit}>
+            <form onSubmit={(e) => handleStudentSubmit(e)}>
               <div className="modal-body">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                   <img
@@ -258,7 +298,7 @@ function SuperAdminStudentManagement() {
                         <div className="d-flex flex-column justify-content-center">
                           <Dropdown>
                             <Dropdown.Toggle
-                              variant="primary"
+                              variant="dark"
                               id="dropdown-basic"
                               className="my-2"
                             >
@@ -286,30 +326,33 @@ function SuperAdminStudentManagement() {
                         </div>
                       </div>
                     </div>
-                    <hr />
+
                     {screenshots.length > 0 && (
-                      <div
-                        className="mt-3"
-                        style={{ maxWidth: "640px", margin: "auto" }}
-                      >
-                        <div className="d-flex flex-column justify-content-center">
-                          <Carousel>
-                            {screenshots.map((screenshot, index) => (
-                              <Carousel.Item key={index}>
-                                <img
-                                  src={screenshot}
-                                  alt={`Screenshot ${index}`}
-                                  className="d-block w-100"
-                                />
-                              </Carousel.Item>
-                            ))}
-                          </Carousel>
-                          <Button
-                            onClick={clearScreenshots}
-                            className="mt-3 btn btn-danger"
-                          >
-                            Clear Screenshots
-                          </Button>
+                      <div>
+                        <hr />
+                        <div
+                          className="mt-3"
+                          style={{ maxWidth: "640px", margin: "auto" }}
+                        >
+                          <div className="d-flex flex-column justify-content-center">
+                            <Carousel>
+                              {screenshots.map((screenshot, index) => (
+                                <Carousel.Item key={index}>
+                                  <img
+                                    src={screenshot}
+                                    alt={`Screenshot ${index}`}
+                                    className="d-block w-100"
+                                  />
+                                </Carousel.Item>
+                              ))}
+                            </Carousel>
+                            <Button
+                              onClick={clearScreenshots}
+                              className="mt-3 btn btn-danger"
+                            >
+                              Clear Screenshots
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     )}

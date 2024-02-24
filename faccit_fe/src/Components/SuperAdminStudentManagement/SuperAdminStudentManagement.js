@@ -1,8 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./SuperAdminStudentManagement.css";
 import Webcam from "react-webcam";
 import { Carousel, Dropdown, Button } from "react-bootstrap";
 import AWS from "aws-sdk";
+import https from "../../https";
+import { setStudents } from "../../Redux/students";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
 
 function SuperAdminStudentManagement() {
   const [faithID, setFaithID] = useState("");
@@ -11,9 +15,35 @@ function SuperAdminStudentManagement() {
   const [course, setCourse] = useState("");
   const [yrSection, setYrSection] = useState("");
 
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const dispatch = useDispatch();
+  const students = useSelector((state) => state.student.students);
+
   const webcamRef = useRef(null);
   const [screenshots, setScreenshots] = useState([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
+
+  //UseEffect for loading Students every time it changes
+  useEffect(() => {}, [students]);
+
+  //Function for fetching Students
+  const fetchStudents = () => {
+    https
+      .get("students")
+      .then((result) => {
+        dispatch(setStudents(result.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  //UseEffect for starting the function when loading the page
+  useEffect(() => {
+    fetchStudents();
+  }, []);
 
   const handleSelectDevice = (deviceId) => {
     setSelectedDeviceId(deviceId);
@@ -45,6 +75,7 @@ function SuperAdminStudentManagement() {
     region: process.env.REACT_APP_AWS_REGION,
   });
 
+  //FUNCTION FOR UPLOADING IMAGE TO AWS AND IMAGE URL TO MYSQL
   const uploadToS3 = (screenshotData, index) => {
     const base64Data = new Buffer.from(
       screenshotData.replace(/^data:image\/\w+;base64,/, ""),
@@ -62,6 +93,21 @@ function SuperAdminStudentManagement() {
       if (err) {
         console.error("Error uploading screenshot to S3:", err);
       } else {
+        const studentImageUrl = {
+          faith_id: faithID,
+          std_folder_url: `${faithID}/`,
+          std_folder_img_url: `${index + 1}.jpg`,
+        };
+        console.log(studentImageUrl);
+        https
+          .post("student_images", studentImageUrl)
+          .then((result) => {
+            //console.log(result.data.message);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+
         console.log(
           `Screenshot ${index + 1} uploaded successfully:`,
           data.Location
@@ -73,9 +119,39 @@ function SuperAdminStudentManagement() {
   const handleStudentSubmit = (e) => {
     e.preventDefault();
 
-    screenshots.forEach((screenshot, index) => uploadToS3(screenshot, index));
-    // Reset screenshots state after uploading
-    setScreenshots([]);
+    const studentData = {
+      faith_id: faithID,
+      std_lname: lastname,
+      std_fname: firstname,
+      std_course: course,
+      std_yrSection: yrSection,
+    };
+
+    https
+      .post("students", studentData)
+      .then((result) => {
+        fetchStudents();
+        toast.success(result.data.message);
+        screenshots.forEach((screenshot, index) =>
+          uploadToS3(screenshot, index)
+        );
+        // Reset screenshots state after uploading
+        setScreenshots([]);
+
+        setFaithID("");
+        setLastname("");
+        setFirstname("");
+        setCourse("");
+        setYrSection("");
+      })
+      .catch((error) => {
+        setError(true);
+        setErrorMessage(error.response.data);
+        toast.error(error.response.data);
+      });
+    // screenshots.forEach((screenshot, index) => uploadToS3(screenshot, index));
+    // // Reset screenshots state after uploading
+    // setScreenshots([]);
   };
 
   const clark = "Clark";
@@ -83,7 +159,7 @@ function SuperAdminStudentManagement() {
   return (
     <div className="base_bg w-100 p-5">
       <h1 className="my-4">{clark}'s Student Management Page</h1>
-      <div className="upper_bg rounded container-fluid w-100 p-3 px-5">
+      <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
             <div className="w-100 d-flex">
@@ -134,26 +210,35 @@ function SuperAdminStudentManagement() {
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              <tr className="table-light">
-                <td scope="row">S2019112158</td>
-                <td>Delos Santos</td>
-                <td>John Daniel</td>
-                <td>BSIT</td>
-                <td>4A</td>
-              </tr>
-              <tr key="loading-row">
-                <td colSpan="8" className="text-center">
-                  <div className="loadcontainer">
-                    <div className="loadingspinner">
-                      <div id="square1"></div>
-                      <div id="square2"></div>
-                      <div id="square3"></div>
-                      <div id="square4"></div>
-                      <div id="square5"></div>
+              {students.length > 0 ? (
+                students.map((student, index) => (
+                  <tr className="table-light" key={index}>
+                    <td className="p-2">{student.faith_id}</td>
+                    <td className="p-2">{student.std_lname}</td>
+                    <td className="p-2">{student.std_fname}</td>
+                    <td className="p-2">{student.std_course}</td>
+                    <td className="p-2">{student.std_yrSection}</td>
+                    <td className="p-2">
+                      <button>Update</button>
+                      <button>Deactivate</button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr className="table-light" key="loading-row">
+                  <td colSpan="8" className="text-center">
+                    <div className="loadcontainer">
+                      <div className="loadingspinner">
+                        <div id="square1"></div>
+                        <div id="square2"></div>
+                        <div id="square3"></div>
+                        <div id="square4"></div>
+                        <div id="square5"></div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -196,6 +281,14 @@ function SuperAdminStudentManagement() {
                         STUDENT INFORMATION
                       </h1>
                     </div>
+                    {error == true ? (
+                      <div className="d-flex justify-content-center">
+                        <p className="text-danger fs-4">{errorMessage}</p>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    <h1></h1>
                     {/* Start of Student ID */}
                     <div className="">
                       <div className="md-6 mb-4">
@@ -206,9 +299,10 @@ function SuperAdminStudentManagement() {
                             value={faithID}
                             onChange={(e) => {
                               setFaithID(e.target.value);
+                              setError(false);
                             }}
                             pattern="S20.*"
-                            title="Please Enter a FAITH Student ID!"
+                            title="Enter a FAITH Student ID! Ex: S20****"
                             maxLength="11"
                             required
                           />

@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
+import https from "../../https";
 // import { setAdmins } from "../../redux/admins.js";
 // import { setSuperAdmins } from "../../redux/superAdmins.js";
 // import { useDispatch, useSelector } from "react-redux";
 // import http from "../../https.js";
 // import toast from "react-hot-toast";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,8 +18,34 @@ function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate("SuperAdminStudentManagement");
+    const attemptLogin = {
+      email: email,
+      password: password,
+    };
+
+    https
+      .post("auth/login", attemptLogin)
+      .then((result) => {
+        const decodedToken = jwtDecode(result.data);
+        sessionStorage.setItem("Surname", decodedToken.surname);
+        sessionStorage.setItem("Firstname", decodedToken.firstname);
+        // sessionStorage.setItem("Role", decodedToken.role);
+        sessionStorage.setItem("Token", result.data);
+        redirectToDashboard(decodedToken.role);
+      })
+      .catch((err) => {
+        toast.error(err.response.data.error);
+      });
   };
+
+  const redirectToDashboard = (role) => {
+    if (role === "super_admin") {
+      navigate("students/register");
+    } else {
+      navigate("SubjectManagement");
+    }
+  };
+
   return (
     <>
       <section className="login p-5 d-flex justify-content-center align-items-center">

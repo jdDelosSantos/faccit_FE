@@ -39,7 +39,7 @@ function App() {
 
           <Route element={<SuperAdminSidebarFunction />}>
             <Route
-              path="/SuperAdminStudentManagement"
+              path="/students/register"
               element={<SuperAdminStudentManagement />}
             />
             <Route path="/" element={<LoginPage />} />
@@ -47,7 +47,7 @@ function App() {
 
           <Route element={<AdminSidebarFunction />}>
             <Route
-              path="/AdminSubjectManagement"
+              path="/SubjectManagement"
               element={<AdminSubjectManagement />}
             />
             <Route path="/" element={<LoginPage />} />

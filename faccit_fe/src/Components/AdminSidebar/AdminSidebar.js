@@ -8,6 +8,9 @@ function AdminSidebar() {
     setIsExpanded(!isExpanded);
   };
 
+  const handleLogout = () => {
+    sessionStorage.clear();
+  };
   return (
     <div>
       <div className="wrapper">
@@ -122,7 +125,7 @@ function AdminSidebar() {
             </li>
           </ul>
           <div className="sidebar-footer">
-            <a href="#" className="sidebar-link">
+            <a href="/" className="sidebar-link" onClick={() => handleLogout()}>
               <i className="lni lni-exit"></i>
               <span>Logout</span>
             </a>

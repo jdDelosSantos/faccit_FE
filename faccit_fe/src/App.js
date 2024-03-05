@@ -3,8 +3,6 @@ import "./App.css";
 import SuperAdminSidebar from "./Components/SuperAdminSidebar/SuperAdminSidebar";
 import SuperAdminStudentManagement from "./Components/SuperAdminStudentManagement/SuperAdminStudentManagement";
 import { Toaster } from "react-hot-toast";
-import toast from "react-hot-toast";
-
 import {
   BrowserRouter as Router,
   Routes,
@@ -14,6 +12,7 @@ import {
 import LoginPage from "./Components/LoginPage/LoginPage";
 import AdminSubjectManagement from "./Components/AdminSubjectManagement/AdminSubjectManagement";
 import AdminSidebar from "./Components/AdminSidebar/AdminSidebar";
+import TESTING from "./Components/TESTING/TESTING";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -32,6 +31,7 @@ function App() {
 
   return (
     <div>
+      {/* <TESTING /> */}
       <Toaster position="bottom-right" reverseOrder={false} />
       <Router>
         <Routes>

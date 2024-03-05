@@ -24,7 +24,7 @@ function LoginPage() {
     };
 
     https
-      .post("auth/login", attemptLogin)
+      .post("login", attemptLogin)
       .then((result) => {
         const decodedToken = jwtDecode(result.data);
         sessionStorage.setItem("Surname", decodedToken.surname);

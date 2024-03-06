@@ -8,6 +8,7 @@ import { setStudents } from "../../Redux/students";
 import { setCourses } from "../../Redux/courses";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 function SuperAdminStudentManagement() {
   //NEW STUDENT USE STATES
@@ -63,6 +64,7 @@ function SuperAdminStudentManagement() {
   const [updateImageUrls, setUpdateImageUrls] = useState([]);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const students = useSelector((state) => state.student.students);
   const courses = useSelector((state) => state.course.courses);
 
@@ -84,7 +86,15 @@ function SuperAdminStudentManagement() {
         dispatch(setStudents(result.data));
       })
       .catch((error) => {
-        console.log(error);
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        }
+
+        console.log(error.response.data.message);
+        goBackToLogin();
       });
   };
 
@@ -100,7 +110,14 @@ function SuperAdminStudentManagement() {
         dispatch(setCourses(result.data));
       })
       .catch((error) => {
-        console.log(error);
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        }
+        console.log(error.response.data.message);
+        goBackToLogin();
       });
   };
 
@@ -203,7 +220,13 @@ function SuperAdminStudentManagement() {
             //console.log(result.data.message);
           })
           .catch((error) => {
-            console.error(error);
+            if (error.response.data.message != "Unauthenticated.") {
+              setError(true);
+              console.log(error.response.data.message);
+              setErrorMessage(error.response.data.message);
+              toast.error(error.response.data.message, { duration: 7000 });
+            }
+            goBackToLogin();
           });
 
         console.log(
@@ -239,7 +262,15 @@ function SuperAdminStudentManagement() {
         });
       })
       .catch((error) => {
-        console.error(error);
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        }
+
+        console.log(error.response.data.message);
+        goBackToLogin();
       });
   };
 
@@ -278,10 +309,15 @@ function SuperAdminStudentManagement() {
         setSection("");
       })
       .catch((error) => {
-        setError(true);
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        }
+
         console.log(error.response.data.message);
-        setErrorMessage(error.response.data.message);
-        toast.error(error.response.data.message, { duration: 7000 });
+        goBackToLogin();
       });
   };
 
@@ -337,10 +373,15 @@ function SuperAdminStudentManagement() {
         setCourseCollege("");
       })
       .catch((error) => {
-        setError(true);
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        }
+
         console.log(error.response.data.message);
-        setErrorMessage(error.response.data.message);
-        toast.error(error.response.data.message, { duration: 7000 });
+        goBackToLogin();
       });
   };
 
@@ -384,6 +425,11 @@ function SuperAdminStudentManagement() {
     setUpdateCourseName("");
     setUpdateCourseDescription("");
     setUpdateCourseCollege("");
+  };
+
+  const goBackToLogin = () => {
+    sessionStorage.clear();
+    navigate("/");
   };
 
   return (

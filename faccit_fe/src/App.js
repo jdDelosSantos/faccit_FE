@@ -32,7 +32,7 @@ function App() {
   return (
     <div>
       {/* <TESTING /> */}
-      <Toaster position="bottom-right" reverseOrder={false} />
+      <Toaster position="top-right" reverseOrder={false} />
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />

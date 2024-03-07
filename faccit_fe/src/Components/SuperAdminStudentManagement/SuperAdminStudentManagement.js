@@ -165,7 +165,6 @@ function SuperAdminStudentManagement() {
     if (updatedScreenshots.length < 3) {
       const updatedScreenshot = updateWebcamRef.current.getScreenshot();
       setUpdatedScreenshots([...updatedScreenshots, updatedScreenshot]);
-      console.log(updatedScreenshots);
     }
   };
 
@@ -237,28 +236,32 @@ function SuperAdminStudentManagement() {
     });
   };
 
-  const fetchStudentImages = async (student_faith_id) => {
+  const fetchStudentImages = (student_faith_id) => {
+    const studentImages = {
+      faith_id: student_faith_id,
+    };
     // Implement your logic to fetch image URLs from the S3 bucket
     https
-      .post("student_img_url", student_faith_id, {
+      .post("student_img_url", studentImages, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        console.log(result);
+        result.data.forEach((imageData) => {
+          const params = {
+            Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+            Key: `${student_faith_id}/${imageData.std_folder_img_url}`,
+          };
 
-        const params = {
-          Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-          Key: `${student_faith_id}/1.jpg`,
-        };
-
-        s3.getObject(params, (err, data) => {
-          if (err) {
-            console.error("Error fetching screenshot to S3:", err);
-          } else {
-            setUpdateImageUrls(URL.createObjectURL(new Blob([data.Body])));
-          }
+          s3.getObject(params, (err, data) => {
+            if (err) {
+              console.error("Error fetching screenshot to S3:", err);
+            } else {
+              const imageUrl = URL.createObjectURL(new Blob([data.Body]));
+              setUpdateImageUrls((prevUrls) => [...prevUrls, imageUrl]);
+            }
+          });
         });
       })
       .catch((error) => {
@@ -268,7 +271,6 @@ function SuperAdminStudentManagement() {
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         }
-
         console.log(error.response.data.message);
         goBackToLogin();
       });
@@ -330,14 +332,14 @@ function SuperAdminStudentManagement() {
     student_level,
     student_section
   ) => {
-    const imageUrls = await fetchStudentImages(student_faith_id);
+    fetchStudentImages(student_faith_id);
+
     setUpdateFaithID(student_faith_id);
     setUpdateLastname(student_lname);
     setUpdateFirstname(student_fname);
     setUpdateCourse(student_course);
     setUpdateLevel(student_level);
     setUpdateSection(student_section);
-    setUpdateImageUrls(imageUrls);
   };
 
   const handleUpdateStudentSubmit = (e) => {
@@ -418,6 +420,7 @@ function SuperAdminStudentManagement() {
     setUpdateCourse("");
     setUpdateLevel("");
     setUpdateSection("");
+    setUpdatedScreenshots([]);
   };
 
   const clearUpdateCourse = () => {
@@ -1141,7 +1144,22 @@ function SuperAdminStudentManagement() {
                         </div>
                       </div>
                     </div>
+                    <hr />
+                    <h3>Current Images</h3>
+                    <Carousel>
+                      {updateImageUrls.map((updateImageUrl, index) => (
+                        <Carousel.Item key={index}>
+                          <img
+                            src={updateImageUrl}
+                            alt={`Screenshot ${index}`}
+                            className="d-block w-100"
+                          />
+                        </Carousel.Item>
+                      ))}
+                    </Carousel>
 
+                    <hr />
+                    <h3>Take New Images</h3>
                     {/* START OF SCREENSHOT AND ADD BUTTON  */}
                     <div className="d-flex flex-column align-items-center">
                       <div style={{ maxWidth: "640px", margin: "auto" }}>
@@ -1217,7 +1235,6 @@ function SuperAdminStudentManagement() {
                       </div>
                     )}
                   </div>
-                  <img src={updateImageUrls} alt="S3 Image" />
                 </div>
               </div>
               <div className="modal-footer">
@@ -1226,6 +1243,7 @@ function SuperAdminStudentManagement() {
                   className="btn btn-secondary"
                   data-bs-dismiss="modal"
                   onClick={() => {
+                    setUpdateImageUrls([]);
                     clearStudentUpdate();
                     setIsWebcamActive(false);
                   }}
@@ -1236,6 +1254,11 @@ function SuperAdminStudentManagement() {
                   type="submit"
                   className="btn btn-success mb-1"
                   data-bs-dismiss="modal"
+                  onClick={() => {
+                    setUpdateImageUrls([]);
+                    clearStudentUpdate();
+                    setIsWebcamActive(false);
+                  }}
                 >
                   SAVE CHANGES
                 </button>

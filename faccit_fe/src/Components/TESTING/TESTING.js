@@ -1,24 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Webcam from "react-webcam";
+import socketIO from "socket.io-client";
 
 function TESTING() {
-  const [text, setText] = useState("");
-  const webSocket = new WebSocket("ws://192.168.1.123:81");
+  const webcamRef = useRef(null);
+  const socketRef = useRef();
+  const [intervalId, setIntervalId] = useState(null);
 
   useEffect(() => {
-    webSocket.onmessage = (event) => {
-      // Decode base64 string to image
-      // const imageSrc = "data:image/jpeg;base64," + event.data;
-      setText(event.data);
+    socketRef.current = socketIO.connect("http://localhost:3002");
+
+    const sendFrame = () => {
+      const imageSrc = webcamRef.current.getScreenshot();
+      socketRef.current.emit("frame", imageSrc);
     };
 
+    const intervalId = setInterval(sendFrame, 10000); // Send a frame every 1 second (1000 milliseconds)
+    setIntervalId(intervalId);
+
     return () => {
-      webSocket.close();
+      clearInterval(intervalId);
+      socketRef.current.disconnect();
     };
   }, []);
 
   return (
     <div>
-      <h1>Hello {text}</h1>
+      <Webcam
+        audio={false}
+        height={480}
+        ref={webcamRef}
+        screenshotFormat="image/jpeg"
+        width={640}
+      />
     </div>
   );
 }

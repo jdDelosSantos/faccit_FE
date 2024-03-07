@@ -92,7 +92,6 @@ function SuperAdminStudentManagement() {
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         }
-
         console.log(error.response.data.message);
         goBackToLogin();
       });
@@ -236,6 +235,53 @@ function SuperAdminStudentManagement() {
     });
   };
 
+  const updateImagesInS3 = (updateScreenshotData, index) => {
+    const base64Data = new Buffer.from(
+      updateScreenshotData.replace(/^data:image\/\w+;base64,/, ""),
+      "base64"
+    );
+
+    const params = {
+      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+      Key: `${updateFaithID}/${index + 1}.jpg`, // Use the index to generate sequential names
+      Body: base64Data,
+      ContentType: "image/jpeg",
+    };
+
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.error("Error uploading screenshot to S3:", err);
+      } else {
+        const studentImageUrl = {
+          faith_id: updateFaithID,
+          std_folder_url: `${updateFaithID}/`,
+          std_folder_img_url: `${index + 1}.jpg`,
+        };
+
+        https
+          .put(`student_images/${updateFaithID}`, studentImageUrl, {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+            },
+          })
+          .then((result) => {
+            //console.log(result.data.message);
+          })
+          .catch((error) => {
+            if (error.response.data.message == "Unauthenticated.") {
+              setError(true);
+              console.log(error.response.data.message);
+              setErrorMessage(error.response.data.message);
+              toast.error(error.response.data.message, { duration: 7000 });
+            }
+            goBackToLogin();
+          });
+
+        console.log(`Screenshot ${index + 1} uploaded successfully:`);
+      }
+    });
+  };
+
   const fetchStudentImages = (student_faith_id) => {
     const studentImages = {
       faith_id: student_faith_id,
@@ -248,6 +294,7 @@ function SuperAdminStudentManagement() {
         },
       })
       .then((result) => {
+        console.log(result.data);
         result.data.forEach((imageData) => {
           const params = {
             Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
@@ -276,6 +323,7 @@ function SuperAdminStudentManagement() {
       });
   };
 
+  //FUNCTION FOR ADDING A STUDENT
   const handleStudentSubmit = (e) => {
     e.preventDefault();
 
@@ -342,10 +390,52 @@ function SuperAdminStudentManagement() {
     setUpdateSection(student_section);
   };
 
+  //FUNCTION FOR UPDATING A STUDENT
   const handleUpdateStudentSubmit = (e) => {
     e.preventDefault();
+    const updateStudentData = {
+      faith_id: updateFaithID,
+      std_lname: updateLastname,
+      std_fname: updateFirstname,
+      std_course: updateCourse,
+      std_level: updateLevel,
+      std_section: updateSection,
+    };
 
-    setIsWebcamActive(false);
+    https
+      .put(`update_students/${updateFaithID}`, updateStudentData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        fetchStudents();
+        toast.success(result.data.message, { duration: 7000 });
+        updatedScreenshots.forEach((updatedScreenshot, index) =>
+          updateImagesInS3(updatedScreenshot, index)
+        );
+        // Reset screenshots state after uploading
+        setUpdatedScreenshots([]);
+
+        setUpdateFaithID("");
+        setLastname("");
+        setUpdateFirstname("");
+        setUpdateCourse("");
+        setUpdateLevel("");
+        setUpdateSection("");
+        clearStudentUpdate();
+        setIsWebcamActive(false);
+        setUpdateImageUrls([]);
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        }
+        goBackToLogin();
+      });
   };
 
   //FUNCTION FOR ADDING A COURSE
@@ -1018,7 +1108,7 @@ function SuperAdminStudentManagement() {
                     {/* Start of Student ID */}
                     <div className="">
                       <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
+                        <div className="inputBox2 w-100">
                           <input
                             type="text"
                             id="updateFaithID"
@@ -1031,6 +1121,7 @@ function SuperAdminStudentManagement() {
                             title="Enter a FAITH Student ID! Ex: S20****"
                             maxLength="11"
                             required
+                            disabled
                           />
                           <span className="">FAITH ID</span>
                         </div>
@@ -1254,11 +1345,6 @@ function SuperAdminStudentManagement() {
                   type="submit"
                   className="btn btn-success mb-1"
                   data-bs-dismiss="modal"
-                  onClick={() => {
-                    setUpdateImageUrls([]);
-                    clearStudentUpdate();
-                    setIsWebcamActive(false);
-                  }}
                 >
                   SAVE CHANGES
                 </button>

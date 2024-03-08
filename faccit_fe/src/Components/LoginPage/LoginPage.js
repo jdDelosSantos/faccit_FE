@@ -40,7 +40,7 @@ function LoginPage() {
 
   const redirectToDashboard = (role) => {
     if (role === "super_admin") {
-      navigate("students/register");
+      navigate("dashboard");
     } else {
       navigate("SubjectManagement");
     }

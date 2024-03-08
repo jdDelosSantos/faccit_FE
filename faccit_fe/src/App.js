@@ -1,7 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
 import SuperAdminSidebar from "./Components/SuperAdminSidebar/SuperAdminSidebar";
-import SuperAdminStudentManagement from "./Components/SuperAdminStudentManagement/SuperAdminStudentManagement";
 import { Toaster } from "react-hot-toast";
 import {
   BrowserRouter as Router,
@@ -13,6 +12,8 @@ import LoginPage from "./Components/LoginPage/LoginPage";
 import AdminSubjectManagement from "./Components/AdminSubjectManagement/AdminSubjectManagement";
 import AdminSidebar from "./Components/AdminSidebar/AdminSidebar";
 import TESTING from "./Components/TESTING/TESTING";
+import SuperAdminDashboard from "./Components/SuperAdminDashboard/SuperAdminDashboard";
+import SuperAdminStudentCourseManagement from "./Components/SuperAdminStudentCourseManagement/SuperAdminStudentCourseManagement";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -31,17 +32,18 @@ function App() {
 
   return (
     <div>
-      {/* <TESTING /> */}
-      <Toaster position="top-right" reverseOrder={false} />
+      <TESTING />
+      {/* <Toaster position="top-right" reverseOrder={false} />
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
 
           <Route element={<SuperAdminSidebarFunction />}>
             <Route
-              path="/students/register"
-              element={<SuperAdminStudentManagement />}
+              path="/managements/student&courses"
+              element={<SuperAdminStudentCourseManagement />}
             />
+            <Route path="/dashboard" element={<SuperAdminDashboard />} />
             <Route path="/" element={<LoginPage />} />
           </Route>
 
@@ -53,7 +55,7 @@ function App() {
             <Route path="/" element={<LoginPage />} />
           </Route>
         </Routes>
-      </Router>
+      </Router> */}
     </div>
   );
 }

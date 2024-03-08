@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./SuperAdminSidebar.css";
 
 function SuperAdminSidebar() {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(
+    localStorage.getItem("isSidebarExpanded") === "true" ? true : false
+  );
+
+  // Update localStorage when the isExpanded state changes
+  useEffect(() => {
+    localStorage.setItem("isSidebarExpanded", isExpanded);
+  }, [isExpanded]);
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
@@ -21,7 +28,7 @@ function SuperAdminSidebar() {
               <i className="lni lni-grid-alt"></i>
             </button>
             <div className="sidebar-logo">
-              <a href="#"></a>
+              <a href="#">FACCIT</a>
             </div>
           </div>
           <ul className="sidebar-nav">
@@ -33,8 +40,14 @@ function SuperAdminSidebar() {
             </li>
             <li className="sidebar-item">
               <a href="#" className="sidebar-link">
-                <i className="lni lni-agenda"></i>
-                <span>List</span>
+                <i className="lni lni-cog"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/dashboard" className="sidebar-link">
+                <i className="lni lni-license"></i>
+                <span>Dashboard</span>
               </a>
             </li>
             <li className="sidebar-item">
@@ -46,8 +59,8 @@ function SuperAdminSidebar() {
                 aria-expanded="true"
                 aria-controls="auth"
               >
-                <i className="lni lni-protection"></i>
-                <span>Auth</span>
+                <i className="lni lni-graph"></i>
+                <span>Laboratories</span>
               </a>
               <ul
                 id="auth"
@@ -56,12 +69,12 @@ function SuperAdminSidebar() {
               >
                 <li className="sidebar-item">
                   <a href="#" className="sidebar-link">
-                    Login
+                    Programming Lab
                   </a>
                 </li>
                 <li className="sidebar-item">
                   <a href="#" className="sidebar-link">
-                    Register
+                    Machine Lab
                   </a>
                 </li>
               </ul>
@@ -76,7 +89,7 @@ function SuperAdminSidebar() {
                 aria-controls="multi"
               >
                 <i className="lni lni-layout"></i>
-                <span>Schedule</span>
+                <span>Managements</span>
               </a>
               <ul
                 id="multi"
@@ -85,30 +98,16 @@ function SuperAdminSidebar() {
               >
                 <li className="sidebar-item">
                   <a
-                    href="#"
-                    className="sidebar-link collapsed"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#multi-two"
-                    aria-expanded="true"
-                    aria-controls="multi-two"
+                    href="/managements/student&courses"
+                    className="sidebar-link"
                   >
-                    Two Links
+                    Students & Courses
                   </a>
-                  <ul
-                    id="multi-two"
-                    className="sidebar-dropdown list-unstyled collapse"
-                  >
-                    <li className="sidebar-item">
-                      <a href="#" className="sidebar-link">
-                        Link 1
-                      </a>
-                    </li>
-                    <li className="sidebar-item">
-                      <a href="#" className="sidebar-link">
-                        Link 2
-                      </a>
-                    </li>
-                  </ul>
+                </li>
+                <li className="sidebar-item">
+                  <a href="managements/professors" className="sidebar-link">
+                    Professors
+                  </a>
                 </li>
               </ul>
             </li>
@@ -116,12 +115,6 @@ function SuperAdminSidebar() {
               <a href="#" className="sidebar-link">
                 <i className="lni lni-popup"></i>
                 <span>Notification</span>
-              </a>
-            </li>
-            <li className="sidebar-item">
-              <a href="#" className="sidebar-link">
-                <i className="lni lni-cog"></i>
-                <span>Setting</span>
               </a>
             </li>
           </ul>

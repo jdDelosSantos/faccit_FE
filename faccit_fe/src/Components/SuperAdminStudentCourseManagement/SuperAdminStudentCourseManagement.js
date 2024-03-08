@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./SuperAdminStudentManagement.css";
+import "./SuperAdminStudentCourseManagement.css";
 import Webcam from "react-webcam";
 import { Carousel, Dropdown, Button } from "react-bootstrap";
 import AWS from "aws-sdk";
@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-function SuperAdminStudentManagement() {
+function SuperAdminStudentCourseManagement() {
   //NEW STUDENT USE STATES
   const [faithID, setFaithID] = useState("");
   const [lastname, setLastname] = useState("");
@@ -1649,4 +1649,4 @@ function SuperAdminStudentManagement() {
   );
 }
 
-export default SuperAdminStudentManagement;
+export default SuperAdminStudentCourseManagement;

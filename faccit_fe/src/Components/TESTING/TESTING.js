@@ -15,7 +15,7 @@ function TESTING() {
       socketRef.current.emit("frame", imageSrc);
     };
 
-    const intervalId = setInterval(sendFrame, 3000); // Send a frame every 1 second (1000 milliseconds)
+    const intervalId = setInterval(sendFrame, 2000); // Send a frame every 1 second (1000 milliseconds)
     setIntervalId(intervalId);
 
     return () => {

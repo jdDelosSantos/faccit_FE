@@ -97,16 +97,28 @@ function SuperAdminSidebar() {
                 data-bs-parent="#sidebar"
               >
                 <li className="sidebar-item">
-                  <a
-                    href="/managements/student&courses"
-                    className="sidebar-link"
-                  >
-                    Students & Courses
+                  <a href="/managements/students" className="sidebar-link">
+                    Students
                   </a>
                 </li>
                 <li className="sidebar-item">
                   <a href="managements/professors" className="sidebar-link">
                     Professors
+                  </a>
+                </li>
+                <li className="sidebar-item">
+                  <a href="/managements/colleges" className="sidebar-link">
+                    Colleges
+                  </a>
+                </li>
+                <li className="sidebar-item">
+                  <a href="/managements/courses" className="sidebar-link">
+                    Courses
+                  </a>
+                </li>
+                <li className="sidebar-item">
+                  <a href="/managements/subjects" className="sidebar-link">
+                    Subjects
                   </a>
                 </li>
               </ul>

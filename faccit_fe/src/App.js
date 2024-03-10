@@ -13,7 +13,10 @@ import AdminSubjectManagement from "./Components/AdminSubjectManagement/AdminSub
 import AdminSidebar from "./Components/AdminSidebar/AdminSidebar";
 import TESTING from "./Components/TESTING/TESTING";
 import SuperAdminDashboard from "./Components/SuperAdminDashboard/SuperAdminDashboard";
-import SuperAdminStudentCourseManagement from "./Components/SuperAdminStudentCourseManagement/SuperAdminStudentCourseManagement";
+import SuperAdminStudentManagement from "./Components/SuperAdminStudentManagement/SuperAdminStudentManagement";
+import SuperAdminCourseManagement from "./Components/SuperAdminCourseManagement/SuperAdminCourseManagement";
+import SuperAdminSubjectManagement from "./Components/SuperAdminSubjectManagement/SuperAdminSubjectManagement";
+import SuperAdminCollegeManagement from "./Components/SuperAdminCollegeManagement/SuperAdminCollegeManagement";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -32,18 +35,31 @@ function App() {
 
   return (
     <div>
-      <TESTING />
-      {/* <Toaster position="top-right" reverseOrder={false} />
+      {/* <TESTING /> */}
+      <Toaster position="top-right" reverseOrder={false} />
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
 
           <Route element={<SuperAdminSidebarFunction />}>
-            <Route
-              path="/managements/student&courses"
-              element={<SuperAdminStudentCourseManagement />}
-            />
             <Route path="/dashboard" element={<SuperAdminDashboard />} />
+            <Route
+              path="/managements/students"
+              element={<SuperAdminStudentManagement />}
+            />
+            <Route
+              path="/managements/colleges"
+              element={<SuperAdminCollegeManagement />}
+            />
+            <Route
+              path="/managements/courses"
+              element={<SuperAdminCourseManagement />}
+            />
+            <Route
+              path="/managements/subjects"
+              element={<SuperAdminSubjectManagement />}
+            />
+
             <Route path="/" element={<LoginPage />} />
           </Route>
 
@@ -55,7 +71,7 @@ function App() {
             <Route path="/" element={<LoginPage />} />
           </Route>
         </Routes>
-      </Router> */}
+      </Router>
     </div>
   );
 }

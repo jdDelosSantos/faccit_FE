@@ -1,31 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./SuperAdminStudentManagement.css";
+import "./SuperAdminProfessorManagement.css";
 import Webcam from "react-webcam";
 import { Carousel, Dropdown, Button } from "react-bootstrap";
 import AWS from "aws-sdk";
 import https from "../../https";
-import { setStudents } from "../../Redux/students";
-import { setCourses } from "../../Redux/courses";
+import { setProfessors } from "../../Redux/professors";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-function SuperAdminStudentManagement() {
-  //NEW STUDENT USE STATES
-  const [faithID, setFaithID] = useState("");
+function SuperAdminProfessorManagement() {
+  //NEW PROFESSOR USE STATES
   const [lastname, setLastname] = useState("");
   const [firstname, setFirstname] = useState("");
-  const [course, setCourse] = useState("");
-  const [level, setLevel] = useState("");
-  const [section, setSection] = useState("");
+  const [email, setEmail] = useState("");
 
-  //UPDATE STUDENT USE STATES
-  const [updateFaithID, setUpdateFaithID] = useState("");
+  //UPDATE PROFESSOR USE STATES
   const [updateLastname, setUpdateLastname] = useState("");
   const [updateFirstname, setUpdateFirstname] = useState("");
-  const [updateCourse, setUpdateCourse] = useState("");
-  const [updateLevel, setUpdateLevel] = useState("");
-  const [updateSection, setUpdateSection] = useState("");
+  const [updateEmail, setUpdateEmail] = useState("");
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -53,48 +46,24 @@ function SuperAdminStudentManagement() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const students = useSelector((state) => state.student.students);
-  const courses = useSelector((state) => state.course.courses);
+  const professors = useSelector((state) => state.professor.professors);
 
   //UseEffect for loading Students and Courses every time it changes
-  useEffect(() => {}, [students]);
-  useEffect(() => {}, [courses]);
+  useEffect(() => {}, [professors]);
 
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
   //Function for fetching Students
-  const fetchStudents = () => {
+  const fetchProfessors = () => {
     https
-      .get("students", {
+      .get("professors", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        dispatch(setStudents(result.data));
-      })
-      .catch((error) => {
-        if (error.response.data.message != "Unauthenticated.") {
-          setError(true);
-          console.log(error.response.data.message);
-          setErrorMessage(error.response.data.message);
-          toast.error(error.response.data.message, { duration: 7000 });
-        } else {
-          console.log(error.response.data.message);
-          goBackToLogin();
-        }
-      });
-  };
-
-  const fetchCourses = () => {
-    https
-      .get("courses", {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-        },
-      })
-      .then((result) => {
-        dispatch(setCourses(result.data));
+        dispatch(setProfessors(result.data));
+        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -111,8 +80,7 @@ function SuperAdminStudentManagement() {
 
   //UseEffect for starting the function when loading the page
   useEffect(() => {
-    fetchStudents();
-    fetchCourses();
+    fetchProfessors();
   }, []);
 
   useEffect(() => {
@@ -169,182 +137,176 @@ function SuperAdminStudentManagement() {
   });
 
   //FUNCTION FOR UPLOADING IMAGE TO AWS AND IMAGE URL TO MYSQL
-  const uploadToS3 = (screenshotData, index) => {
-    const base64Data = new Buffer.from(
-      screenshotData.replace(/^data:image\/\w+;base64,/, ""),
-      "base64"
-    );
+  //   const uploadToS3 = (screenshotData, index) => {
+  //     const base64Data = new Buffer.from(
+  //       screenshotData.replace(/^data:image\/\w+;base64,/, ""),
+  //       "base64"
+  //     );
 
-    const params = {
-      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-      Key: `${faithID}/${index + 1}.jpg`, // Use the index to generate sequential names
-      Body: base64Data,
-      ContentType: "image/jpeg",
-    };
+  //     const params = {
+  //       Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+  //       Key: `${faithID}/${index + 1}.jpg`, // Use the index to generate sequential names
+  //       Body: base64Data,
+  //       ContentType: "image/jpeg",
+  //     };
 
-    s3.upload(params, (err, data) => {
-      if (err) {
-        console.error("Error uploading screenshot to S3:", err);
-      } else {
-        const studentImageUrl = {
-          faith_id: faithID,
-          std_folder_url: `${faithID}/`,
-          std_folder_img_url: `${index + 1}.jpg`,
-        };
-        console.log(studentImageUrl);
-        https
-          .post("student_images", studentImageUrl, {
-            headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-            },
-          })
-          .then((result) => {
-            //console.log(result.data.message);
-          })
-          .catch((error) => {
-            if (error.response.data.message != "Unauthenticated.") {
-              setError(true);
-              console.log(error.response.data.message);
-              setErrorMessage(error.response.data.message);
-              toast.error(error.response.data.message, { duration: 7000 });
-            } else {
-              console.log(error.response.data.message);
-              goBackToLogin();
-            }
-          });
+  //     s3.upload(params, (err, data) => {
+  //       if (err) {
+  //         console.error("Error uploading screenshot to S3:", err);
+  //       } else {
+  //         const studentImageUrl = {
+  //           faith_id: faithID,
+  //           std_folder_url: `${faithID}/`,
+  //           std_folder_img_url: `${index + 1}.jpg`,
+  //         };
+  //         console.log(studentImageUrl);
+  //         https
+  //           .post("student_images", studentImageUrl, {
+  //             headers: {
+  //               Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+  //             },
+  //           })
+  //           .then((result) => {
+  //             //console.log(result.data.message);
+  //           })
+  //           .catch((error) => {
+  //             if (error.response.data.message != "Unauthenticated.") {
+  //               setError(true);
+  //               console.log(error.response.data.message);
+  //               setErrorMessage(error.response.data.message);
+  //               toast.error(error.response.data.message, { duration: 7000 });
+  //             } else {
+  //               console.log(error.response.data.message);
+  //               goBackToLogin();
+  //             }
+  //           });
 
-        console.log(
-          `Screenshot ${index + 1} uploaded successfully:`,
-          data.Location
-        );
-      }
-    });
-  };
+  //         console.log(
+  //           `Screenshot ${index + 1} uploaded successfully:`,
+  //           data.Location
+  //         );
+  //       }
+  //     });
+  //   };
 
-  const updateImagesInS3 = (updateScreenshotData, index) => {
-    const base64Data = new Buffer.from(
-      updateScreenshotData.replace(/^data:image\/\w+;base64,/, ""),
-      "base64"
-    );
+  //   const updateImagesInS3 = (updateScreenshotData, index) => {
+  //     const base64Data = new Buffer.from(
+  //       updateScreenshotData.replace(/^data:image\/\w+;base64,/, ""),
+  //       "base64"
+  //     );
 
-    const params = {
-      Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-      Key: `${updateFaithID}/${index + 1}.jpg`, // Use the index to generate sequential names
-      Body: base64Data,
-      ContentType: "image/jpeg",
-    };
+  //     const params = {
+  //       Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+  //       Key: `${updateFaithID}/${index + 1}.jpg`, // Use the index to generate sequential names
+  //       Body: base64Data,
+  //       ContentType: "image/jpeg",
+  //     };
 
-    s3.upload(params, (err, data) => {
-      if (err) {
-        console.error("Error uploading screenshot to S3:", err);
-      } else {
-        const studentImageUrl = {
-          faith_id: updateFaithID,
-          std_folder_url: `${updateFaithID}/`,
-          std_folder_img_url: `${index + 1}.jpg`,
-        };
+  //     s3.upload(params, (err, data) => {
+  //       if (err) {
+  //         console.error("Error uploading screenshot to S3:", err);
+  //       } else {
+  //         const studentImageUrl = {
+  //           faith_id: updateFaithID,
+  //           std_folder_url: `${updateFaithID}/`,
+  //           std_folder_img_url: `${index + 1}.jpg`,
+  //         };
 
-        https
-          .put(`student_images/${updateFaithID}`, studentImageUrl, {
-            headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-            },
-          })
-          .then((result) => {
-            //console.log(result.data.message);
-          })
-          .catch((error) => {
-            if (error.response.data.message != "Unauthenticated.") {
-              setError(true);
-              console.log(error.response.data.message);
-              setErrorMessage(error.response.data.message);
-              toast.error(error.response.data.message, { duration: 7000 });
-            } else {
-              console.log(error.response.data.message);
-              goBackToLogin();
-            }
-          });
-        console.log(`Screenshot ${index + 1} uploaded successfully:`);
-      }
-    });
-  };
+  //         https
+  //           .put(`student_images/${updateFaithID}`, studentImageUrl, {
+  //             headers: {
+  //               Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+  //             },
+  //           })
+  //           .then((result) => {
+  //             //console.log(result.data.message);
+  //           })
+  //           .catch((error) => {
+  //             if (error.response.data.message != "Unauthenticated.") {
+  //               setError(true);
+  //               console.log(error.response.data.message);
+  //               setErrorMessage(error.response.data.message);
+  //               toast.error(error.response.data.message, { duration: 7000 });
+  //             } else {
+  //               console.log(error.response.data.message);
+  //               goBackToLogin();
+  //             }
+  //           });
+  //         console.log(`Screenshot ${index + 1} uploaded successfully:`);
+  //       }
+  //     });
+  //   };
 
-  const fetchStudentImages = (student_faith_id) => {
-    const studentImages = {
-      faith_id: student_faith_id,
-    };
-    // Implement your logic to fetch image URLs from the S3 bucket
-    https
-      .post("student_img_url", studentImages, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-        },
-      })
-      .then((result) => {
-        console.log(result.data);
-        result.data.forEach((imageData) => {
-          const params = {
-            Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
-            Key: `${student_faith_id}/${imageData.std_folder_img_url}`,
-          };
+  //   const fetchProfessorImages = (student_faith_id) => {
+  //     const professorImages = {
+  //       faith_id: student_faith_id,
+  //     };
+  //     // Implement your logic to fetch image URLs from the S3 bucket
+  //     https
+  //       .post("student_img_url", studentImages, {
+  //         headers: {
+  //           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+  //         },
+  //       })
+  //       .then((result) => {
+  //         console.log(result.data);
+  //         result.data.forEach((imageData) => {
+  //           const params = {
+  //             Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
+  //             Key: `${student_faith_id}/${imageData.std_folder_img_url}`,
+  //           };
 
-          s3.getObject(params, (err, data) => {
-            if (err) {
-              console.error("Error fetching screenshot to S3:", err);
-            } else {
-              const imageUrl = URL.createObjectURL(new Blob([data.Body]));
-              setUpdateImageUrls((prevUrls) => [...prevUrls, imageUrl]);
-            }
-          });
-        });
-      })
-      .catch((error) => {
-        if (error.response.data.message != "Unauthenticated.") {
-          setError(true);
-          console.log(error.response.data.message);
-          setErrorMessage(error.response.data.message);
-          toast.error(error.response.data.message, { duration: 7000 });
-        } else {
-          console.log(error.response.data.message);
-          goBackToLogin();
-        }
-      });
-  };
+  //           s3.getObject(params, (err, data) => {
+  //             if (err) {
+  //               console.error("Error fetching screenshot to S3:", err);
+  //             } else {
+  //               const imageUrl = URL.createObjectURL(new Blob([data.Body]));
+  //               setUpdateImageUrls((prevUrls) => [...prevUrls, imageUrl]);
+  //             }
+  //           });
+  //         });
+  //       })
+  //       .catch((error) => {
+  //         if (error.response.data.message != "Unauthenticated.") {
+  //           setError(true);
+  //           console.log(error.response.data.message);
+  //           setErrorMessage(error.response.data.message);
+  //           toast.error(error.response.data.message, { duration: 7000 });
+  //         } else {
+  //           console.log(error.response.data.message);
+  //           goBackToLogin();
+  //         }
+  //       });
+  //   };
 
   //FUNCTION FOR ADDING A STUDENT
-  const handleStudentSubmit = (e) => {
+  const handleProfessorSubmit = (e) => {
     e.preventDefault();
 
-    const studentData = {
-      faith_id: faithID,
-      std_lname: lastname,
-      std_fname: firstname,
-      std_course: course,
-      std_level: level,
-      std_section: section,
+    const professorData = {
+      email: email,
+      user_lastname: lastname,
+      user_firstname: firstname,
     };
 
     https
-      .post("students", studentData, {
+      .post("professors", professorData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        fetchStudents();
+        fetchProfessors();
         toast.success(result.data.message, { duration: 7000 });
-        screenshots.forEach((screenshot, index) =>
-          uploadToS3(screenshot, index)
-        );
+        // screenshots.forEach((screenshot, index) =>
+        //   uploadToS3(screenshot, index)
+        // );
         // Reset screenshots state after uploading
         setScreenshots([]);
 
-        setFaithID("");
+        setEmail("");
         setLastname("");
         setFirstname("");
-        setCourse("");
-        setLevel("");
-        setSection("");
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -359,45 +321,36 @@ function SuperAdminStudentManagement() {
       });
   };
 
-  //FUNCTION FOR PUTTING SELECTED STUDENT TO UPDATE FIELDS
-  const handleStudentUpdate = async (
-    student_faith_id,
-    student_lname,
-    student_fname,
-    student_course,
-    student_level,
-    student_section
+  //FUNCTION FOR PUTTING SELECTED PROFESSOR TO UPDATE FIELDS
+  const handleProfessorUpdate = async (
+    email,
+    user_lastname,
+    user_firstname
   ) => {
-    fetchStudentImages(student_faith_id);
+    // fetchProfessorImages(email);
 
-    setUpdateFaithID(student_faith_id);
-    setUpdateLastname(student_lname);
-    setUpdateFirstname(student_fname);
-    setUpdateCourse(student_course);
-    setUpdateLevel(student_level);
-    setUpdateSection(student_section);
+    setUpdateEmail(email);
+    setUpdateLastname(user_lastname);
+    setUpdateFirstname(user_firstname);
   };
 
-  //FUNCTION FOR UPDATING A STUDENT
-  const handleUpdateStudentSubmit = (e) => {
+  //FUNCTION FOR UPDATING A PROFESSOR
+  const handleUpdateProfessorSubmit = (e) => {
     e.preventDefault();
-    const updateStudentData = {
-      faith_id: updateFaithID,
-      std_lname: updateLastname,
-      std_fname: updateFirstname,
-      std_course: updateCourse,
-      std_level: updateLevel,
-      std_section: updateSection,
+    const updateProfessorData = {
+      email: updateEmail,
+      user_lastname: updateLastname,
+      user_firstname: updateFirstname,
     };
 
     https
-      .put(`update_students/${updateFaithID}`, updateStudentData, {
+      .put(`update_professors/${updateEmail}`, updateProfessorData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        fetchStudents();
+        fetchProfessors();
         toast.success(result.data.message, { duration: 7000 });
         updatedScreenshots.forEach((updatedScreenshot, index) =>
           updateImagesInS3(updatedScreenshot, index)
@@ -405,12 +358,10 @@ function SuperAdminStudentManagement() {
         // Reset screenshots state after uploading
         setUpdatedScreenshots([]);
 
-        setUpdateFaithID("");
-        setLastname("");
+        setUpdateEmail("");
+        setUpdateLastname("");
         setUpdateFirstname("");
-        setUpdateCourse("");
-        setUpdateLevel("");
-        setUpdateSection("");
+
         clearStudentUpdate();
         setIsWebcamActive(false);
         setUpdateImageUrls([]);
@@ -428,17 +379,15 @@ function SuperAdminStudentManagement() {
       });
   };
 
-  const handleStudentDeactivate = () => {};
+  const handleProfessorDeactivate = () => {};
 
-  const handleStudentActivate = () => {};
+  const handleProfessorActivate = () => {};
 
-  const clearStudentUpdate = () => {
-    setUpdateFaithID("");
+  const clearProfessorUpdate = () => {
+    setUpdateEmail("");
     setUpdateLastname("");
     setUpdateFirstname("");
-    setUpdateCourse("");
-    setUpdateLevel("");
-    setUpdateSection("");
+
     setUpdatedScreenshots([]);
   };
 
@@ -450,9 +399,9 @@ function SuperAdminStudentManagement() {
   return (
     <div className="base_bg w-100 p-5">
       <h1 className="my-4">
-        <b>{NametoUpperCase}'S STUDENT MANAGEMENT PAGE</b>
+        <b>{NametoUpperCase}'S PROFESSOR MANAGEMENT PAGE</b>
       </h1>
-      <h4 className="">LIST OF STUDENTS</h4>
+      <h4 className="">LIST OF PROFESSORS</h4>
       <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
@@ -466,7 +415,7 @@ function SuperAdminStudentManagement() {
                     <input
                       className="form-control"
                       type="search"
-                      placeholder="Search Student..."
+                      placeholder="Search Professor..."
                       aria-label="Search"
                     />
                     <button
@@ -489,7 +438,7 @@ function SuperAdminStudentManagement() {
                   setIsWebcamActive(true);
                 }}
               >
-                ADD STUDENT
+                ADD PROFESSOR
               </button>
             </div>
           </div>
@@ -497,25 +446,20 @@ function SuperAdminStudentManagement() {
           <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
             <thead className="table-light">
               <tr>
-                <th>FAITH ID</th>
+                <th>EMAIL</th>
                 <th>LAST NAME</th>
                 <th>FIRST NAME</th>
-                <th>COURSE</th>
-                <th>LEVEL/YEAR</th>
-                <th>SECTION</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              {students.length > 0 ? (
-                students.map((student, index) => (
+              {professors.length > 0 ? (
+                professors.map((professor, index) => (
                   <tr className="table-light" key={index}>
-                    <td className="p-2">{student.faith_id}</td>
-                    <td className="p-2">{student.std_lname}</td>
-                    <td className="p-2">{student.std_fname}</td>
-                    <td className="p-2">{student.std_course}</td>
-                    <td className="p-2">{student.std_level}</td>
-                    <td className="p-2">{student.std_section}</td>
+                    <td className="p-2">{professor.email}</td>
+                    <td className="p-2">{professor.user_lastname}</td>
+                    <td className="p-2">{professor.user_firstname}</td>
+
                     <td className="p-2">
                       <button
                         type="button"
@@ -523,26 +467,23 @@ function SuperAdminStudentManagement() {
                         data-bs-target="#staticBackdrop1"
                         className="btn btn-primary"
                         onClick={() => {
-                          handleStudentUpdate(
-                            student.faith_id,
-                            student.std_lname,
-                            student.std_fname,
-                            student.std_course,
-                            student.std_level,
-                            student.std_section
+                          handleProfessorUpdate(
+                            professor.email,
+                            professor.user_lastname,
+                            professor.user_firstname
                           );
                           setIsWebcamActive(!isWebcamActive);
                         }}
                       >
                         UPDATE
                       </button>
-                      {student.std_status == "Active" ? (
+                      {professor.user_status == "Active" ? (
                         <button
                           type="button"
                           data-bs-toggle="modal"
                           data-bs-target="#staticBackdrop2"
                           className="btn btn-danger mx-3"
-                          onClick={handleStudentDeactivate()}
+                          onClick={handleProfessorDeactivate()}
                         >
                           DEACTIVATE
                         </button>
@@ -552,11 +493,19 @@ function SuperAdminStudentManagement() {
                           data-bs-toggle="modal"
                           data-bs-target="#staticBackdrop3"
                           className="btn btn-success mx-3"
-                          onClick={handleStudentActivate()}
+                          onClick={handleProfessorActivate()}
                         >
                           REACTIVATE
                         </button>
                       )}
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop1"
+                        className="btn btn-warning"
+                      >
+                        RESET PASSWORD
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -580,7 +529,7 @@ function SuperAdminStudentManagement() {
         </div>
       </div>
 
-      {/* START OF MODAL FOR ADDING NEW STUDENT */}
+      {/* START OF MODAL FOR ADDING NEW PROFESSOR */}
       <div
         className="modal fade"
         id="staticBackdrop"
@@ -594,11 +543,11 @@ function SuperAdminStudentManagement() {
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel">
-                <b>CREATE NEW STUDENT</b>
+                <b>CREATE NEW PROFESSOR</b>
               </h1>
             </div>
 
-            <form onSubmit={(e) => handleStudentSubmit(e)}>
+            <form onSubmit={(e) => handleProfessorSubmit(e)}>
               <div className="modal-body">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                   <img
@@ -614,7 +563,7 @@ function SuperAdminStudentManagement() {
                   <div className="card-body p-4 p-md-5">
                     <div className="container d-flex justify-content-center">
                       <h1 className="fontfam fw-bolder mb-4 pb-2 pb-md-0 mb-md-5 px-md-2 text-justify">
-                        STUDENT INFORMATION
+                        PROFESSOR INFORMATION
                       </h1>
                     </div>
                     {error == true ? (
@@ -630,23 +579,23 @@ function SuperAdminStudentManagement() {
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
                           <input
-                            type="text"
-                            id="faithID"
-                            value={faithID}
+                            type="email"
+                            id="email"
+                            value={email}
                             onChange={(e) => {
-                              setFaithID(e.target.value);
+                              setEmail(e.target.value);
                               setError(false);
                             }}
-                            pattern="S20.*"
-                            title="Enter a FAITH Student ID! Ex: S20****"
-                            maxLength="11"
+                            // pattern="S20.*"
+                            // title="Enter a FAITH Student ID! Ex: S20****"
+                            // maxLength="11"
                             required
                           />
-                          <span className="">FAITH ID</span>
+                          <span className="">FAITH EMAIL</span>
                         </div>
                       </div>
                     </div>
-                    {/* End of Student ID */}
+                    {/* End of Faith Email */}
                     {/* Start of Lastname */}
                     <div className="">
                       <div className="md-6 mb-4">
@@ -683,91 +632,6 @@ function SuperAdminStudentManagement() {
                       </div>
                     </div>
                     {/* End of Firstname */}
-                    {/* Start of Course */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <select
-                            className="form-select form-select-md mb-3"
-                            aria-label=".form-select-md example"
-                            onChange={(e) => {
-                              setCourse(e.target.value);
-                            }}
-                            id="course"
-                            value={course || ""}
-                            required
-                          >
-                            <option value="" disabled>
-                              Select a Course
-                            </option>
-                            {courses.length > 0
-                              ? courses.map((course) => (
-                                  <option
-                                    key={course.id}
-                                    value={course.course_name}
-                                  >
-                                    {course.course_name}
-                                  </option>
-                                ))
-                              : ""}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                    {/* End of Course */}
-
-                    {/* Start of Level/Year */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <select
-                            className="form-select form-select-md mb-3"
-                            aria-label=".form-select-md example"
-                            onChange={(e) => {
-                              setLevel(e.target.value);
-                            }}
-                            id="level"
-                            value={level || ""}
-                            required
-                          >
-                            <option value="" disabled>
-                              Select a Level/Year
-                            </option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Start of Section */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <select
-                            className="form-select form-select-md mb-3"
-                            aria-label=".form-select-md example"
-                            onChange={(e) => {
-                              setSection(e.target.value);
-                            }}
-                            id="section"
-                            value={section || ""}
-                            required
-                          >
-                            <option value="" disabled>
-                              Select a Section
-                            </option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
 
                     {/* START OF SCREENSHOT AND ADD BUTTON  */}
                     <div className="d-flex flex-column align-items-center">
@@ -777,7 +641,7 @@ function SuperAdminStudentManagement() {
                             value={selectedWebcam}
                             onChange={(e) => setSelectedWebcam(e.target.value)}
                           >
-                            <option>Select Webcam</option>
+                            <option>SELECT WEBCAM</option>
                             {webcams.map((webcam) => (
                               <option
                                 key={webcam.deviceId}
@@ -801,7 +665,7 @@ function SuperAdminStudentManagement() {
                                 className="my-2"
                                 onClick={() => captureScreenshot()}
                               >
-                                Take Screenshot
+                                TAKE SCREENSHOT
                               </Button>
                             </>
                           )}
@@ -832,7 +696,7 @@ function SuperAdminStudentManagement() {
                               onClick={() => clearScreenshots()}
                               className="mt-3 btn btn-danger"
                             >
-                              Clear Screenshots
+                              CLEAR SCREENSHOTS
                             </Button>
                           </div>
                         </div>
@@ -855,14 +719,15 @@ function SuperAdminStudentManagement() {
                   className="btn btn-success mb-1"
                   data-bs-dismiss="modal"
                 >
-                  ADD STUDENT
+                  ADD PROFESSOR
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-      {/* START OF UPDATE STUDENT MODAL */}
+
+      {/* START OF UPDATE PROFESSOR MODAL */}
       <div
         className="modal fade"
         id="staticBackdrop1"
@@ -876,11 +741,11 @@ function SuperAdminStudentManagement() {
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel1">
-                <b>UPDATE STUDENT</b>
+                <b>UPDATE PROFESSOR</b>
               </h1>
             </div>
 
-            <form onSubmit={(e) => handleUpdateStudentSubmit(e)}>
+            <form onSubmit={(e) => handleUpdateProfessorSubmit(e)}>
               <div className="modal-body">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                   <img
@@ -896,7 +761,7 @@ function SuperAdminStudentManagement() {
                   <div className="card-body p-4 p-md-5">
                     <div className="container d-flex justify-content-center">
                       <h1 className="fontfam fw-bolder mb-4 pb-2 pb-md-0 mb-md-5 px-md-2 text-justify">
-                        STUDENT INFORMATION
+                        PROFESSOR INFORMATION
                       </h1>
                     </div>
                     {error == true ? (
@@ -912,20 +777,20 @@ function SuperAdminStudentManagement() {
                       <div className="md-6 mb-4">
                         <div className="inputBox2 w-100">
                           <input
-                            type="text"
-                            id="updateFaithID"
-                            value={updateFaithID}
+                            type="email"
+                            id="updateEmail"
+                            value={updateEmail}
                             onChange={(e) => {
-                              setUpdateFaithID(e.target.value);
+                              setUpdateEmail(e.target.value);
                               setError(false);
                             }}
-                            pattern="S20.*"
-                            title="Enter a FAITH Student ID! Ex: S20****"
-                            maxLength="11"
+                            // pattern="S20.*"
+                            // title="Enter a FAITH Student ID! Ex: S20****"
+                            // maxLength="11"
                             required
                             disabled
                           />
-                          <span className="">FAITH ID</span>
+                          <span className="">FAITH EMAIL</span>
                         </div>
                       </div>
                     </div>
@@ -966,77 +831,7 @@ function SuperAdminStudentManagement() {
                       </div>
                     </div>
                     {/* End of Firstname */}
-                    {/* Start of Course */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <input
-                            type="text"
-                            id="updateCourse"
-                            value={updateCourse}
-                            onChange={(e) => {
-                              setUpdateCourse(e.target.value);
-                            }}
-                            required
-                          />
-                          <span className="">Course</span>
-                        </div>
-                      </div>
-                    </div>
-                    {/* End of Course */}
 
-                    {/* Start of Level/Year */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <select
-                            className="form-select form-select-md mb-3"
-                            aria-label=".form-select-md example"
-                            onChange={(e) => {
-                              setUpdateLevel(e.target.value);
-                            }}
-                            id="updateLevel"
-                            value={updateLevel || ""}
-                            required
-                          >
-                            <option value="" disabled>
-                              Select a Level/Year
-                            </option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Start of Section */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <select
-                            className="form-select form-select-md mb-3"
-                            aria-label=".form-select-md example"
-                            onChange={(e) => {
-                              setUpdateSection(e.target.value);
-                            }}
-                            id="updateSection"
-                            value={updateSection || ""}
-                            required
-                          >
-                            <option value="" disabled>
-                              Select a Section
-                            </option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
                     <hr />
                     <h3>Current Images</h3>
                     <Carousel>
@@ -1052,7 +847,7 @@ function SuperAdminStudentManagement() {
                     </Carousel>
 
                     <hr />
-                    <h3>Take New Images</h3>
+                    <h3>TAKE NEW IMAGES</h3>
                     {/* START OF SCREENSHOT AND ADD BUTTON  */}
                     <div className="d-flex flex-column align-items-center">
                       <div style={{ maxWidth: "640px", margin: "auto" }}>
@@ -1088,7 +883,7 @@ function SuperAdminStudentManagement() {
                                 className="my-2"
                                 onClick={() => captureUpdatedScreenshot()}
                               >
-                                Take Screenshot
+                                TAKE SCREENSHOT
                               </Button>
                             </>
                           )}
@@ -1121,7 +916,7 @@ function SuperAdminStudentManagement() {
                               onClick={() => clearUpdatedScreenshots()}
                               className="mt-3 btn btn-danger"
                             >
-                              Clear Screenshots
+                              CLEAR SCREENSHOTS
                             </Button>
                           </div>
                         </div>
@@ -1137,7 +932,7 @@ function SuperAdminStudentManagement() {
                   data-bs-dismiss="modal"
                   onClick={() => {
                     setUpdateImageUrls([]);
-                    clearStudentUpdate();
+                    clearProfessorUpdate();
                     setIsWebcamActive(false);
                   }}
                 >
@@ -1159,4 +954,4 @@ function SuperAdminStudentManagement() {
   );
 }
 
-export default SuperAdminStudentManagement;
+export default SuperAdminProfessorManagement;

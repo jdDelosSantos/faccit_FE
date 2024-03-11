@@ -17,6 +17,7 @@ import SuperAdminStudentManagement from "./Components/SuperAdminStudentManagemen
 import SuperAdminCourseManagement from "./Components/SuperAdminCourseManagement/SuperAdminCourseManagement";
 import SuperAdminSubjectManagement from "./Components/SuperAdminSubjectManagement/SuperAdminSubjectManagement";
 import SuperAdminCollegeManagement from "./Components/SuperAdminCollegeManagement/SuperAdminCollegeManagement";
+import SuperAdminProfessorManagement from "./Components/SuperAdminProfessorManagement/SuperAdminProfessorManagement";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -50,6 +51,10 @@ function App() {
             <Route
               path="/managements/colleges"
               element={<SuperAdminCollegeManagement />}
+            />
+            <Route
+              path="/managements/professors"
+              element={<SuperAdminProfessorManagement />}
             />
             <Route
               path="/managements/courses"

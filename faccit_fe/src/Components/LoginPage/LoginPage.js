@@ -13,7 +13,12 @@ import toast from "react-hot-toast";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
+  const [seePassword, setSeePassword] = useState(false);
   const [password, setPassword] = useState("");
+
+  const handleSeePasswordChange = (event) => {
+    setSeePassword(event.target.checked);
+  };
   // const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -27,9 +32,8 @@ function LoginPage() {
       .post("login", attemptLogin)
       .then((result) => {
         const decodedToken = jwtDecode(result.data);
-        sessionStorage.setItem("Surname", decodedToken.surname);
-        sessionStorage.setItem("Firstname", decodedToken.firstname);
-        // sessionStorage.setItem("Role", decodedToken.role);
+        sessionStorage.setItem("Lastname", decodedToken.user_lastname);
+        sessionStorage.setItem("Firstname", decodedToken.user_firstname);
         sessionStorage.setItem("Token", result.data);
         redirectToDashboard(decodedToken.role);
       })
@@ -65,6 +69,7 @@ function LoginPage() {
               <div className="inputBox w-100">
                 <input
                   type="text"
+                  value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
                   }}
@@ -74,13 +79,21 @@ function LoginPage() {
               </div>
               <div className="inputBox w-100 my-3">
                 <input
-                  type="password"
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
+                  type={seePassword ? "text" : "password"} // Change type based on state
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
                 <span>Password</span>
+              </div>
+
+              <div className="w-100 d-flex flex-row align-items-center">
+                <input
+                  type="checkbox"
+                  checked={seePassword} // Set checkbox checked state
+                  onChange={handleSeePasswordChange}
+                />
+                <p className="p-class mx-2 text-white">Show Password</p>
               </div>
               <button
                 type="button"

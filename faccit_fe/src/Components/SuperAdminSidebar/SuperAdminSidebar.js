@@ -102,7 +102,7 @@ function SuperAdminSidebar() {
                   </a>
                 </li>
                 <li className="sidebar-item">
-                  <a href="managements/professors" className="sidebar-link">
+                  <a href="/managements/professors" className="sidebar-link">
                     Professors
                   </a>
                 </li>

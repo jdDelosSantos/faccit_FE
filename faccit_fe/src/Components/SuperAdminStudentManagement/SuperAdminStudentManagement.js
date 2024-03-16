@@ -448,8 +448,8 @@ function SuperAdminStudentManagement() {
   };
 
   return (
-    <div className="base_bg w-100 p-5">
-      <h1 className="my-4">
+    <div className="base_bg w-100 p-4">
+      <h1 className="my-1">
         <b>{NametoUpperCase}'S STUDENT MANAGEMENT PAGE</b>
       </h1>
       <h4 className="">LIST OF STUDENTS</h4>
@@ -590,7 +590,7 @@ function SuperAdminStudentManagement() {
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel">
@@ -872,7 +872,7 @@ function SuperAdminStudentManagement() {
         aria-labelledby="staticBackdropLabel1"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel1">
@@ -970,16 +970,30 @@ function SuperAdminStudentManagement() {
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
-                          <input
-                            type="text"
-                            id="updateCourse"
-                            value={updateCourse}
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
                             onChange={(e) => {
                               setUpdateCourse(e.target.value);
                             }}
+                            id="updateCourse"
+                            value={updateCourse || ""}
                             required
-                          />
-                          <span className="">Course</span>
+                          >
+                            <option value="" disabled>
+                              Select a Course
+                            </option>
+                            {courses.length > 0
+                              ? courses.map((course) => (
+                                  <option
+                                    key={course.id}
+                                    value={course.course_name}
+                                  >
+                                    {course.course_name}
+                                  </option>
+                                ))
+                              : ""}
+                          </select>
                         </div>
                       </div>
                     </div>

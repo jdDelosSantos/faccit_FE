@@ -133,8 +133,8 @@ function SuperAdminCourseManagement() {
   };
 
   return (
-    <div className="base_bg w-100 p-5">
-      <h1 className="my-4">
+    <div className="base_bg w-100 p-4">
+      <h1 className="my-1">
         <b>{NametoUpperCase}'S COURSE MANAGEMENT PAGE</b>
       </h1>
       <h4 className="">LIST OF COURSES</h4>

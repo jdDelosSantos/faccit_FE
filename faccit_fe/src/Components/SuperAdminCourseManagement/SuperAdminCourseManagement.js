@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../SuperAdminCourseManagement/SuperAdminCourseManagement.css";
 import { setCourses } from "../../Redux/courses";
+import { setColleges } from "../../Redux/colleges";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ function SuperAdminCourseManagement() {
   const [updateCourseCollege, setUpdateCourseCollege] = useState("");
 
   const courses = useSelector((state) => state.course.courses);
+  const colleges = useSelector((state) => state.college.colleges);
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
   const dispatch = useDispatch();
@@ -50,8 +52,32 @@ function SuperAdminCourseManagement() {
       });
   };
 
+  const fetchColleges = () => {
+    https
+      .get("colleges", {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        dispatch(setColleges(result.data));
+        console.log(colleges);
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        }
+        console.log(error.response.data.message);
+        goBackToLogin();
+      });
+  };
+
   useEffect(() => {
     fetchCourses();
+    fetchColleges();
   }, []);
 
   const handleCourseSearchBar = (e) => {
@@ -265,7 +291,7 @@ function SuperAdminCourseManagement() {
         aria-labelledby="staticBackdropLabel4"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel4">
@@ -360,16 +386,30 @@ function SuperAdminCourseManagement() {
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
-                          <input
-                            type="text"
-                            id="courseCollege"
-                            value={courseCollege}
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
                             onChange={(e) => {
                               setCourseCollege(e.target.value);
                             }}
+                            id="courseCollege"
+                            value={courseCollege || ""}
                             required
-                          />
-                          <span className="">Course College</span>
+                          >
+                            <option value="" disabled>
+                              Select a Course College
+                            </option>
+                            {colleges.length > 0
+                              ? colleges.map((college) => (
+                                  <option
+                                    key={college.id}
+                                    value={college.college_name}
+                                  >
+                                    {college.college_name}
+                                  </option>
+                                ))
+                              : ""}
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -411,7 +451,7 @@ function SuperAdminCourseManagement() {
         aria-labelledby="staticBackdropLabel5"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel5">
@@ -507,16 +547,30 @@ function SuperAdminCourseManagement() {
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
-                          <input
-                            type="text"
-                            id="updateCourseCollege"
-                            value={updateCourseCollege}
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
                             onChange={(e) => {
                               setUpdateCourseCollege(e.target.value);
                             }}
+                            id="updateCourseCollege"
+                            value={updateCourseCollege || ""}
                             required
-                          />
-                          <span className="">Course College</span>
+                          >
+                            <option value="" disabled>
+                              Select a Course College
+                            </option>
+                            {colleges.length > 0
+                              ? colleges.map((college) => (
+                                  <option
+                                    key={college.id}
+                                    value={college.college_name}
+                                  >
+                                    {college.college_name}
+                                  </option>
+                                ))
+                              : ""}
+                          </select>
                         </div>
                       </div>
                     </div>

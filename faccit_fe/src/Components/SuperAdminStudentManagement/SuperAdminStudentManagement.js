@@ -503,6 +503,7 @@ function SuperAdminStudentManagement() {
                 <th>COURSE</th>
                 <th>LEVEL/YEAR</th>
                 <th>SECTION</th>
+                <th>IMAGE STATUS</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
@@ -516,6 +517,39 @@ function SuperAdminStudentManagement() {
                     <td className="p-2">{student.std_course}</td>
                     <td className="p-2">{student.std_level}</td>
                     <td className="p-2">{student.std_section}</td>
+                    <td className="p-3">
+                      {(() => {
+                        switch (true) {
+                          case student.student_images_count === 0:
+                            return (
+                              <img
+                                className="table_img"
+                                src="https://img.icons8.com/ios-filled/50/FA5252/cancel.png"
+                                alt="cancel"
+                              />
+                            );
+                          case student.student_images_count < 3 &&
+                            student.student_images_count !== 0:
+                            return (
+                              <img
+                                className="table_img"
+                                src="https://img.icons8.com/ios-filled/50/FAB005/medium-risk.png"
+                                alt="medium-risk"
+                              />
+                            );
+                          case student.student_images_count === 3:
+                            return (
+                              <img
+                                className="table_img"
+                                src="https://img.icons8.com/ios-filled/50/40C057/ok--v1.png"
+                                alt="ok--v1"
+                              />
+                            );
+                          default:
+                            return null;
+                        }
+                      })()}
+                    </td>
                     <td className="p-2">
                       <button
                         type="button"
@@ -801,7 +835,7 @@ function SuperAdminStudentManagement() {
                                 className="my-2"
                                 onClick={() => captureScreenshot()}
                               >
-                                Take Screenshot
+                                TAKE A SCREENSHOT
                               </Button>
                             </>
                           )}
@@ -832,7 +866,7 @@ function SuperAdminStudentManagement() {
                               onClick={() => clearScreenshots()}
                               className="mt-3 btn btn-danger"
                             >
-                              Clear Screenshots
+                              CLEAR SCREENSHOTS
                             </Button>
                           </div>
                         </div>

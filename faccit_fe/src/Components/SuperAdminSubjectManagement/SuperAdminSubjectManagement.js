@@ -160,8 +160,8 @@ function SuperAdminSubjectManagement() {
   };
 
   return (
-    <div className="base_bg w-100 p-5">
-      <h1 className="my-4">
+    <div className="base_bg w-100 p-4">
+      <h1 className="my-1">
         <b>{NametoUpperCase}'S SUBJECT MANAGEMENT PAGE</b>
       </h1>
       <h4 className="">LIST OF SUBJECTS</h4>
@@ -297,7 +297,7 @@ function SuperAdminSubjectManagement() {
         aria-labelledby="staticBackdropLabel4"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel4">
@@ -486,7 +486,7 @@ function SuperAdminSubjectManagement() {
         aria-labelledby="staticBackdropLabel5"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-xl">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel5">

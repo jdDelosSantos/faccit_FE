@@ -117,7 +117,7 @@ function AdminSidebar() {
                   </a>
                 </li> */}
                 <li className="sidebar-item">
-                  <a href="/management/subjects" className="sidebar-link">
+                  <a href="admin/managements/subjects" className="sidebar-link">
                     Subjects
                   </a>
                 </li>

@@ -25,6 +25,7 @@ function SuperAdminCourseManagement() {
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");

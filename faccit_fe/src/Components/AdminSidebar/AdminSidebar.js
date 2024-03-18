@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./AdminSidebar.css";
 
 function AdminSidebar() {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(
+    localStorage.getItem("isSidebarExpanded") === "true" ? true : false
+  );
+
+  // Update localStorage when the isExpanded state changes
+  useEffect(() => {
+    localStorage.setItem("isSidebarExpanded", isExpanded);
+  }, [isExpanded]);
 
   const toggleSidebar = () => {
     setIsExpanded(!isExpanded);
@@ -11,6 +18,7 @@ function AdminSidebar() {
   const handleLogout = () => {
     sessionStorage.clear();
   };
+
   return (
     <div>
       <div className="wrapper">
@@ -20,7 +28,7 @@ function AdminSidebar() {
               <i className="lni lni-grid-alt"></i>
             </button>
             <div className="sidebar-logo">
-              <a href="#"></a>
+              <a href="#">FACCIT</a>
             </div>
           </div>
           <ul className="sidebar-nav">
@@ -32,8 +40,14 @@ function AdminSidebar() {
             </li>
             <li className="sidebar-item">
               <a href="#" className="sidebar-link">
-                <i className="lni lni-agenda"></i>
-                <span>List</span>
+                <i className="lni lni-cog"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+            <li className="sidebar-item">
+              <a href="/dashboard" className="sidebar-link">
+                <i className="lni lni-license"></i>
+                <span>Dashboard</span>
               </a>
             </li>
             <li className="sidebar-item">
@@ -45,8 +59,8 @@ function AdminSidebar() {
                 aria-expanded="true"
                 aria-controls="auth"
               >
-                <i className="lni lni-protection"></i>
-                <span>Auth</span>
+                <i className="lni lni-graph"></i>
+                <span>Laboratories</span>
               </a>
               <ul
                 id="auth"
@@ -55,12 +69,12 @@ function AdminSidebar() {
               >
                 <li className="sidebar-item">
                   <a href="#" className="sidebar-link">
-                    Login
+                    Programming Lab
                   </a>
                 </li>
                 <li className="sidebar-item">
                   <a href="#" className="sidebar-link">
-                    Register
+                    Machine Lab
                   </a>
                 </li>
               </ul>
@@ -75,39 +89,37 @@ function AdminSidebar() {
                 aria-controls="multi"
               >
                 <i className="lni lni-layout"></i>
-                <span>Schedule</span>
+                <span>Managements</span>
               </a>
               <ul
                 id="multi"
                 className="sidebar-dropdown list-unstyle collapse"
                 data-bs-parent="#sidebar"
               >
-                <li className="sidebar-item">
-                  <a
-                    href="#"
-                    className="sidebar-link collapsed"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#multi-two"
-                    aria-expanded="true"
-                    aria-controls="multi-two"
-                  >
-                    Two Links
+                {/* <li className="sidebar-item">
+                  <a href="/managements/students" className="sidebar-link">
+                    Students
                   </a>
-                  <ul
-                    id="multi-two"
-                    className="sidebar-dropdown list-unstyled collapse"
-                  >
-                    <li className="sidebar-item">
-                      <a href="#" className="sidebar-link">
-                        Link 1
-                      </a>
-                    </li>
-                    <li className="sidebar-item">
-                      <a href="#" className="sidebar-link">
-                        Link 2
-                      </a>
-                    </li>
-                  </ul>
+                </li>
+                <li className="sidebar-item">
+                  <a href="/managements/professors" className="sidebar-link">
+                    Professors
+                  </a>
+                </li> */}
+                {/* <li className="sidebar-item">
+                  <a href="/managements/colleges" className="sidebar-link">
+                    Colleges
+                  </a>
+                </li>
+                <li className="sidebar-item">
+                  <a href="/managements/courses" className="sidebar-link">
+                    Courses
+                  </a>
+                </li> */}
+                <li className="sidebar-item">
+                  <a href="/management/subjects" className="sidebar-link">
+                    Subjects
+                  </a>
                 </li>
               </ul>
             </li>
@@ -115,12 +127,6 @@ function AdminSidebar() {
               <a href="#" className="sidebar-link">
                 <i className="lni lni-popup"></i>
                 <span>Notification</span>
-              </a>
-            </li>
-            <li className="sidebar-item">
-              <a href="#" className="sidebar-link">
-                <i className="lni lni-cog"></i>
-                <span>Setting</span>
               </a>
             </li>
           </ul>

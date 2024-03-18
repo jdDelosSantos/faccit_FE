@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../SuperAdminSubjectManagement/SuperAdminSubjectManagement.css";
 import { setSubjects } from "../../Redux/subjects";
+import { setProfessors } from "../../Redux/professors";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +12,7 @@ function SuperAdminSubjectManagement() {
   const [subjectCode, setSubjectCode] = useState("");
   const [subjectName, setSubjectName] = useState("");
   const [subjectDescription, setSubjectDescription] = useState("");
-  const [professor, setProfessor] = useState("");
+  const [professorID, setProfessorID] = useState("");
   const [subjectDay, setSubjectDay] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -20,12 +21,13 @@ function SuperAdminSubjectManagement() {
   const [updateSubjectCode, setUpdateSubjectCode] = useState("");
   const [updateSubjectName, setUpdateSubjectName] = useState("");
   const [updateSubjectDescription, setUpdateSubjectDescription] = useState("");
-  const [updateProfessor, setUpdateProfessor] = useState("");
+  const [updateProfessorID, setUpdateProfessorID] = useState("");
   const [updateSubjectDay, setUpdateSubjectDay] = useState("");
   const [updateStartTime, setUpdateStartTime] = useState("");
   const [updateEndTime, setUpdateEndTime] = useState("");
 
   const subjects = useSelector((state) => state.subject.subjects);
+  const professors = useSelector((state) => state.professor.professors);
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
   const dispatch = useDispatch();
@@ -33,6 +35,9 @@ function SuperAdminSubjectManagement() {
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {}, [professors]);
+  useEffect(() => {}, [subjects]);
 
   //Function for fetching Courses
   const fetchSubjects = () => {
@@ -58,8 +63,33 @@ function SuperAdminSubjectManagement() {
       });
   };
 
+  //Function for fetching Professors
+  const fetchProfessors = () => {
+    https
+      .get("getProfessors", {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        dispatch(setProfessors(result.data));
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          console.log(error.response.data.message);
+          goBackToLogin();
+        }
+      });
+  };
+
   useEffect(() => {
     fetchSubjects();
+    fetchProfessors();
   }, []);
 
   const handleSubjectSearchBar = (e) => {
@@ -75,13 +105,85 @@ function SuperAdminSubjectManagement() {
       subject_code: subjectCode,
       subject_name: subjectName,
       subject_description: subjectDescription,
-      subject_day: subjectDay,
-      start_time: startTime,
-      end_time: endTime,
+      // Include prof_id only if it has a value
+      ...(professorID && { prof_id: professorID }),
+      // Include subject_day only if it has a value
+      ...(subjectDay && { subject_day: subjectDay }),
+      // Include start_time only if it has a value
+      ...(startTime && { start_time: startTime }),
+      // Include end_time only if it has a value
+      ...(endTime && { end_time: endTime }),
     };
 
+    console.log(subjectData);
+
+    try {
+      https
+        .post("subjects", subjectData, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+          },
+        })
+        .then((result) => {
+          fetchSubjects();
+          toast.success(result.data.message, { duration: 7000 });
+
+          setSubjectCode("");
+          setSubjectName("");
+          setSubjectDescription("");
+          setSubjectDay("");
+          setStartTime("");
+          setEndTime("");
+        })
+        .catch((error) => {
+          if (error.response.data.message != "Unauthenticated.") {
+            setError(true);
+            setErrorMessage(error.response.data.message);
+            toast.error(error.response.data.message, { duration: 7000 });
+          } else {
+            goBackToLogin();
+          }
+        });
+    } catch {
+      console.error(error);
+    }
+  };
+
+  //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
+  const handleSubjectUpdate = (
+    subject_code,
+    subject_name,
+    subject_description,
+    prof_id,
+    subject_day,
+    start_time,
+    end_time
+  ) => {
+    setUpdateSubjectCode(subject_code);
+    setUpdateSubjectName(subject_name);
+    setUpdateSubjectDescription(subject_description);
+    setUpdateProfessorID(prof_id);
+    setUpdateSubjectDay(subject_day);
+    setUpdateStartTime(start_time);
+    setUpdateEndTime(end_time);
+  };
+
+  //FUNCTION FOR ADDING UPDATING A SUBJECT
+  const handleUpdateSubjectSubmit = (e) => {
+    e.preventDefault();
+    const updateSubjectData = {
+      subject_code: updateSubjectCode,
+      subject_name: updateSubjectName,
+      subject_description: updateSubjectDescription,
+      subject_day: updateSubjectDay,
+      prof_id: updateProfessorID,
+      start_time: updateStartTime,
+      end_time: updateEndTime,
+    };
+
+    console.log(updateSubjectData);
     https
-      .post("subjects", subjectData, {
+      .put(`update_subjects/${updateSubjectCode}`, updateSubjectData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -90,12 +192,13 @@ function SuperAdminSubjectManagement() {
         fetchSubjects();
         toast.success(result.data.message, { duration: 7000 });
 
-        setSubjectCode("");
-        setSubjectName("");
-        setSubjectDescription("");
-        setSubjectDay("");
-        setStartTime("");
-        setEndTime("");
+        setUpdateSubjectCode("");
+        setUpdateSubjectName("");
+        setUpdateSubjectDescription("");
+        setUpdateProfessorID("");
+        setUpdateSubjectDay("");
+        setUpdateStartTime("");
+        setUpdateEndTime("");
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -108,28 +211,6 @@ function SuperAdminSubjectManagement() {
           goBackToLogin();
         }
       });
-  };
-
-  //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
-  const handleSubjectUpdate = (
-    subject_code,
-    subject_name,
-    subject_description,
-    subject_day,
-    start_time,
-    end_time
-  ) => {
-    setUpdateSubjectCode(subject_code);
-    setUpdateSubjectName(subject_name);
-    setUpdateSubjectDescription(subject_description);
-    setUpdateSubjectDay(subject_day);
-    setUpdateStartTime(start_time);
-    setUpdateEndTime(end_time);
-  };
-
-  //FUNCTION FOR ADDING UPDATING A SUBJECT
-  const handleUpdateSubjectSubmit = (e) => {
-    e.preventDefault();
   };
 
   const handleSubjectDeactivate = () => {};
@@ -149,6 +230,7 @@ function SuperAdminSubjectManagement() {
     setUpdateSubjectCode("");
     setUpdateSubjectName("");
     setUpdateSubjectDescription("");
+    setUpdateProfessorID("");
     setUpdateSubjectDay("");
     setUpdateStartTime("");
     setUpdateEndTime("");
@@ -209,6 +291,7 @@ function SuperAdminSubjectManagement() {
                 <th>SUBJECT CODE</th>
                 <th>SUBJECT NAME</th>
                 <th>SUBJECT DESCRIPTION</th>
+                <th>PROFESSOR ID</th>
                 <th>SUBJECT DAY</th>
                 <th>START TIME</th>
                 <th>END TIME</th>
@@ -222,6 +305,7 @@ function SuperAdminSubjectManagement() {
                     <td className="p-2">{subject.subject_code}</td>
                     <td className="p-2">{subject.subject_name}</td>
                     <td className="p-2">{subject.subject_description}</td>
+                    <td className="p-2">{subject.prof_id}</td>
                     <td className="p-2">{subject.subject_day}</td>
                     <td className="p-2">{subject.start_time}</td>
                     <td className="p-2">{subject.end_time}</td>
@@ -236,6 +320,8 @@ function SuperAdminSubjectManagement() {
                             subject.subject_code,
                             subject.subject_name,
                             subject.subject_description,
+                            subject.prof_id,
+                            subject.subject_day,
                             subject.start_time,
                             subject.end_time
                           );
@@ -415,6 +501,39 @@ function SuperAdminSubjectManagement() {
                       </div>
                     </div>
 
+                    {/* Start of Prof ID */}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox1 w-100">
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
+                            onChange={(e) => {
+                              setProfessorID(e.target.value);
+                            }}
+                            id="professorID"
+                            value={professorID || ""}
+                          >
+                            <option value="" disabled>
+                              Select a Professor
+                            </option>
+                            {professors.length > 0
+                              ? professors.map((professor) => (
+                                  <option
+                                    key={`${professor.prof_id}-${professor.user_lastname}-${professor.user_firstname}`}
+                                    value={professor.prof_id}
+                                    title={`Professor ID: ${professor.prof_id}`}
+                                  >
+                                    {professor.user_lastname},{" "}
+                                    {professor.user_firstname}
+                                  </option>
+                                ))
+                              : ""}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Start of Subject Start Time */}
                     <div className="">
                       <div className="md-6 mb-4">
@@ -578,6 +697,40 @@ function SuperAdminSubjectManagement() {
                       </div>
                     </div>
 
+                    {/* Start of Prof ID */}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox1 w-100">
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
+                            onChange={(e) => {
+                              setUpdateProfessorID(e.target.value);
+                            }}
+                            id="updateProfessorID"
+                            value={updateProfessorID || ""} // Use an empty string if updateProfessorID is falsy
+                          >
+                            <option value="" disabled>
+                              Select a Professor
+                            </option>
+                            <option value="None">None</option>
+                            {professors.length > 0
+                              ? professors.map((professor) => (
+                                  <option
+                                    key={`${professor.prof_id}-${professor.user_lastname}-${professor.user_firstname}`}
+                                    value={professor.prof_id}
+                                    title={`Professor ID: ${professor.prof_id}`}
+                                  >
+                                    {professor.user_lastname},{" "}
+                                    {professor.user_firstname}
+                                  </option>
+                                ))
+                              : ""}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Start of Subject Day */}
                     <div className="">
                       <div className="md-6 mb-4">
@@ -586,15 +739,15 @@ function SuperAdminSubjectManagement() {
                             className="form-select form-select-md mb-3"
                             aria-label=".form-select-md example"
                             onChange={(e) => {
-                              setSubjectDay(e.target.value);
+                              setUpdateSubjectDay(e.target.value);
                             }}
-                            id="subjectDay"
-                            value={subjectDay || ""}
-                            required
+                            id="updateSubjectDay"
+                            value={updateSubjectDay || ""}
                           >
                             <option value="" disabled>
                               Select a Day
                             </option>
+                            <option value="None">None</option>
                             <option value="Monday">Monday</option>
                             <option value="Tuesday">Tuesday</option>
                             <option value="Tuesday">Tuesday</option>
@@ -614,11 +767,10 @@ function SuperAdminSubjectManagement() {
                           <input
                             type="time"
                             id="updateStartTime"
-                            value={updateStartTime}
+                            value={updateStartTime || ""}
                             onChange={(e) => {
                               setUpdateStartTime(e.target.value);
                             }}
-                            required
                           />
                           <span className="">Subject Start Time</span>
                         </div>
@@ -632,11 +784,10 @@ function SuperAdminSubjectManagement() {
                           <input
                             type="time"
                             id="updateEndTime"
-                            value={updateEndTime}
+                            value={updateEndTime || ""}
                             onChange={(e) => {
                               setUpdateEndTime(e.target.value);
                             }}
-                            required
                           />
                           <span className="">Subject End Time</span>
                         </div>

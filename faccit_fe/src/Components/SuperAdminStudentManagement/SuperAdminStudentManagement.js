@@ -199,7 +199,7 @@ function SuperAdminStudentManagement() {
             },
           })
           .then((result) => {
-            //console.log(result.data.message);
+            fetchStudents();
           })
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
@@ -251,7 +251,7 @@ function SuperAdminStudentManagement() {
             },
           })
           .then((result) => {
-            //console.log(result.data.message);
+            fetchStudents();
           })
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
@@ -1136,7 +1136,7 @@ function SuperAdminStudentManagement() {
                                 className="my-2"
                                 onClick={() => captureUpdatedScreenshot()}
                               >
-                                Take Screenshot
+                                TAKE A SCREENSHOT
                               </Button>
                             </>
                           )}
@@ -1169,7 +1169,7 @@ function SuperAdminStudentManagement() {
                               onClick={() => clearUpdatedScreenshots()}
                               className="mt-3 btn btn-danger"
                             >
-                              Clear Screenshots
+                              CLEAR SCREENSHOTS
                             </Button>
                           </div>
                         </div>

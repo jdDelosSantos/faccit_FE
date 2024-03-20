@@ -70,7 +70,7 @@ function App() {
 
           <Route element={<AdminSidebarFunction />}>
             <Route
-              path="admin/managements/subjects/"
+              path="/admin/managements/subjects"
               element={<AdminSubjectManagement />}
             />
             <Route path="/" element={<LoginPage />} />

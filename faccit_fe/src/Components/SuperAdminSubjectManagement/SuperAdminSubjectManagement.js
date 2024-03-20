@@ -39,7 +39,7 @@ function SuperAdminSubjectManagement() {
   useEffect(() => {}, [professors]);
   useEffect(() => {}, [subjects]);
 
-  //Function for fetching Courses
+  //Function for fetching Subjects
   const fetchSubjects = () => {
     https
       .get("subjects", {
@@ -105,13 +105,9 @@ function SuperAdminSubjectManagement() {
       subject_code: subjectCode,
       subject_name: subjectName,
       subject_description: subjectDescription,
-      // Include prof_id only if it has a value
       ...(professorID && { prof_id: professorID }),
-      // Include subject_day only if it has a value
       ...(subjectDay && { subject_day: subjectDay }),
-      // Include start_time only if it has a value
       ...(startTime && { start_time: startTime }),
-      // Include end_time only if it has a value
       ...(endTime && { end_time: endTime }),
     };
 

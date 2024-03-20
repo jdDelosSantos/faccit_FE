@@ -32,10 +32,19 @@ function LoginPage() {
       .post("login", attemptLogin)
       .then((result) => {
         const decodedToken = jwtDecode(result.data);
-        sessionStorage.setItem("Lastname", decodedToken.user_lastname);
-        sessionStorage.setItem("Firstname", decodedToken.user_firstname);
-        sessionStorage.setItem("Token", result.data);
-        redirectToDashboard(decodedToken.role);
+        console.log(result.data);
+        if (decodedToken.prof_id != undefined || "" || null) {
+          sessionStorage.setItem("Prof ID", decodedToken.prof_id);
+          sessionStorage.setItem("Lastname", decodedToken.user_lastname);
+          sessionStorage.setItem("Firstname", decodedToken.user_firstname);
+          sessionStorage.setItem("Token", result.data);
+          redirectToDashboard(decodedToken.role);
+        } else {
+          sessionStorage.setItem("Lastname", decodedToken.user_lastname);
+          sessionStorage.setItem("Firstname", decodedToken.user_firstname);
+          sessionStorage.setItem("Token", result.data);
+          redirectToDashboard(decodedToken.role);
+        }
       })
       .catch((err) => {
         toast.error(err.response.data.error);

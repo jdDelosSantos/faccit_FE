@@ -9,6 +9,7 @@ import { setCourses } from "../../Redux/courses";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 
 function SuperAdminStudentManagement() {
   //NEW STUDENT USE STATES
@@ -51,13 +52,20 @@ function SuperAdminStudentManagement() {
   //THE ARRAY FOR UPDATE STUDENT MODAL FOR DISPLAYING IMAGES FROM AWS S3
   const [updateImageUrls, setUpdateImageUrls] = useState([]);
 
+  //REACT-PAGINATION
+  const [students, setStudents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = students.slice(startIndex, endIndex);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const students = useSelector((state) => state.student.students);
+  // const reduxStudents = useSelector((state) => state.student.students);
   const courses = useSelector((state) => state.course.courses);
 
   //UseEffect for loading Students and Courses every time it changes
-  useEffect(() => {}, [students]);
   useEffect(() => {}, [courses]);
 
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
@@ -71,7 +79,8 @@ function SuperAdminStudentManagement() {
         },
       })
       .then((result) => {
-        dispatch(setStudents(result.data));
+        // dispatch(setStudents(result.data));
+        setStudents(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -508,8 +517,8 @@ function SuperAdminStudentManagement() {
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              {students.length > 0 ? (
-                students.map((student, index) => (
+              {currentItems.length > 0 ? (
+                currentItems.map((student, index) => (
                   <tr className="table-light" key={index}>
                     <td className="p-2">{student.faith_id}</td>
                     <td className="p-2">{student.std_lname}</td>
@@ -611,6 +620,28 @@ function SuperAdminStudentManagement() {
               )}
             </tbody>
           </table>
+          <div className="d-flex flex-row">
+            <ReactPaginate
+              nextLabel="next >"
+              onPageChange={(event) => setCurrentPage(event.selected)}
+              pageRangeDisplayed={3}
+              marginPagesDisplayed={2}
+              pageCount={Math.ceil(students.length / itemsPerPage)}
+              previousLabel="< previous"
+              pageClassName="page-item"
+              pageLinkClassName="page-link"
+              previousClassName="page-item"
+              previousLinkClassName="page-link"
+              nextClassName="page-item"
+              nextLinkClassName="page-link"
+              breakLabel="..."
+              breakClassName="page-item"
+              breakLinkClassName="page-link"
+              containerClassName="pagination"
+              activeClassName="active"
+              renderOnZeroPageCount={null}
+            />
+          </div>
         </div>
       </div>
 

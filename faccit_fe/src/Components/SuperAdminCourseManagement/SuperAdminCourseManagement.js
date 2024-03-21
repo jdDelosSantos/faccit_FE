@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../SuperAdminCourseManagement/SuperAdminCourseManagement.css";
-import { setCourses } from "../../Redux/courses";
+// import { setCourses } from "../../Redux/courses";
 import { setColleges } from "../../Redux/colleges";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import https from "../../https";
 
 function SuperAdminCourseManagement() {
@@ -20,12 +21,20 @@ function SuperAdminCourseManagement() {
   const [updateCourseDescription, setUpdateCourseDescription] = useState("");
   const [updateCourseCollege, setUpdateCourseCollege] = useState("");
 
-  const courses = useSelector((state) => state.course.courses);
+  const reduxCourses = useSelector((state) => state.course.courses);
   const colleges = useSelector((state) => state.college.colleges);
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  //REACT-PAGINATION
+  const [courses, setCourses] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = courses.slice(startIndex, endIndex);
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -39,7 +48,8 @@ function SuperAdminCourseManagement() {
         },
       })
       .then((result) => {
-        dispatch(setCourses(result.data));
+        // dispatch(setCourses(result.data));
+        setCourses(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -143,9 +153,39 @@ function SuperAdminCourseManagement() {
     e.preventDefault();
   };
 
-  const handleCourseDeactivate = () => {};
+  const handleCourseDeactivate = (course_code) => {
+    const courseData = {
+      course_status: "Disabled",
+    };
 
-  const handleCourseActivate = () => {};
+    https
+      .put(`course_deactivate/${course_code}`, courseData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.error(result.data.message, { duration: 7000 });
+        fetchCourses();
+      });
+  };
+
+  const handleCourseActivate = (course_code) => {
+    const courseData = {
+      course_status: "Active",
+    };
+
+    https
+      .put(`course_activate/${course_code}`, courseData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.success(result.data.message, { duration: 7000 });
+        fetchCourses();
+      });
+  };
 
   const clearUpdateCourse = () => {
     setUpdateCourseCode("");
@@ -210,17 +250,25 @@ function SuperAdminCourseManagement() {
                 <th>COURSE NAME</th>
                 <th>COURSE DESCRIPTION</th>
                 <th>COURSE COLLEGE</th>
+                <th>COURSE STATUS</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              {courses.length > 0 ? (
-                courses.map((course, index) => (
+              {currentItems.length > 0 ? (
+                currentItems.map((course, index) => (
                   <tr className="table-light" key={index}>
                     <td className="p-2">{course.course_code}</td>
                     <td className="p-2">{course.course_name}</td>
                     <td className="p-2">{course.course_description}</td>
                     <td className="p-2">{course.course_college}</td>
+                    <td className="p-2">
+                      {course.course_status === "Active" ? (
+                        <span style={{ color: "green" }}>ACTIVE</span>
+                      ) : (
+                        <span style={{ color: "red" }}>DISABLED</span>
+                      )}
+                    </td>
                     <td className="p-2">
                       <button
                         type="button"
@@ -241,20 +289,24 @@ function SuperAdminCourseManagement() {
                       {course.course_status == "Active" ? (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop6"
+                          // data-bs-toggle="modal"
+                          // data-bs-target="#staticBackdrop6"
                           className="btn btn-danger mx-3"
-                          onClick={handleCourseDeactivate()}
+                          onClick={() =>
+                            handleCourseDeactivate(course.course_code)
+                          }
                         >
                           DEACTIVATE
                         </button>
                       ) : (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop7"
+                          // data-bs-toggle="modal"
+                          // data-bs-target="#staticBackdrop7"
                           className="btn btn-success mx-3"
-                          onClick={handleCourseActivate()}
+                          onClick={() =>
+                            handleCourseActivate(course.course_code)
+                          }
                         >
                           REACTIVATE
                         </button>
@@ -279,6 +331,28 @@ function SuperAdminCourseManagement() {
               )}
             </tbody>
           </table>
+          <div className="d-flex flex-row">
+            <ReactPaginate
+              nextLabel="Next >"
+              onPageChange={(event) => setCurrentPage(event.selected)}
+              pageRangeDisplayed={3}
+              marginPagesDisplayed={2}
+              pageCount={Math.ceil(courses.length / itemsPerPage)}
+              previousLabel="< Previous"
+              pageClassName="page-item"
+              pageLinkClassName="page-link"
+              previousClassName="page-item"
+              previousLinkClassName="page-link"
+              nextClassName="page-item"
+              nextLinkClassName="page-link"
+              breakLabel="..."
+              breakClassName="page-item"
+              breakLinkClassName="page-link"
+              containerClassName="pagination"
+              activeClassName="active"
+              renderOnZeroPageCount={null}
+            />
+          </div>
         </div>
       </div>
 
@@ -401,14 +475,19 @@ function SuperAdminCourseManagement() {
                               Select a Course College
                             </option>
                             {colleges.length > 0
-                              ? colleges.map((college) => (
-                                  <option
-                                    key={college.id}
-                                    value={college.college_name}
-                                  >
-                                    {college.college_name}
-                                  </option>
-                                ))
+                              ? colleges
+                                  .filter(
+                                    (college) =>
+                                      college.college_status === "Active"
+                                  )
+                                  .map((college) => (
+                                    <option
+                                      key={`${college.id}-${college.college_name}-${college.college_description}`}
+                                      value={college.college_name}
+                                    >
+                                      {college.college_name}
+                                    </option>
+                                  ))
                               : ""}
                           </select>
                         </div>
@@ -562,14 +641,19 @@ function SuperAdminCourseManagement() {
                               Select a Course College
                             </option>
                             {colleges.length > 0
-                              ? colleges.map((college) => (
-                                  <option
-                                    key={college.id}
-                                    value={college.college_name}
-                                  >
-                                    {college.college_name}
-                                  </option>
-                                ))
+                              ? colleges
+                                  .filter(
+                                    (college) =>
+                                      college.college_status === "Active"
+                                  )
+                                  .map((college) => (
+                                    <option
+                                      key={`${college.id}-${college.college_name}-${college.college_description}`}
+                                      value={college.college_name}
+                                    >
+                                      {college.college_name}
+                                    </option>
+                                  ))
                               : ""}
                           </select>
                         </div>

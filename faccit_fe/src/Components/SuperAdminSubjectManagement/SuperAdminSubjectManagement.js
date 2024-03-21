@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../SuperAdminSubjectManagement/SuperAdminSubjectManagement.css";
-import { setSubjects } from "../../Redux/subjects";
+// import { setSubjects } from "../../Redux/subjects";
 import { setProfessors } from "../../Redux/professors";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import https from "../../https";
 
 function SuperAdminSubjectManagement() {
@@ -26,7 +27,15 @@ function SuperAdminSubjectManagement() {
   const [updateStartTime, setUpdateStartTime] = useState("");
   const [updateEndTime, setUpdateEndTime] = useState("");
 
-  const subjects = useSelector((state) => state.subject.subjects);
+  //REACT-PAGINATION
+  const [subjects, setSubjects] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = subjects.slice(startIndex, endIndex);
+
+  const reduxSubjects = useSelector((state) => state.subject.subjects);
   const professors = useSelector((state) => state.professor.professors);
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
@@ -48,7 +57,8 @@ function SuperAdminSubjectManagement() {
         },
       })
       .then((result) => {
-        dispatch(setSubjects(result.data));
+        // dispatch(setSubjects(result.data));
+        setSubjects(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -209,9 +219,39 @@ function SuperAdminSubjectManagement() {
       });
   };
 
-  const handleSubjectDeactivate = () => {};
+  const handleSubjectDeactivate = (subject_code) => {
+    const subjectData = {
+      subject_status: "Disabled",
+    };
 
-  const handleSubjectActivate = () => {};
+    https
+      .put(`subject_deactivate/${subject_code}`, subjectData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.error(result.data.message, { duration: 7000 });
+        fetchSubjects();
+      });
+  };
+
+  const handleSubjectActivate = (subject_code) => {
+    const subjectData = {
+      subject_status: "Active",
+    };
+
+    https
+      .put(`subject_activate/${subject_code}`, subjectData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.success(result.data.message, { duration: 7000 });
+        fetchSubjects();
+      });
+  };
 
   const clearSubject = () => {
     setSubjectCode("");
@@ -291,12 +331,13 @@ function SuperAdminSubjectManagement() {
                 <th>SUBJECT DAY</th>
                 <th>START TIME</th>
                 <th>END TIME</th>
+                <th>SUBJECT STATUS</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              {subjects.length > 0 ? (
-                subjects.map((subject, index) => (
+              {currentItems.length > 0 ? (
+                currentItems.map((subject, index) => (
                   <tr className="table-light" key={index}>
                     <td className="p-2">{subject.subject_code}</td>
                     <td className="p-2">{subject.subject_name}</td>
@@ -305,6 +346,13 @@ function SuperAdminSubjectManagement() {
                     <td className="p-2">{subject.subject_day}</td>
                     <td className="p-2">{subject.start_time}</td>
                     <td className="p-2">{subject.end_time}</td>
+                    <td className="p-2">
+                      {subject.subject_status === "Active" ? (
+                        <span style={{ color: "green" }}>ACTIVE</span>
+                      ) : (
+                        <span style={{ color: "red" }}>DISABLED</span>
+                      )}
+                    </td>
                     <td className="p-2">
                       <button
                         type="button"
@@ -328,20 +376,24 @@ function SuperAdminSubjectManagement() {
                       {subject.subject_status == "Active" ? (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop6"
+                          // data-bs-toggle="modal"
+                          // data-bs-target="#staticBackdrop6"
                           className="btn btn-danger mx-3"
-                          onClick={handleSubjectDeactivate()}
+                          onClick={() =>
+                            handleSubjectDeactivate(subject.subject_code)
+                          }
                         >
                           DEACTIVATE
                         </button>
                       ) : (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop7"
+                          // data-bs-toggle="modal"
+                          // data-bs-target="#staticBackdrop7"
                           className="btn btn-success mx-3"
-                          onClick={handleSubjectActivate()}
+                          onClick={() =>
+                            handleSubjectActivate(subject.subject_code)
+                          }
                         >
                           REACTIVATE
                         </button>
@@ -366,6 +418,28 @@ function SuperAdminSubjectManagement() {
               )}
             </tbody>
           </table>
+          <div className="d-flex flex-row">
+            <ReactPaginate
+              nextLabel="Next >"
+              onPageChange={(event) => setCurrentPage(event.selected)}
+              pageRangeDisplayed={3}
+              marginPagesDisplayed={2}
+              pageCount={Math.ceil(subjects.length / itemsPerPage)}
+              previousLabel="< Previous"
+              pageClassName="page-item"
+              pageLinkClassName="page-link"
+              previousClassName="page-item"
+              previousLinkClassName="page-link"
+              nextClassName="page-item"
+              nextLinkClassName="page-link"
+              breakLabel="..."
+              breakClassName="page-item"
+              breakLinkClassName="page-link"
+              containerClassName="pagination"
+              activeClassName="active"
+              renderOnZeroPageCount={null}
+            />
+          </div>
         </div>
       </div>
 
@@ -514,16 +588,21 @@ function SuperAdminSubjectManagement() {
                               Select a Professor
                             </option>
                             {professors.length > 0
-                              ? professors.map((professor) => (
-                                  <option
-                                    key={`${professor.prof_id}-${professor.user_lastname}-${professor.user_firstname}`}
-                                    value={professor.prof_id}
-                                    title={`Professor ID: ${professor.prof_id}`}
-                                  >
-                                    {professor.user_lastname},{" "}
-                                    {professor.user_firstname}
-                                  </option>
-                                ))
+                              ? professors
+                                  .filter(
+                                    (professor) =>
+                                      professor.user_status === "Active"
+                                  )
+                                  .map((professor) => (
+                                    <option
+                                      key={`${professor.prof_id}-${professor.user_lastname}-${professor.user_firstname}`}
+                                      value={professor.prof_id}
+                                      title={`Professor ID: ${professor.prof_id}`}
+                                    >
+                                      {professor.user_lastname},{" "}
+                                      {professor.user_firstname}
+                                    </option>
+                                  ))
                               : ""}
                           </select>
                         </div>
@@ -711,16 +790,21 @@ function SuperAdminSubjectManagement() {
                             </option>
                             <option value="None">None</option>
                             {professors.length > 0
-                              ? professors.map((professor) => (
-                                  <option
-                                    key={`${professor.prof_id}-${professor.user_lastname}-${professor.user_firstname}`}
-                                    value={professor.prof_id}
-                                    title={`Professor ID: ${professor.prof_id}`}
-                                  >
-                                    {professor.user_lastname},{" "}
-                                    {professor.user_firstname}
-                                  </option>
-                                ))
+                              ? professors
+                                  .filter(
+                                    (professor) =>
+                                      professor.user_status === "Active"
+                                  )
+                                  .map((professor) => (
+                                    <option
+                                      key={`${professor.prof_id}-${professor.user_lastname}-${professor.user_firstname}`}
+                                      value={professor.prof_id}
+                                      title={`Professor ID: ${professor.prof_id}`}
+                                    >
+                                      {professor.user_lastname},{" "}
+                                      {professor.user_firstname}
+                                    </option>
+                                  ))
                               : ""}
                           </select>
                         </div>

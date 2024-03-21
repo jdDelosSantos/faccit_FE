@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import "../SuperAdminCollegeManagement/SuperAdminCollegeManagement.css";
-import { setColleges } from "../../Redux/colleges";
+// import { setColleges } from "../../Redux/colleges";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import https from "../../https";
 
 function SuperAdminCollegeManagement() {
@@ -15,8 +16,16 @@ function SuperAdminCollegeManagement() {
   const [updateCollegeName, setUpdateCollegeName] = useState("");
   const [updateCollegeDescription, setUpdateCollegeDescription] = useState("");
 
-  const colleges = useSelector((state) => state.college.colleges);
-  console.log(colleges);
+  //REACT-PAGINATION
+  const [colleges, setColleges] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = colleges.slice(startIndex, endIndex);
+
+  // const reduxColleges = useSelector((state) => state.college.colleges);
+
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
   const dispatch = useDispatch();
@@ -34,7 +43,8 @@ function SuperAdminCollegeManagement() {
         },
       })
       .then((result) => {
-        dispatch(setColleges(result.data));
+        // dispatch(setColleges(result.data));
+        setColleges(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -104,9 +114,39 @@ function SuperAdminCollegeManagement() {
     e.preventDefault();
   };
 
-  const handleCollegeDeactivate = () => {};
+  const handleCollegeDeactivate = (college_name) => {
+    const collegeData = {
+      college_status: "Disabled",
+    };
 
-  const handleCollegeActivate = () => {};
+    https
+      .put(`college_deactivate/${college_name}`, collegeData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.error(result.data.message, { duration: 7000 });
+        fetchColleges();
+      });
+  };
+
+  const handleCollegeActivate = (college_name) => {
+    const collegeData = {
+      college_status: "Active",
+    };
+
+    https
+      .put(`college_activate/${college_name}`, collegeData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.success(result.data.message, { duration: 7000 });
+        fetchColleges();
+      });
+  };
 
   const clearCollege = () => {
     setCollegeName("");
@@ -172,15 +212,23 @@ function SuperAdminCollegeManagement() {
               <tr>
                 <th>COLLEGE NAME</th>
                 <th>COLLEGE DESCRIPTION</th>
+                <th>COLLEGE STATUS</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              {colleges.length > 0 ? (
-                colleges.map((college, index) => (
+              {currentItems.length > 0 ? (
+                currentItems.map((college, index) => (
                   <tr className="table-light" key={index}>
                     <td className="p-2">{college.college_name}</td>
                     <td className="p-2">{college.college_description}</td>
+                    <td className="p-2">
+                      {college.college_status === "Active" ? (
+                        <span style={{ color: "green" }}>ACTIVE</span>
+                      ) : (
+                        <span style={{ color: "red" }}>DISABLED</span>
+                      )}
+                    </td>
                     <td className="p-2">
                       <button
                         type="button"
@@ -199,20 +247,24 @@ function SuperAdminCollegeManagement() {
                       {college.college_status == "Active" ? (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop6"
+                          // data-bs-toggle="modal"
+                          // data-bs-target="#staticBackdrop6"
                           className="btn btn-danger mx-3"
-                          onClick={handleCollegeDeactivate()}
+                          onClick={() =>
+                            handleCollegeDeactivate(college.college_name)
+                          }
                         >
                           DEACTIVATE
                         </button>
                       ) : (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop7"
+                          // data-bs-toggle="modal"
+                          // data-bs-target="#staticBackdrop7"
                           className="btn btn-success mx-3"
-                          onClick={handleCollegeActivate()}
+                          onClick={() =>
+                            handleCollegeActivate(college.college_name)
+                          }
                         >
                           REACTIVATE
                         </button>
@@ -237,6 +289,28 @@ function SuperAdminCollegeManagement() {
               )}
             </tbody>
           </table>
+          <div className="d-flex flex-row">
+            <ReactPaginate
+              nextLabel="Next >"
+              onPageChange={(event) => setCurrentPage(event.selected)}
+              pageRangeDisplayed={3}
+              marginPagesDisplayed={2}
+              pageCount={Math.ceil(colleges.length / itemsPerPage)}
+              previousLabel="< Previous"
+              pageClassName="page-item"
+              pageLinkClassName="page-link"
+              previousClassName="page-item"
+              previousLinkClassName="page-link"
+              nextClassName="page-item"
+              nextLinkClassName="page-link"
+              breakLabel="..."
+              breakClassName="page-item"
+              breakLinkClassName="page-link"
+              containerClassName="pagination"
+              activeClassName="active"
+              renderOnZeroPageCount={null}
+            />
+          </div>
         </div>
       </div>
 

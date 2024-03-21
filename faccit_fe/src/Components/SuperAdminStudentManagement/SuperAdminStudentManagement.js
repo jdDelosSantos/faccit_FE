@@ -437,9 +437,39 @@ function SuperAdminStudentManagement() {
       });
   };
 
-  const handleStudentDeactivate = () => {};
+  const handleStudentDeactivate = (faith_id) => {
+    const studentData = {
+      std_status: "Disabled",
+    };
 
-  const handleStudentActivate = () => {};
+    https
+      .put(`student_deactivate/${faith_id}`, studentData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.error(result.data.message, { duration: 7000 });
+        fetchStudents();
+      });
+  };
+
+  const handleStudentActivate = (faith_id) => {
+    const studentData = {
+      std_status: "Active",
+    };
+
+    https
+      .put(`student_activate/${faith_id}`, studentData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.success(result.data.message, { duration: 7000 });
+        fetchStudents();
+      });
+  };
 
   const clearStudentUpdate = () => {
     setUpdateFaithID("");
@@ -513,6 +543,7 @@ function SuperAdminStudentManagement() {
                 <th>LEVEL/YEAR</th>
                 <th>SECTION</th>
                 <th>IMAGE STATUS</th>
+                <th>STUDENT STATUS</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
@@ -526,6 +557,7 @@ function SuperAdminStudentManagement() {
                     <td className="p-2">{student.std_course}</td>
                     <td className="p-2">{student.std_level}</td>
                     <td className="p-2">{student.std_section}</td>
+
                     <td className="p-3">
                       {(() => {
                         switch (true) {
@@ -560,6 +592,13 @@ function SuperAdminStudentManagement() {
                       })()}
                     </td>
                     <td className="p-2">
+                      {student.std_status === "Active" ? (
+                        <span style={{ color: "green" }}>ACTIVE</span>
+                      ) : (
+                        <span style={{ color: "red" }}>DISABLED</span>
+                      )}
+                    </td>
+                    <td className="p-2">
                       <button
                         type="button"
                         data-bs-toggle="modal"
@@ -582,22 +621,22 @@ function SuperAdminStudentManagement() {
                       {student.std_status == "Active" ? (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop2"
                           className="btn btn-danger mx-3"
-                          onClick={handleStudentDeactivate()}
+                          onClick={() => {
+                            handleStudentDeactivate(student.faith_id);
+                          }}
                         >
                           DEACTIVATE
                         </button>
                       ) : (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop3"
                           className="btn btn-success mx-3"
-                          onClick={handleStudentActivate()}
+                          onClick={() => {
+                            handleStudentActivate(student.faith_id);
+                          }}
                         >
-                          REACTIVATE
+                          ACTIVATE
                         </button>
                       )}
                     </td>
@@ -622,12 +661,12 @@ function SuperAdminStudentManagement() {
           </table>
           <div className="d-flex flex-row">
             <ReactPaginate
-              nextLabel="next >"
+              nextLabel="Next >"
               onPageChange={(event) => setCurrentPage(event.selected)}
               pageRangeDisplayed={3}
               marginPagesDisplayed={2}
               pageCount={Math.ceil(students.length / itemsPerPage)}
-              previousLabel="< previous"
+              previousLabel="< Previous"
               pageClassName="page-item"
               pageLinkClassName="page-link"
               previousClassName="page-item"
@@ -766,14 +805,19 @@ function SuperAdminStudentManagement() {
                               Select a Course
                             </option>
                             {courses.length > 0
-                              ? courses.map((course) => (
-                                  <option
-                                    key={course.id}
-                                    value={course.course_name}
-                                  >
-                                    {course.course_name}
-                                  </option>
-                                ))
+                              ? courses
+                                  .filter(
+                                    (course) =>
+                                      course.course_status === "Active"
+                                  )
+                                  .map((course) => (
+                                    <option
+                                      key={course.id}
+                                      value={course.course_name}
+                                    >
+                                      {course.course_name}
+                                    </option>
+                                  ))
                               : ""}
                           </select>
                         </div>
@@ -1049,14 +1093,19 @@ function SuperAdminStudentManagement() {
                               Select a Course
                             </option>
                             {courses.length > 0
-                              ? courses.map((course) => (
-                                  <option
-                                    key={course.id}
-                                    value={course.course_name}
-                                  >
-                                    {course.course_name}
-                                  </option>
-                                ))
+                              ? courses
+                                  .filter(
+                                    (course) =>
+                                      course.course_status === "Active"
+                                  )
+                                  .map((course) => (
+                                    <option
+                                      key={course.id}
+                                      value={course.course_name}
+                                    >
+                                      {course.course_name}
+                                    </option>
+                                  ))
                               : ""}
                           </select>
                         </div>

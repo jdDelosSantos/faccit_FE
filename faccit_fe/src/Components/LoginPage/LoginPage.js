@@ -32,7 +32,7 @@ function LoginPage() {
       .post("login", attemptLogin)
       .then((result) => {
         const decodedToken = jwtDecode(result.data);
-        console.log(result.data);
+
         if (decodedToken.prof_id != undefined || "" || null) {
           sessionStorage.setItem("Prof ID", decodedToken.prof_id);
           sessionStorage.setItem("Lastname", decodedToken.user_lastname);

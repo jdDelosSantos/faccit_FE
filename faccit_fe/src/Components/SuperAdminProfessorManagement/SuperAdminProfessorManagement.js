@@ -4,10 +4,11 @@ import Webcam from "react-webcam";
 import { Carousel, Dropdown, Button } from "react-bootstrap";
 import AWS from "aws-sdk";
 import https from "../../https";
-import { setProfessors } from "../../Redux/professors";
+// import { setProfessors } from "../../Redux/professors";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 
 function SuperAdminProfessorManagement() {
   //NEW PROFESSOR USE STATES
@@ -48,7 +49,16 @@ function SuperAdminProfessorManagement() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const professors = useSelector((state) => state.professor.professors);
+
+  //REACT-PAGINATION
+  const [professors, setProfessors] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = professors.slice(startIndex, endIndex);
+
+  // const reduxProfessors = useSelector((state) => state.professor.professors);
 
   //UseEffect for loading Students and Courses every time it changes
   useEffect(() => {}, [professors]);
@@ -64,8 +74,9 @@ function SuperAdminProfessorManagement() {
         },
       })
       .then((result) => {
-        dispatch(setProfessors(result.data));
-        console.log(result.data);
+        // dispatch(setProfessors(result.data));
+        // console.log(result.data);
+        setProfessors(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -389,9 +400,39 @@ function SuperAdminProfessorManagement() {
       });
   };
 
-  const handleProfessorDeactivate = () => {};
+  const handleProfessorDeactivate = (prof_id) => {
+    const profData = {
+      user_status: "Disabled",
+    };
 
-  const handleProfessorActivate = () => {};
+    https
+      .put(`prof_deactivate/${prof_id}`, profData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.error(result.data.message, { duration: 7000 });
+        fetchProfessors();
+      });
+  };
+
+  const handleProfessorActivate = (prof_id) => {
+    const profData = {
+      user_status: "Active",
+    };
+
+    https
+      .put(`prof_activate/${prof_id}`, profData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.success(result.data.message, { duration: 7000 });
+        fetchProfessors();
+      });
+  };
 
   const clearProfessorUpdate = () => {
     setUpdateEmail("");
@@ -461,12 +502,13 @@ function SuperAdminProfessorManagement() {
                 <th>LAST NAME</th>
                 <th>FIRST NAME</th>
                 <th>IMAGE STATUS</th>
+                <th>PROFESSOR STATUS</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              {professors.length > 0 ? (
-                professors.map((professor, index) => (
+              {currentItems.length > 0 ? (
+                currentItems.map((professor, index) => (
                   <tr className="table-light" key={index}>
                     <td className="p-2">{professor.prof_id}</td>
                     <td className="p-2">{professor.email}</td>
@@ -506,6 +548,13 @@ function SuperAdminProfessorManagement() {
                       })()}
                     </td>
                     <td className="p-2">
+                      {professor.user_status === "Active" ? (
+                        <span style={{ color: "green" }}>ACTIVE</span>
+                      ) : (
+                        <span style={{ color: "red" }}>DISABLED</span>
+                      )}
+                    </td>
+                    <td className="p-2">
                       <button
                         type="button"
                         data-bs-toggle="modal"
@@ -526,20 +575,24 @@ function SuperAdminProfessorManagement() {
                       {professor.user_status == "Active" ? (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop2"
+                          // data-bs-toggle="modal"
+                          // data-bs-target="#staticBackdrop2"
                           className="btn btn-danger mx-3"
-                          onClick={handleProfessorDeactivate()}
+                          onClick={() =>
+                            handleProfessorDeactivate(professor.prof_id)
+                          }
                         >
                           DEACTIVATE
                         </button>
                       ) : (
                         <button
                           type="button"
-                          data-bs-toggle="modal"
-                          data-bs-target="#staticBackdrop3"
+                          // data-bs-toggle="modal"
+                          // data-bs-target="#staticBackdrop3"
                           className="btn btn-success mx-3"
-                          onClick={handleProfessorActivate()}
+                          onClick={() =>
+                            handleProfessorActivate(professor.prof_id)
+                          }
                         >
                           REACTIVATE
                         </button>
@@ -572,6 +625,28 @@ function SuperAdminProfessorManagement() {
               )}
             </tbody>
           </table>
+          <div className="d-flex flex-row">
+            <ReactPaginate
+              nextLabel="Next >"
+              onPageChange={(event) => setCurrentPage(event.selected)}
+              pageRangeDisplayed={3}
+              marginPagesDisplayed={2}
+              pageCount={Math.ceil(professors.length / itemsPerPage)}
+              previousLabel="< Previous"
+              pageClassName="page-item"
+              pageLinkClassName="page-link"
+              previousClassName="page-item"
+              previousLinkClassName="page-link"
+              nextClassName="page-item"
+              nextLinkClassName="page-link"
+              breakLabel="..."
+              breakClassName="page-item"
+              breakLinkClassName="page-link"
+              containerClassName="pagination"
+              activeClassName="active"
+              renderOnZeroPageCount={null}
+            />
+          </div>
         </div>
       </div>
 

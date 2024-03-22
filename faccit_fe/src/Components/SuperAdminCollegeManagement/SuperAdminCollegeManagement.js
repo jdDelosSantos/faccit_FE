@@ -112,6 +112,33 @@ function SuperAdminCollegeManagement() {
   //FUNCTION FOR ADDING UPDATING A COLLEGE
   const handleUpdateCollegeSubmit = (e) => {
     e.preventDefault();
+
+    const updateCollegeData = {
+      college_name: updateCollegeName,
+      college_description: updateCollegeDescription,
+    };
+
+    https
+      .put(`update_college/${updateCollegeName}`, updateCollegeData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        fetchColleges();
+        toast.success(result.data.message, { duration: 7000 });
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          console.log(error.response.data.message);
+          goBackToLogin();
+        }
+      });
   };
 
   const handleCollegeDeactivate = (college_name) => {
@@ -473,7 +500,7 @@ function SuperAdminCollegeManagement() {
                     {/* Start of College Name*/}
                     <div className="">
                       <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
+                        <div className="inputBox2 w-100">
                           <input
                             type="text"
                             id="updateCollegeName"

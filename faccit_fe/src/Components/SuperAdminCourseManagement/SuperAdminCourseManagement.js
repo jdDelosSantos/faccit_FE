@@ -151,6 +151,34 @@ function SuperAdminCourseManagement() {
   //FUNCTION FOR ADDING UPDATING A COURSE
   const handleUpdateCourseSubmit = (e) => {
     e.preventDefault();
+
+    const updateCourseData = {
+      course_name: updateCourseName,
+      course_description: updateCourseDescription,
+      course_college: updateCourseCollege,
+    };
+
+    https
+      .put(`update_course/${updateCourseCode}`, updateCourseData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        fetchCourses();
+        toast.success(result.data.message, { duration: 7000 });
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          console.log(error.response.data.message);
+          goBackToLogin();
+        }
+      });
   };
 
   const handleCourseDeactivate = (course_code) => {

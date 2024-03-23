@@ -502,7 +502,7 @@ function SuperAdminProfessorManagement() {
                 <th>LAST NAME</th>
                 <th>FIRST NAME</th>
                 <th>IMAGE STATUS</th>
-                <th>PROFESSOR STATUS</th>
+                <th>STATUS</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
@@ -582,7 +582,7 @@ function SuperAdminProfessorManagement() {
                             handleProfessorDeactivate(professor.prof_id)
                           }
                         >
-                          DEACTIVATE
+                          DISABLE
                         </button>
                       ) : (
                         <button
@@ -594,7 +594,7 @@ function SuperAdminProfessorManagement() {
                             handleProfessorActivate(professor.prof_id)
                           }
                         >
-                          REACTIVATE
+                          ENABLE
                         </button>
                       )}
                       <button
@@ -603,7 +603,7 @@ function SuperAdminProfessorManagement() {
                         data-bs-target="#staticBackdrop4"
                         className="btn btn-warning"
                       >
-                        RESET PASSWORD
+                        RESET
                       </button>
                     </td>
                   </tr>

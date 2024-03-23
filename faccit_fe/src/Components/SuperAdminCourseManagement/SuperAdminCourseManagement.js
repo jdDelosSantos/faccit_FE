@@ -31,7 +31,7 @@ function SuperAdminCourseManagement() {
   //REACT-PAGINATION
   const [courses, setCourses] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentItems = courses.slice(startIndex, endIndex);

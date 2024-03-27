@@ -1,42 +1,48 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../SuperAdminSubjectManagement/SuperAdminSubjectManagement.css";
+import "./SuperAdminClassManagement.css";
 // import { setSubjects } from "../../Redux/subjects";
 import { setProfessors } from "../../Redux/professors";
+import { setColleges } from "../../Redux/colleges";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import https from "../../https";
 
-function SuperAdminSubjectManagement() {
+function SuperAdminClassManagement() {
   //NEW SUBJECT USE STATES
-  const [subjectCode, setSubjectCode] = useState("");
-  const [subjectName, setSubjectName] = useState("");
-  const [subjectDescription, setSubjectDescription] = useState("");
+  const [classCode, setClassCode] = useState("");
+  const [className, setClassName] = useState("");
+  const [classDescription, setClassDescription] = useState("");
   const [professorID, setProfessorID] = useState("");
-  const [subjectDay, setSubjectDay] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  // const [subjectDay, setSubjectDay] = useState("");
+  // const [startTime, setStartTime] = useState("");
+  // const [endTime, setEndTime] = useState("");
 
   //UPDATE SUBJECT USE STATES
-  const [updateSubjectCode, setUpdateSubjectCode] = useState("");
-  const [updateSubjectName, setUpdateSubjectName] = useState("");
-  const [updateSubjectDescription, setUpdateSubjectDescription] = useState("");
+  const [updateClassCode, setUpdateClassCode] = useState("");
+  const [updateClassName, setUpdateClassName] = useState("");
+  const [updateClassDescription, setUpdateClassDescription] = useState("");
   const [updateProfessorID, setUpdateProfessorID] = useState("");
-  const [updateSubjectDay, setUpdateSubjectDay] = useState("");
-  const [updateStartTime, setUpdateStartTime] = useState("");
-  const [updateEndTime, setUpdateEndTime] = useState("");
+  // const [updateSubjectDay, setUpdateSubjectDay] = useState("");
+  // const [updateStartTime, setUpdateStartTime] = useState("");
+  // const [updateEndTime, setUpdateEndTime] = useState("");
 
   //REACT-PAGINATION
-  const [subjects, setSubjects] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = subjects.slice(startIndex, endIndex);
+  const currentItems = classes.slice(startIndex, endIndex);
 
-  const reduxSubjects = useSelector((state) => state.subject.subjects);
+  const reduxClasses = useSelector((state) => state.class.classes);
   const professors = useSelector((state) => state.professor.professors);
+  const colleges = useSelector((state) => state.college.colleges);
+
+  const [classCollege, setClassCollege] = useState("");
+  const [updateClassCollege, setUpdateClassCollege] = useState("");
+
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
   const dispatch = useDispatch();
@@ -46,19 +52,20 @@ function SuperAdminSubjectManagement() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {}, [professors]);
-  useEffect(() => {}, [subjects]);
+  useEffect(() => {}, [classes]);
 
   //Function for fetching Subjects
-  const fetchSubjects = () => {
+  const fetchClasses = () => {
     https
-      .get("subjects", {
+      .get("classes", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
         // dispatch(setSubjects(result.data));
-        setSubjects(result.data);
+        setClasses(result.data);
+        console.log(currentItems);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -97,114 +104,16 @@ function SuperAdminSubjectManagement() {
       });
   };
 
-  useEffect(() => {
-    fetchSubjects();
-    fetchProfessors();
-  }, []);
-
-  const handleSubjectSearchBar = (e) => {
-    e.preventDefault();
-    // Implement search functionality if needed
-  };
-
-  //FUNCTION FOR ADDING A COURSE
-  const handleSubjectSubmit = (e) => {
-    e.preventDefault();
-
-    const subjectData = {
-      subject_code: subjectCode,
-      subject_name: subjectName,
-      subject_description: subjectDescription,
-      ...(professorID && { prof_id: professorID }),
-      ...(subjectDay && { subject_day: subjectDay }),
-      ...(startTime && { start_time: startTime }),
-      ...(endTime && { end_time: endTime }),
-    };
-
-    console.log(subjectData);
-
-    try {
-      https
-        .post("subjects", subjectData, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-          },
-        })
-        .then((result) => {
-          fetchSubjects();
-          toast.success(result.data.message, { duration: 7000 });
-
-          setSubjectCode("");
-          setSubjectName("");
-          setSubjectDescription("");
-          setSubjectDay("");
-          setStartTime("");
-          setEndTime("");
-        })
-        .catch((error) => {
-          if (error.response.data.message != "Unauthenticated.") {
-            setError(true);
-            setErrorMessage(error.response.data.message);
-            toast.error(error.response.data.message, { duration: 7000 });
-          } else {
-            goBackToLogin();
-          }
-        });
-    } catch {
-      console.error(error);
-    }
-  };
-
-  //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
-  const handleSubjectUpdate = (
-    subject_code,
-    subject_name,
-    subject_description,
-    prof_id,
-    subject_day,
-    start_time,
-    end_time
-  ) => {
-    setUpdateSubjectCode(subject_code);
-    setUpdateSubjectName(subject_name);
-    setUpdateSubjectDescription(subject_description);
-    setUpdateProfessorID(prof_id);
-    setUpdateSubjectDay(subject_day);
-    setUpdateStartTime(start_time);
-    setUpdateEndTime(end_time);
-  };
-
-  //FUNCTION FOR ADDING UPDATING A SUBJECT
-  const handleUpdateSubjectSubmit = (e) => {
-    e.preventDefault();
-    const updateSubjectData = {
-      subject_code: updateSubjectCode,
-      subject_name: updateSubjectName,
-      subject_description: updateSubjectDescription,
-      subject_day: updateSubjectDay,
-      prof_id: updateProfessorID,
-      start_time: updateStartTime,
-      end_time: updateEndTime,
-    };
-
-    console.log(updateSubjectData);
+  //Function for fetching Professors
+  const fetchColleges = () => {
     https
-      .put(`update_subjects/${updateSubjectCode}`, updateSubjectData, {
+      .get("colleges", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        fetchSubjects();
-        toast.success(result.data.message, { duration: 7000 });
-
-        setUpdateSubjectCode("");
-        setUpdateSubjectName("");
-        setUpdateSubjectDescription("");
-        setUpdateProfessorID("");
-        setUpdateSubjectDay("");
-        setUpdateStartTime("");
-        setUpdateEndTime("");
+        dispatch(setColleges(result.data));
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -219,57 +128,163 @@ function SuperAdminSubjectManagement() {
       });
   };
 
-  const handleSubjectDeactivate = (subject_code) => {
-    const subjectData = {
-      subject_status: "Disabled",
+  useEffect(() => {
+    fetchClasses();
+    fetchProfessors();
+    fetchColleges();
+  }, []);
+
+  const handleSubjectSearchBar = (e) => {
+    e.preventDefault();
+    // Implement search functionality if needed
+  };
+
+  //FUNCTION FOR ADDING A COURSE
+  const handleClassSubmit = (e) => {
+    e.preventDefault();
+
+    const classData = {
+      class_code: classCode,
+      class_name: className,
+      class_description: classDescription,
+      college_name: classCollege,
+      prof_id: professorID,
+    };
+
+    console.log(classData);
+    https
+      .post("classes", classData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        fetchClasses();
+        toast.success(result.data.message, { duration: 7000 });
+
+        setClassCode("");
+        setClassName("");
+        setClassDescription("");
+        setClassCollege("");
+        setProfessorID("");
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.response.message != "Unauthenticated.") {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          goBackToLogin();
+        }
+      });
+  };
+
+  //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
+  const handleClassUpdate = (
+    subject_code,
+    subject_name,
+    subject_description,
+    college_name,
+    prof_id
+  ) => {
+    setUpdateClassCode(subject_code);
+    setUpdateClassName(subject_name);
+    setUpdateClassDescription(subject_description);
+    setUpdateClassCollege(college_name);
+    setUpdateProfessorID(prof_id);
+  };
+
+  //FUNCTION FOR ADDING UPDATING A SUBJECT
+  const handleUpdateClassSubmit = (e) => {
+    e.preventDefault();
+    const updateClassData = {
+      class_code: updateClassCode,
+      class_name: updateClassName,
+      class_description: updateClassDescription,
+      college_name: updateClassCollege,
+      prof_id: updateProfessorID,
+    };
+    console.log(updateClassData);
+
+    https
+      .put(`update_classes/${updateClassCode}`, updateClassData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        fetchClasses();
+        toast.success(result.data.message, { duration: 7000 });
+
+        setUpdateClassCode("");
+        setUpdateClassName("");
+        setUpdateClassDescription("");
+        setUpdateClassCollege("");
+        setUpdateProfessorID("");
+      })
+      .catch((error) => {
+        if (error.response.message != "Unauthenticated.") {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          goBackToLogin();
+        }
+      });
+  };
+
+  const handleClassDeactivate = (class_code) => {
+    const classData = {
+      class_status: "Disabled",
     };
 
     https
-      .put(`subject_deactivate/${subject_code}`, subjectData, {
+      .put(`class_disable/${class_code}`, classData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
         toast.error(result.data.message, { duration: 7000 });
-        fetchSubjects();
+        fetchClasses();
       });
   };
 
-  const handleSubjectActivate = (subject_code) => {
-    const subjectData = {
-      subject_status: "Active",
+  const handleClassActivate = (class_code) => {
+    const classData = {
+      class_status: "Active",
     };
 
     https
-      .put(`subject_activate/${subject_code}`, subjectData, {
+      .put(`class_enable/${class_code}`, classData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
         toast.success(result.data.message, { duration: 7000 });
-        fetchSubjects();
+        fetchClasses();
       });
   };
 
-  const clearSubject = () => {
-    setSubjectCode("");
-    setSubjectName("");
-    setSubjectDescription("");
-    setSubjectDay("");
-    setStartTime("");
-    setEndTime("");
+  const clearClass = () => {
+    setClassCode("");
+    setClassName("");
+    setClassDescription("");
+    // setSubjectDay("");
+    // setStartTime("");
+    // setEndTime("");
   };
 
-  const clearUpdateSubject = () => {
-    setUpdateSubjectCode("");
-    setUpdateSubjectName("");
-    setUpdateSubjectDescription("");
+  const clearUpdateClass = () => {
+    setUpdateClassCode("");
+    setUpdateClassName("");
+    setUpdateClassDescription("");
     setUpdateProfessorID("");
-    setUpdateSubjectDay("");
-    setUpdateStartTime("");
-    setUpdateEndTime("");
+    // setUpdateSubjectDay("");
+    // setUpdateStartTime("");
+    // setUpdateEndTime("");
   };
 
   const goBackToLogin = () => {
@@ -280,9 +295,9 @@ function SuperAdminSubjectManagement() {
   return (
     <div className="base_bg w-100 p-4">
       <h1 className="my-1">
-        <b>{NametoUpperCase}'S SUBJECT MANAGEMENT PAGE</b>
+        <b>{NametoUpperCase}'S CLASS MANAGEMENT PAGE</b>
       </h1>
-      <h4 className="">LIST OF SUBJECTS</h4>
+      <h4 className="">LIST OF CLASSES</h4>
       <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
@@ -316,7 +331,7 @@ function SuperAdminSubjectManagement() {
                 data-bs-target="#staticBackdrop4"
                 className="btn btn-primary btn-sm"
               >
-                ADD SUBJECT
+                ADD CLASS
               </button>
             </div>
           </div>
@@ -324,30 +339,29 @@ function SuperAdminSubjectManagement() {
           <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
             <thead className="table-light">
               <tr>
-                <th>SUBJECT CODE</th>
-                <th>SUBJECT NAME</th>
-                <th>SUBJECT DESCRIPTION</th>
+                <th>CLASS CODE</th>
+                <th>CLASS NAME</th>
+                <th>CLASS DESCRIPTION</th>
+                <th>CLASS COLLEGE</th>
                 <th>PROFESSOR ID</th>
-                <th>SUBJECT DAY</th>
+                {/* <th>SUBJECT DAY</th>
                 <th>START TIME</th>
-                <th>END TIME</th>
-                <th>SUBJECT STATUS</th>
+                <th>END TIME</th> */}
+                <th>CLASS STATUS</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody className="table-group-divider">
               {currentItems.length > 0 ? (
-                currentItems.map((subject, index) => (
+                currentItems.map((classes, index) => (
                   <tr className="table-light" key={index}>
-                    <td className="p-2">{subject.subject_code}</td>
-                    <td className="p-2">{subject.subject_name}</td>
-                    <td className="p-2">{subject.subject_description}</td>
-                    <td className="p-2">{subject.prof_id}</td>
-                    <td className="p-2">{subject.subject_day}</td>
-                    <td className="p-2">{subject.start_time}</td>
-                    <td className="p-2">{subject.end_time}</td>
+                    <td className="p-2">{classes.class_code}</td>
+                    <td className="p-2">{classes.class_name}</td>
+                    <td className="p-2">{classes.class_description}</td>
+                    <td className="p-2">{classes.college_name}</td>
+                    <td className="p-2">{classes.prof_id}</td>
                     <td className="p-2">
-                      {subject.subject_status === "Active" ? (
+                      {classes.class_status === "Active" ? (
                         <span style={{ color: "green" }}>ACTIVE</span>
                       ) : (
                         <span style={{ color: "red" }}>DISABLED</span>
@@ -360,30 +374,28 @@ function SuperAdminSubjectManagement() {
                         data-bs-target="#staticBackdrop5"
                         className="btn btn-primary"
                         onClick={() => {
-                          handleSubjectUpdate(
-                            subject.subject_code,
-                            subject.subject_name,
-                            subject.subject_description,
-                            subject.prof_id,
-                            subject.subject_day,
-                            subject.start_time,
-                            subject.end_time
+                          handleClassUpdate(
+                            classes.class_code,
+                            classes.class_name,
+                            classes.class_description,
+                            classes.college_name,
+                            classes.prof_id
                           );
                         }}
                       >
                         UPDATE
                       </button>
-                      {subject.subject_status == "Active" ? (
+                      {classes.class_status == "Active" ? (
                         <button
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop6"
                           className="btn btn-danger mx-3"
                           onClick={() =>
-                            handleSubjectDeactivate(subject.subject_code)
+                            handleClassDeactivate(classes.class_code)
                           }
                         >
-                          DEACTIVATE
+                          DISABLE
                         </button>
                       ) : (
                         <button
@@ -392,10 +404,10 @@ function SuperAdminSubjectManagement() {
                           // data-bs-target="#staticBackdrop7"
                           className="btn btn-success mx-3"
                           onClick={() =>
-                            handleSubjectActivate(subject.subject_code)
+                            handleClassActivate(classes.class_code)
                           }
                         >
-                          REACTIVATE
+                          ENABLE
                         </button>
                       )}
                     </td>
@@ -424,7 +436,7 @@ function SuperAdminSubjectManagement() {
               onPageChange={(event) => setCurrentPage(event.selected)}
               pageRangeDisplayed={3}
               marginPagesDisplayed={2}
-              pageCount={Math.ceil(subjects.length / itemsPerPage)}
+              pageCount={Math.ceil(classes.length / itemsPerPage)}
               previousLabel="< Previous"
               pageClassName="page-item"
               pageLinkClassName="page-link"
@@ -457,11 +469,11 @@ function SuperAdminSubjectManagement() {
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel4">
-                <b>CREATE COURSE</b>
+                <b>CREATE CLASS</b>
               </h1>
             </div>
 
-            <form onSubmit={(e) => handleSubjectSubmit(e)}>
+            <form onSubmit={(e) => handleClassSubmit(e)}>
               <div className="modal-body">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                   <img
@@ -477,7 +489,7 @@ function SuperAdminSubjectManagement() {
                   <div className="card-body p-4 p-md-5">
                     <div className="container d-flex justify-content-center">
                       <h1 className="fontfam fw-bolder mb-4 pb-2 pb-md-0 mb-md-5 px-md-2 text-justify">
-                        SUBJECT INFORMATION
+                        CLASS INFORMATION
                       </h1>
                     </div>
                     {error == true ? (
@@ -488,63 +500,63 @@ function SuperAdminSubjectManagement() {
                       ""
                     )}
                     <h1></h1>
-                    {/* Start of Subject Code */}
+                    {/* Start of CLASS Code */}
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
                           <input
                             type="text"
-                            id="subjectCode"
-                            value={subjectCode}
+                            id="classCode"
+                            value={classCode}
                             onChange={(e) => {
-                              setSubjectCode(e.target.value);
+                              setClassCode(e.target.value);
                               setError(false);
                             }}
                             maxLength="4"
                             required
                           />
-                          <span className="">Subject Code</span>
+                          <span className="">Class Code</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Start of Subject Name*/}
+                    {/* Start of Class Name*/}
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
                           <input
                             type="text"
-                            id="subjectName"
-                            value={subjectName}
+                            id="className"
+                            value={className}
                             onChange={(e) => {
-                              setSubjectName(e.target.value);
+                              setClassName(e.target.value);
                             }}
                             required
                           />
-                          <span className="">Subject Name</span>
+                          <span className="">Class Name</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Start of Subject Description */}
+                    {/* Start of Class Description */}
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
                           <input
                             type="text"
-                            id="subjectDescription"
-                            value={subjectDescription}
+                            id="classDescription"
+                            value={classDescription}
                             onChange={(e) => {
-                              setSubjectDescription(e.target.value);
+                              setClassDescription(e.target.value);
                             }}
                             required
                           />
-                          <span className="">Subject Description</span>
+                          <span className="">Class Description</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Start of Subject Day */}
+                    {/* Start of Course College */}
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
@@ -552,20 +564,30 @@ function SuperAdminSubjectManagement() {
                             className="form-select form-select-md mb-3"
                             aria-label=".form-select-md example"
                             onChange={(e) => {
-                              setSubjectDay(e.target.value);
+                              setClassCollege(e.target.value);
                             }}
-                            id="subjectDay"
-                            value={subjectDay || ""}
+                            id="classCollege"
+                            value={classCollege || ""}
+                            required
                           >
                             <option value="" disabled>
-                              Select a Day
+                              Select a Course College
                             </option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
+                            {colleges.length > 0
+                              ? colleges
+                                  .filter(
+                                    (college) =>
+                                      college.college_status === "Active"
+                                  )
+                                  .map((college) => (
+                                    <option
+                                      key={`${college.id}-${college.college_name}-${college.college_description}`}
+                                      value={college.college_name}
+                                    >
+                                      {college.college_name}
+                                    </option>
+                                  ))
+                              : ""}
                           </select>
                         </div>
                       </div>
@@ -608,40 +630,6 @@ function SuperAdminSubjectManagement() {
                         </div>
                       </div>
                     </div>
-
-                    {/* Start of Subject Start Time */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <input
-                            type="time"
-                            id="startTime"
-                            value={startTime}
-                            onChange={(e) => {
-                              setStartTime(e.target.value);
-                            }}
-                          />
-                          <span className="">Subject Start Time</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Start of Subject End Time */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <input
-                            type="time"
-                            id="endTime"
-                            value={endTime}
-                            onChange={(e) => {
-                              setEndTime(e.target.value);
-                            }}
-                          />
-                          <span className="">Subject End Time</span>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -651,7 +639,7 @@ function SuperAdminSubjectManagement() {
                   className="btn btn-secondary"
                   data-bs-dismiss="modal"
                   onClick={() => {
-                    clearSubject();
+                    clearClass();
                   }}
                 >
                   CANCEL
@@ -661,16 +649,16 @@ function SuperAdminSubjectManagement() {
                   className="btn btn-success mb-1"
                   data-bs-dismiss="modal"
                 >
-                  ADD SUBJECT
+                  ADD CLASS
                 </button>
               </div>
             </form>
           </div>
         </div>
       </div>
-      {/* END OF MODAL FOR ADDING SUBJECT */}
+      {/* END OF MODAL FOR ADDING CLASS */}
 
-      {/* START OF MODAL FOR UPDATING SUBJECT */}
+      {/* START OF MODAL FOR UPDATING CLASS */}
       <div
         className="modal fade"
         id="staticBackdrop5"
@@ -684,11 +672,11 @@ function SuperAdminSubjectManagement() {
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel5">
-                <b>UPDATE SUBJECT</b>
+                <b>UPDATE CLASS</b>
               </h1>
             </div>
 
-            <form onSubmit={(e) => handleUpdateSubjectSubmit(e)}>
+            <form onSubmit={(e) => handleUpdateClassSubmit(e)}>
               <div className="modal-body">
                 <div className="row d-flex justify-content-center align-items-center h-100">
                   <img
@@ -704,7 +692,7 @@ function SuperAdminSubjectManagement() {
                   <div className="card-body p-4 p-md-5">
                     <div className="container d-flex justify-content-center">
                       <h1 className="fontfam fw-bolder mb-4 pb-2 pb-md-0 mb-md-5 px-md-2 text-justify">
-                        SUBJECT INFORMATION
+                        CLASS INFORMATION
                       </h1>
                     </div>
                     {error == true ? (
@@ -715,59 +703,96 @@ function SuperAdminSubjectManagement() {
                       ""
                     )}
                     <h1></h1>
-                    {/* Start of Subject Code */}
+                    {/* Start of Class Code */}
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox2 w-100">
                           <input
                             type="text"
-                            id="updateSubjectCode"
-                            value={updateSubjectCode}
+                            id="updateClassCode"
+                            value={updateClassCode}
                             onChange={(e) => {
-                              setUpdateSubjectCode(e.target.value);
+                              setUpdateClassCode(e.target.value);
                               setError(false);
                             }}
                             maxLength="4"
                             required
                             disabled
                           />
-                          <span className="">Subject Code</span>
+                          <span className="">Class Code</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Start of Subject Name*/}
+                    {/* Start of Class Name*/}
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
                           <input
                             type="text"
-                            id="updateSubjectName"
-                            value={updateSubjectName}
+                            id="updateClassName"
+                            value={updateClassName}
                             onChange={(e) => {
-                              setUpdateSubjectName(e.target.value);
+                              setUpdateClassName(e.target.value);
                             }}
                             required
                           />
-                          <span className="">Subject Name</span>
+                          <span className="">Class Name</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Start of Subject Description */}
+                    {/* Start of Class Description */}
                     <div className="">
                       <div className="md-6 mb-4">
                         <div className="inputBox1 w-100">
                           <input
                             type="text"
-                            id="updateSubjectDescription"
-                            value={updateSubjectDescription}
+                            id="updateClassDescription"
+                            value={updateClassDescription}
                             onChange={(e) => {
-                              setUpdateSubjectDescription(e.target.value);
+                              setUpdateClassDescription(e.target.value);
                             }}
                             required
                           />
-                          <span className="">Subject Description</span>
+                          <span className="">Class Description</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Start of Course College */}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox1 w-100">
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
+                            onChange={(e) => {
+                              setUpdateClassCollege(e.target.value);
+                            }}
+                            id="updateClassCollege"
+                            value={updateClassCollege || ""}
+                            required
+                          >
+                            <option value="" disabled>
+                              Select a Class College
+                            </option>
+                            {colleges.length > 0
+                              ? colleges
+                                  .filter(
+                                    (college) =>
+                                      college.college_status === "Active"
+                                  )
+                                  .map((college) => (
+                                    <option
+                                      key={`${college.id}-${college.college_name}-${college.college_description}`}
+                                      value={college.college_name}
+                                    >
+                                      {college.college_name}
+                                    </option>
+                                  ))
+                              : ""}
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -788,7 +813,7 @@ function SuperAdminSubjectManagement() {
                             <option value="" disabled>
                               Select a Professor
                             </option>
-                            <option value="None">None</option>
+
                             {professors.length > 0
                               ? professors
                                   .filter(
@@ -810,69 +835,6 @@ function SuperAdminSubjectManagement() {
                         </div>
                       </div>
                     </div>
-
-                    {/* Start of Subject Day */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <select
-                            className="form-select form-select-md mb-3"
-                            aria-label=".form-select-md example"
-                            onChange={(e) => {
-                              setUpdateSubjectDay(e.target.value);
-                            }}
-                            id="updateSubjectDay"
-                            value={updateSubjectDay || ""}
-                          >
-                            <option value="" disabled>
-                              Select a Day
-                            </option>
-                            <option value="None">None</option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Start of Subject Start Time */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <input
-                            type="time"
-                            id="updateStartTime"
-                            value={updateStartTime || ""}
-                            onChange={(e) => {
-                              setUpdateStartTime(e.target.value);
-                            }}
-                          />
-                          <span className="">Subject Start Time</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Start of Subject End Time */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <input
-                            type="time"
-                            id="updateEndTime"
-                            value={updateEndTime || ""}
-                            onChange={(e) => {
-                              setUpdateEndTime(e.target.value);
-                            }}
-                          />
-                          <span className="">Subject End Time</span>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -882,7 +844,7 @@ function SuperAdminSubjectManagement() {
                   className="btn btn-secondary"
                   data-bs-dismiss="modal"
                   onClick={() => {
-                    clearUpdateSubject();
+                    clearUpdateClass();
                   }}
                 >
                   CANCEL
@@ -904,4 +866,4 @@ function SuperAdminSubjectManagement() {
   );
 }
 
-export default SuperAdminSubjectManagement;
+export default SuperAdminClassManagement;

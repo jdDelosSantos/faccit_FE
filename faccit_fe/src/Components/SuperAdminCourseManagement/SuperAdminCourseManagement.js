@@ -10,13 +10,11 @@ import https from "../../https";
 
 function SuperAdminCourseManagement() {
   //NEW COURSE USE STATES
-  const [courseCode, setCourseCode] = useState("");
   const [courseName, setCourseName] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
   const [courseCollege, setCourseCollege] = useState("");
 
   //UPDATE COURSE USE STATES
-  const [updateCourseCode, setUpdateCourseCode] = useState("");
   const [updateCourseName, setUpdateCourseName] = useState("");
   const [updateCourseDescription, setUpdateCourseDescription] = useState("");
   const [updateCourseCollege, setUpdateCourseCollege] = useState("");
@@ -101,7 +99,6 @@ function SuperAdminCourseManagement() {
     e.preventDefault();
 
     const courseData = {
-      course_code: courseCode,
       course_name: courseName,
       course_description: courseDescription,
       course_college: courseCollege,
@@ -117,7 +114,6 @@ function SuperAdminCourseManagement() {
         fetchCourses();
         toast.success(result.data.message, { duration: 7000 });
 
-        setCourseCode("");
         setCourseName("");
         setCourseDescription("");
         setCourseCollege("");
@@ -137,12 +133,10 @@ function SuperAdminCourseManagement() {
 
   //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
   const handleCourseUpdate = (
-    course_code,
     course_name,
     course_description,
     course_college
   ) => {
-    setUpdateCourseCode(course_code);
     setUpdateCourseName(course_name);
     setUpdateCourseDescription(course_description);
     setUpdateCourseCollege(course_college);
@@ -159,7 +153,7 @@ function SuperAdminCourseManagement() {
     };
 
     https
-      .put(`update_course/${updateCourseCode}`, updateCourseData, {
+      .put(`update_course/${updateCourseName}`, updateCourseData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -181,13 +175,13 @@ function SuperAdminCourseManagement() {
       });
   };
 
-  const handleCourseDeactivate = (course_code) => {
+  const handleCourseDeactivate = (course_name) => {
     const courseData = {
       course_status: "Disabled",
     };
 
     https
-      .put(`course_deactivate/${course_code}`, courseData, {
+      .put(`course_deactivate/${course_name}`, courseData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -198,13 +192,13 @@ function SuperAdminCourseManagement() {
       });
   };
 
-  const handleCourseActivate = (course_code) => {
+  const handleCourseActivate = (course_name) => {
     const courseData = {
       course_status: "Active",
     };
 
     https
-      .put(`course_activate/${course_code}`, courseData, {
+      .put(`course_activate/${course_name}`, courseData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -216,7 +210,6 @@ function SuperAdminCourseManagement() {
   };
 
   const clearUpdateCourse = () => {
-    setUpdateCourseCode("");
     setUpdateCourseName("");
     setUpdateCourseDescription("");
     setUpdateCourseCollege("");
@@ -274,7 +267,6 @@ function SuperAdminCourseManagement() {
           <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
             <thead className="table-light">
               <tr>
-                <th>COURSE CODE</th>
                 <th>COURSE NAME</th>
                 <th>COURSE DESCRIPTION</th>
                 <th>COURSE COLLEGE</th>
@@ -286,7 +278,6 @@ function SuperAdminCourseManagement() {
               {currentItems.length > 0 ? (
                 currentItems.map((course, index) => (
                   <tr className="table-light" key={index}>
-                    <td className="p-2">{course.course_code}</td>
                     <td className="p-2">{course.course_name}</td>
                     <td className="p-2">{course.course_description}</td>
                     <td className="p-2">{course.course_college}</td>
@@ -305,7 +296,6 @@ function SuperAdminCourseManagement() {
                         className="btn btn-primary"
                         onClick={() => {
                           handleCourseUpdate(
-                            course.course_code,
                             course.course_name,
                             course.course_description,
                             course.course_college
@@ -321,7 +311,7 @@ function SuperAdminCourseManagement() {
                           // data-bs-target="#staticBackdrop6"
                           className="btn btn-danger mx-3"
                           onClick={() =>
-                            handleCourseDeactivate(course.course_code)
+                            handleCourseDeactivate(course.course_name)
                           }
                         >
                           DEACTIVATE
@@ -333,7 +323,7 @@ function SuperAdminCourseManagement() {
                           // data-bs-target="#staticBackdrop7"
                           className="btn btn-success mx-3"
                           onClick={() =>
-                            handleCourseActivate(course.course_code)
+                            handleCourseActivate(course.course_name)
                           }
                         >
                           REACTIVATE
@@ -428,26 +418,6 @@ function SuperAdminCourseManagement() {
                     ) : (
                       ""
                     )}
-                    <h1></h1>
-                    {/* Start of Course Code */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
-                          <input
-                            type="text"
-                            id="courseCode"
-                            value={courseCode}
-                            onChange={(e) => {
-                              setCourseCode(e.target.value);
-                              setError(false);
-                            }}
-                            maxLength="4"
-                            required
-                          />
-                          <span className="">Course Code</span>
-                        </div>
-                      </div>
-                    </div>
 
                     {/* Start of Course Name*/}
                     <div className="">
@@ -593,32 +563,11 @@ function SuperAdminCourseManagement() {
                     ) : (
                       ""
                     )}
-                    <h1></h1>
-                    {/* Start of Course Code */}
-                    <div className="">
-                      <div className="md-6 mb-4">
-                        <div className="inputBox2 w-100">
-                          <input
-                            type="text"
-                            id="updateCourseCode"
-                            value={updateCourseCode}
-                            onChange={(e) => {
-                              setUpdateCourseCode(e.target.value);
-                              setError(false);
-                            }}
-                            maxLength="4"
-                            required
-                            disabled
-                          />
-                          <span className="">Course Code</span>
-                        </div>
-                      </div>
-                    </div>
 
                     {/* Start of Course Name*/}
                     <div className="">
                       <div className="md-6 mb-4">
-                        <div className="inputBox1 w-100">
+                        <div className="inputBox2 w-100">
                           <input
                             type="text"
                             id="updateCourseName"
@@ -627,6 +576,7 @@ function SuperAdminCourseManagement() {
                               setUpdateCourseName(e.target.value);
                             }}
                             required
+                            disabled
                           />
                           <span className="">Course Name</span>
                         </div>

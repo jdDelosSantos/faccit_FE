@@ -1,15 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./AdminSubjectManagement.css";
+import "./AdminClassManagement.css";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import https from "../../https";
-import { setSubjects } from "../../Redux/subjects";
+import { setClasses } from "../../Redux/classes";
 // import { setStudents } from "../../Redux/students";
 import { setCourses } from "../../Redux/courses";
 import ReactPaginate from "react-paginate";
 
-function AdminSubjectManagement() {
+function AdminClassManagement() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -17,24 +17,24 @@ function AdminSubjectManagement() {
   const [filterLevel, setFilterLevel] = useState("");
   const [filterSection, setFilterSection] = useState("");
 
-  const [subjectCode, setSubjectCode] = useState("");
-  const [subjectName, setSubjectName] = useState("");
+  const [classCode, setClassCode] = useState("");
+  const [className, setClassName] = useState("");
 
   const [selectedStudents, setSelectedStudents] = useState([]);
   const [removeSelectedStudents, setRemoveSelectedStudents] = useState([]);
 
-  const [listSubjectCode, setListSubjectCode] = useState("");
-  const [listSubjectName, setListSubjectName] = useState("");
+  const [listClassCode, setListClassCode] = useState("");
+  const [listClassName, setListClassName] = useState("");
 
-  const [delSubjectCode, setDelSubjectCode] = useState("");
-  const [delSubjectName, setDelSubjectName] = useState("");
+  const [delClassCode, setDelClassCode] = useState("");
+  const [delClassName, setDelClassName] = useState("");
 
   //REACT-PAGINATION
-  const [subjectStudents, setSubjectStudents] = useState([]);
+  const [classStudents, setClassStudents] = useState([]);
 
-  const [listSubjectStudents, setListSubjectStudents] = useState([]);
+  const [listClassStudents, setListClassStudents] = useState([]);
 
-  const [delSubjectStudents, setDelSubjectStudents] = useState([]);
+  const [delClassStudents, setDelClassStudents] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(6);
@@ -45,16 +45,17 @@ function AdminSubjectManagement() {
   const navigate = useNavigate();
 
   //Function for fetching Subjects
-  const fetchSubjects = () => {
+  const fetchClasses = () => {
     if (sessionStorage.getItem("Prof ID") != null || "") {
       https
-        .get(`profSubjects/${sessionStorage.getItem("Prof ID")}`, {
+        .get(`profClasses/${sessionStorage.getItem("Prof ID")}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
         })
         .then((result) => {
-          dispatch(setSubjects(result.data));
+          dispatch(setClasses(result.data));
+          console.log(classes);
         })
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
@@ -80,7 +81,7 @@ function AdminSubjectManagement() {
       })
       .then((result) => {
         // dispatch(setStudents(result.data));
-        setSubjectStudents(result.data);
+        setClassStudents(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -120,21 +121,21 @@ function AdminSubjectManagement() {
   };
 
   useEffect(() => {
-    fetchSubjects();
+    fetchClasses();
     fetchStudents();
     fetchCourses();
   }, []);
 
-  const subjects = useSelector((state) => state.subject.subjects);
+  const classes = useSelector((state) => state.class.classes);
   // const reduxStudents = useSelector((state) => state.student.students);
   const courses = useSelector((state) => state.course.courses);
 
-  const handleStudentList = (subject_code, subject_name) => {
-    setListSubjectCode(subject_code);
-    setListSubjectName(subject_name);
+  const handleStudentList = (class_code, class_name) => {
+    setListClassCode(class_code);
+    setListClassName(class_name);
     try {
       https
-        .get(`get_subject_students/${subject_code}`, {
+        .get(`get_class_students/${class_code}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
@@ -142,7 +143,7 @@ function AdminSubjectManagement() {
         .then((result) => {
           console.log(result.data);
 
-          setListSubjectStudents(result.data);
+          setListClassStudents(result.data);
         })
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
@@ -160,24 +161,24 @@ function AdminSubjectManagement() {
     }
   };
 
-  const handleAddStudents = (subject_code, subject_name) => {
-    setSubjectCode(subject_code);
-    setSubjectName(subject_name);
+  const handleAddStudents = (class_code, class_name) => {
+    setClassCode(class_code);
+    setClassName(class_name);
   };
 
-  const handleRemoveStudents = (subject_code, subject_name) => {
-    setDelSubjectCode(subject_code);
-    setDelSubjectName(subject_name);
+  const handleRemoveStudents = (class_code, class_name) => {
+    setDelClassCode(class_code);
+    setDelClassName(class_name);
 
     try {
       https
-        .get(`get_subject_students/${subject_code}`, {
+        .get(`get_class_students/${class_code}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
         })
         .then((result) => {
-          setDelSubjectStudents(result.data);
+          setDelClassStudents(result.data);
         })
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
@@ -213,10 +214,10 @@ function AdminSubjectManagement() {
     }
   };
 
-  const addStudentsToSubject = () => {
+  const addStudentsToClass = () => {
     console.log(selectedStudents);
     https
-      .post(`create_subject_students/${subjectCode}`, selectedStudents, {
+      .post(`create_class_students/${classCode}`, selectedStudents, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -252,11 +253,11 @@ function AdminSubjectManagement() {
       });
   };
 
-  const removeStudentsToSubject = () => {
+  const removeStudentsToClass = () => {
     console.log(removeSelectedStudents);
     try {
       https
-        .delete(`remove_subject_students/${delSubjectCode}`, {
+        .delete(`remove_class_students/${delClassCode}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
@@ -264,6 +265,7 @@ function AdminSubjectManagement() {
         })
         .then((result) => {
           toast.success(result.data.message, { duration: 7000 });
+          clearRemoveStudentsToClass();
         })
         .catch((error) => {
           console.log(error);
@@ -275,7 +277,7 @@ function AdminSubjectManagement() {
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
             console.log(error.response.data.message);
-            // goBackToLogin();
+            goBackToLogin();
           }
         });
     } catch (error) {
@@ -284,43 +286,47 @@ function AdminSubjectManagement() {
       setErrorMessage("An unexpected error occurred.");
       toast.error("An unexpected error occurred.", { duration: 7000 });
     } finally {
-      clearRemoveStudentsToSubject();
+      clearRemoveStudentsToClass();
     }
   };
 
-  const clearListStudentsToSubject = () => {
-    setSubjectCode("");
-    setSubjectName("");
+  const clearListStudentsToClass = () => {
+    setClassCode("");
+    setClassName("");
   };
 
-  const clearAddStudentsToSubject = () => {
-    setSubjectCode("");
-    setSubjectName("");
+  const clearAddStudentsToClass = () => {
+    setClassCode("");
+    setClassName("");
+    setFilterCourse("");
+    setFilterLevel("");
+    setFilterSection("");
     setSelectedStudents([]);
   };
 
-  const clearRemoveStudentsToSubject = () => {
-    setDelSubjectCode("");
-    setDelSubjectName("");
+  const clearRemoveStudentsToClass = () => {
+    setDelClassCode("");
+    setDelClassName("");
     setRemoveSelectedStudents([]);
   };
 
-  const filteredStudents = subjectStudents.filter(
-    (student) =>
-      student.std_status === "Active" &&
-      (filterCourse === "" || student.std_course === filterCourse) &&
-      student.std_level.toLowerCase().includes(filterLevel.toLowerCase()) &&
-      student.std_section.toLowerCase().includes(filterSection.toLowerCase())
-  );
-  // .sort((student1, student2) =>
-  //   student1.std_lname.localeCompare(student2.std_lname)
-  // );
+  const filteredStudents = classStudents
+    .filter(
+      (student) =>
+        student.std_status === "Active" &&
+        (filterCourse === "" || student.std_course === filterCourse) &&
+        student.std_level.toLowerCase().includes(filterLevel.toLowerCase()) &&
+        student.std_section.toLowerCase().includes(filterSection.toLowerCase())
+    )
+    .sort((student1, student2) =>
+      student1.std_lname.localeCompare(student2.std_lname)
+    );
 
-  const filteredListStudents = listSubjectStudents.sort((student1, student2) =>
+  const filteredListStudents = listClassStudents.sort((student1, student2) =>
     student1.std_lname.localeCompare(student2.std_lname)
   );
 
-  const filteredRemoveStudents = delSubjectStudents.sort((student1, student2) =>
+  const filteredRemoveStudents = delClassStudents.sort((student1, student2) =>
     student1.std_lname.localeCompare(student2.std_lname)
   );
 
@@ -334,7 +340,7 @@ function AdminSubjectManagement() {
   );
 
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
-  const handleSubjectSearchBar = (e) => {
+  const handleClassSearchBar = (e) => {
     e.preventDefault();
   };
 
@@ -346,23 +352,23 @@ function AdminSubjectManagement() {
   return (
     <div className="base_bg w-100 p-4">
       <h1 className="my-1">
-        <b>{NametoUpperCase}'S SUBJECT MANAGEMENT PAGE</b>
+        <b>{NametoUpperCase}'S CLASS MANAGEMENT PAGE</b>
       </h1>
-      <h4 className="">LIST OF SUBJECTS</h4>
+      <h4 className="">LIST OF CLASSES</h4>
       <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
             <div className="w-100 d-flex">
               <form
                 className="d-flex w-75 searchbar-form"
-                onSubmit={handleSubjectSearchBar}
+                onSubmit={handleClassSearchBar}
               >
                 <div className="w-100">
                   <div className="input-group">
                     <input
                       className="form-control"
                       type="search"
-                      placeholder="Search Subjects..."
+                      placeholder="Search Classes..."
                       aria-label="Search"
                     />
                     <button
@@ -390,23 +396,22 @@ function AdminSubjectManagement() {
           <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
             <thead className="table-light">
               <tr>
-                <th>SUBJECT CODE</th>
-                <th>SUBJECT NAME</th>
-                <th>SUBJECT DAY</th>
-                <th>START TIME</th>
-                <th>END TIME</th>
+                <th>CLASS CODE</th>
+                <th>CLASS NAME</th>
+                <th>CLASS DESCRIPTION</th>
+                <th>COLLEGE</th>
                 <th>ACTIONS</th>
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              {subjects.length > 0 ? (
-                subjects.map((subject, index) => (
+              {classes.length > 0 ? (
+                classes.map((classes, index) => (
                   <tr className="table-light" key={index}>
-                    <td className="p-2">{subject.subject_code}</td>
-                    <td className="p-2">{subject.subject_name}</td>
-                    <td className="p-2">{subject.subject_day}</td>
-                    <td className="p-2">{subject.start_time}</td>
-                    <td className="p-2">{subject.end_time}</td>
+                    <td className="p-2">{classes.class_code}</td>
+                    <td className="p-2">{classes.class_name}</td>
+                    <td className="p-2">{classes.class_description}</td>
+                    <td className="p-2">{classes.college_name}</td>
+
                     <td className="p-2">
                       <button
                         type="button"
@@ -415,8 +420,8 @@ function AdminSubjectManagement() {
                         className="btn btn-secondary"
                         onClick={() => {
                           handleStudentList(
-                            subject.subject_code,
-                            subject.subject_name
+                            classes.class_code,
+                            classes.class_name
                           );
                         }}
                       >
@@ -430,8 +435,8 @@ function AdminSubjectManagement() {
                         className="btn btn-primary mx-3"
                         onClick={() =>
                           handleAddStudents(
-                            subject.subject_code,
-                            subject.subject_name
+                            classes.class_code,
+                            classes.class_name
                           )
                         }
                       >
@@ -445,8 +450,8 @@ function AdminSubjectManagement() {
                         className="btn btn-danger"
                         onClick={() =>
                           handleRemoveStudents(
-                            subject.subject_code,
-                            subject.subject_name
+                            classes.class_code,
+                            classes.class_name
                           )
                         }
                       >
@@ -489,7 +494,7 @@ function AdminSubjectManagement() {
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel">
-                CURRENT STUDENTS IN {subjectName}
+                CURRENT STUDENTS IN {className}
               </h1>
               <button
                 type="button"
@@ -505,10 +510,10 @@ function AdminSubjectManagement() {
                   <div className="inputBox2 w-100">
                     <input
                       type="text"
-                      id="subjectCode"
-                      value={listSubjectCode}
+                      id="classCode"
+                      value={listClassCode}
                       onChange={(e) => {
-                        setListSubjectCode(e.target.value);
+                        setListClassCode(e.target.value);
                         setError(false);
                       }}
                       disabled
@@ -521,10 +526,10 @@ function AdminSubjectManagement() {
                   <div className="inputBox2 w-100">
                     <input
                       type="text"
-                      id="subjectName"
-                      value={listSubjectName}
+                      id="className"
+                      value={listClassName}
                       onChange={(e) => {
-                        setListSubjectName(e.target.value);
+                        setListClassName(e.target.value);
                         setError(false);
                       }}
                       disabled
@@ -582,7 +587,7 @@ function AdminSubjectManagement() {
                     pageRangeDisplayed={3}
                     marginPagesDisplayed={2}
                     pageCount={Math.ceil(
-                      listSubjectStudents.length / itemsPerPage
+                      listClassStudents.length / itemsPerPage
                     )}
                     previousLabel="< Previous"
                     pageClassName="page-item"
@@ -606,7 +611,7 @@ function AdminSubjectManagement() {
                 type="button"
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
-                onClick={() => clearListStudentsToSubject()}
+                onClick={() => clearListStudentsToClass()}
               >
                 CLOSE
               </button>
@@ -629,7 +634,7 @@ function AdminSubjectManagement() {
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel1">
-                ADD STUDENTS TO {subjectName} SUBJECT
+                ADD STUDENTS TO {className} SUBJECT
               </h1>
               <button
                 type="button"
@@ -645,10 +650,10 @@ function AdminSubjectManagement() {
                   <div className="inputBox2 w-100">
                     <input
                       type="text"
-                      id="subjectCode"
-                      value={subjectCode}
+                      id="classCode"
+                      value={classCode}
                       onChange={(e) => {
-                        setSubjectCode(e.target.value);
+                        setClassCode(e.target.value);
                         setError(false);
                       }}
                       disabled
@@ -661,10 +666,10 @@ function AdminSubjectManagement() {
                   <div className="inputBox2 w-100">
                     <input
                       type="text"
-                      id="subjectName"
-                      value={subjectName}
+                      id="className"
+                      value={className}
                       onChange={(e) => {
-                        setSubjectName(e.target.value);
+                        setClassName(e.target.value);
                         setError(false);
                       }}
                       disabled
@@ -801,7 +806,7 @@ function AdminSubjectManagement() {
                     onPageChange={(event) => setCurrentPage(event.selected)}
                     pageRangeDisplayed={3}
                     marginPagesDisplayed={2}
-                    pageCount={Math.ceil(subjectStudents.length / itemsPerPage)}
+                    pageCount={Math.ceil(classStudents.length / itemsPerPage)}
                     previousLabel="< Previous"
                     pageClassName="page-item"
                     pageLinkClassName="page-link"
@@ -824,7 +829,7 @@ function AdminSubjectManagement() {
                 type="button"
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
-                onClick={() => clearAddStudentsToSubject()}
+                onClick={() => clearAddStudentsToClass()}
               >
                 CLOSE
               </button>
@@ -832,7 +837,7 @@ function AdminSubjectManagement() {
                 type="submit"
                 className="btn btn-success"
                 data-bs-dismiss="modal"
-                onClick={() => addStudentsToSubject()}
+                onClick={() => addStudentsToClass()}
               >
                 ADD STUDENTS
               </button>
@@ -855,7 +860,7 @@ function AdminSubjectManagement() {
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel2">
-                REMOVE STUDENTS FROM {delSubjectName}
+                REMOVE STUDENTS FROM {delClassName}
               </h1>
               <button
                 type="button"
@@ -871,10 +876,10 @@ function AdminSubjectManagement() {
                   <div className="inputBox2 w-100">
                     <input
                       type="text"
-                      id="delSubjectCode"
-                      value={delSubjectCode}
+                      id="delClassCode"
+                      value={delClassCode}
                       onChange={(e) => {
-                        setDelSubjectCode(e.target.value);
+                        setDelClassCode(e.target.value);
                         setError(false);
                       }}
                       disabled
@@ -887,10 +892,10 @@ function AdminSubjectManagement() {
                   <div className="inputBox2 w-100">
                     <input
                       type="text"
-                      id="delSubjectName"
-                      value={delSubjectName}
+                      id="delClassName"
+                      value={delClassName}
                       onChange={(e) => {
-                        setDelSubjectName(e.target.value);
+                        setDelClassName(e.target.value);
                         setError(false);
                       }}
                       disabled
@@ -957,7 +962,7 @@ function AdminSubjectManagement() {
                     pageRangeDisplayed={3}
                     marginPagesDisplayed={2}
                     pageCount={Math.ceil(
-                      delSubjectStudents.length / itemsPerPage
+                      delClassStudents.length / itemsPerPage
                     )}
                     previousLabel="< Previous"
                     pageClassName="page-item"
@@ -981,7 +986,7 @@ function AdminSubjectManagement() {
                 type="button"
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
-                onClick={() => clearRemoveStudentsToSubject()}
+                onClick={() => clearRemoveStudentsToClass()}
               >
                 CLOSE
               </button>
@@ -989,7 +994,7 @@ function AdminSubjectManagement() {
                 type="submit"
                 className="btn btn-danger"
                 data-bs-dismiss="modal"
-                onClick={() => removeStudentsToSubject()}
+                onClick={() => removeStudentsToClass()}
               >
                 REMOVE STUDENTS
               </button>
@@ -1001,4 +1006,4 @@ function AdminSubjectManagement() {
   );
 }
 
-export default AdminSubjectManagement;
+export default AdminClassManagement;

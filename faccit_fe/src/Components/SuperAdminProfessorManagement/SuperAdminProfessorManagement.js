@@ -181,6 +181,7 @@ function SuperAdminProfessorManagement() {
           })
           .then((result) => {
             //console.log(result.data.message);
+            fetchProfessors();
           })
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {

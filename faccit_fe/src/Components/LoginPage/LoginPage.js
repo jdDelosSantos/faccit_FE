@@ -55,7 +55,7 @@ function LoginPage() {
     if (role === "super_admin") {
       navigate("dashboard");
     } else {
-      navigate("admin/managements/subjects");
+      navigate("admin/managements/classes");
     }
   };
 

@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 // import attendanceReducer from "./attendance";
 import studentReducer from "./students";
 import courseReducer from "./courses";
-import subjectReducer from "./subjects";
+import classReducer from "./classes";
 import collegeReducer from "./colleges";
 import professorReducer from "./professors";
 
@@ -11,7 +11,7 @@ export default configureStore({
     // attendance: attendanceReducer,
     student: studentReducer,
     course: courseReducer,
-    subject: subjectReducer,
+    class: classReducer,
     college: collegeReducer,
     professor: professorReducer,
   },

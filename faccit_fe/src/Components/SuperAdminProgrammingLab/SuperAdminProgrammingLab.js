@@ -8,8 +8,6 @@ import ReactPaginate from "react-paginate";
 import https from "../../https";
 
 function SuperAdminProgrammingLab() {
-
- 
   //NEW SUBJECT USE STATES
   const [subjectCode, setSubjectCode] = useState("");
   const [subjectName, setSubjectName] = useState("");
@@ -29,17 +27,52 @@ function SuperAdminProgrammingLab() {
   const [updateEndTime, setUpdateEndTime] = useState("");
 
   //REACT-PAGINATION
-  const [subjects, setSubjects] = useState([]);
+  const [classSchedules, setClassSchedules] = useState([]);
+  const [labClassSchedules, setLabClassSchedules] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(7);
+
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = subjects.slice(startIndex, endIndex);
 
-  const [selectedSubjects, setSelectedSubjects] = useState([]);
+  const currentItems = classSchedules.slice(startIndex, endIndex);
+  const currentLabClassSchedules = labClassSchedules.slice(
+    startIndex,
+    endIndex
+  );
 
-  const reduxSubjects = useSelector((state) => state.subject.subjects);
-  const professors = useSelector((state) => state.professor.professors);
+  const sortedData = currentLabClassSchedules.sort((a, b) => {
+    const classNameComparison = a.class.class_name.localeCompare(
+      b.class.class_name
+    );
+    if (classNameComparison !== 0) {
+      return classNameComparison;
+    }
+    // If class names are the same, sort by class day
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    const dayIndexA = days.indexOf(a.class_day);
+    const dayIndexB = days.indexOf(b.class_day);
+    if (dayIndexA !== dayIndexB) {
+      return dayIndexA - dayIndexB;
+    }
+
+    // If class day is the same, sort by start time
+    const startTimeA = new Date(`2000-01-01T${a.start_time}`);
+    const startTimeB = new Date(`2000-01-01T${b.start_time}`);
+    return startTimeA - startTimeB;
+  });
+
+  const [selectedClasses, setSelectedClasses] = useState([]);
+
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
 
   const dispatch = useDispatch();
@@ -48,20 +81,18 @@ function SuperAdminProgrammingLab() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {}, [professors]);
-  useEffect(() => {}, [subjects]);
-
-  //Function for fetching Subjects
-  const fetchSubjects = () => {
+  //Function for fetching Class Schedules
+  const fetchClassSchedules = () => {
     https
-      .get("subjects", {
+      .get("class_schedule_prof", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
         // dispatch(setSubjects(result.data));
-        setSubjects(result.data);
+        setClassSchedules(result.data);
+        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -76,16 +107,18 @@ function SuperAdminProgrammingLab() {
       });
   };
 
-  //Function for fetching Professors
-  const fetchProfessors = () => {
+  //Function for fetching Laboratory Class Schedules
+  const fetchLaboratoryClassSchedules = () => {
+    const laboratory = "lab_prog";
     https
-      .get("getProfessors", {
+      .get(`laboratory_class_schedules/${laboratory}`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        dispatch(setProfessors(result.data));
+        setLabClassSchedules(result.data);
+        console.log(labClassSchedules);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -101,7 +134,8 @@ function SuperAdminProgrammingLab() {
   };
 
   useEffect(() => {
-    fetchSubjects();
+    fetchClassSchedules();
+    fetchLaboratoryClassSchedules();
   }, []);
 
   const handleSubjectSearchBar = (e) => {
@@ -109,184 +143,21 @@ function SuperAdminProgrammingLab() {
     // Implement search functionality if needed
   };
 
-  //FUNCTION FOR ADDING A COURSE
-  const handleSubjectSubmit = (e) => {
-    e.preventDefault();
-
-    const subjectData = {
-      subject_code: subjectCode,
-      subject_name: subjectName,
-      subject_description: subjectDescription,
-      ...(professorID && { prof_id: professorID }),
-      ...(subjectDay && { subject_day: subjectDay }),
-      ...(startTime && { start_time: startTime }),
-      ...(endTime && { end_time: endTime }),
-    };
-
-    console.log(subjectData);
-
-    try {
-      https
-        .post("subjects", subjectData, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-          },
-        })
-        .then((result) => {
-          fetchSubjects();
-          toast.success(result.data.message, { duration: 7000 });
-
-          setSubjectCode("");
-          setSubjectName("");
-          setSubjectDescription("");
-          setSubjectDay("");
-          setStartTime("");
-          setEndTime("");
-        })
-        .catch((error) => {
-          if (error.response.data.message != "Unauthenticated.") {
-            setError(true);
-            setErrorMessage(error.response.data.message);
-            toast.error(error.response.data.message, { duration: 7000 });
-          } else {
-            goBackToLogin();
-          }
-        });
-    } catch {
-      console.error(error);
-    }
-  };
-
-  //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
-  const handleSubjectUpdate = (
-    subject_code,
-    subject_name,
-    subject_description,
-    prof_id,
-    subject_day,
-    start_time,
-    end_time
-  ) => {
-    setUpdateSubjectCode(subject_code);
-    setUpdateSubjectName(subject_name);
-    setUpdateSubjectDescription(subject_description);
-    setUpdateProfessorID(prof_id);
-    setUpdateSubjectDay(subject_day);
-    setUpdateStartTime(start_time);
-    setUpdateEndTime(end_time);
-  };
-
-  //FUNCTION FOR ADDING UPDATING A SUBJECT
-  const handleUpdateSubjectSubmit = (e) => {
-    e.preventDefault();
-    const updateSubjectData = {
-      subject_code: updateSubjectCode,
-      subject_name: updateSubjectName,
-      subject_description: updateSubjectDescription,
-      subject_day: updateSubjectDay,
-      prof_id: updateProfessorID,
-      start_time: updateStartTime,
-      end_time: updateEndTime,
-    };
-
-    console.log(updateSubjectData);
-    https
-      .put(`update_subjects/${updateSubjectCode}`, updateSubjectData, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-        },
-      })
-      .then((result) => {
-        fetchSubjects();
-        toast.success(result.data.message, { duration: 7000 });
-
-        setUpdateSubjectCode("");
-        setUpdateSubjectName("");
-        setUpdateSubjectDescription("");
-        setUpdateProfessorID("");
-        setUpdateSubjectDay("");
-        setUpdateStartTime("");
-        setUpdateEndTime("");
-      })
-      .catch((error) => {
-        if (error.response.data.message != "Unauthenticated.") {
-          setError(true);
-          console.log(error.response.data.message);
-          setErrorMessage(error.response.data.message);
-          toast.error(error.response.data.message, { duration: 7000 });
-        } else {
-          console.log(error.response.data.message);
-          goBackToLogin();
-        }
-      });
-  };
-
-  const handleSubjectRemove = (subject_code) => {
-    // const subjectData = {
-    //   subject_status: "Disabled",
-    // };
-    // https
-    //   .put(`subject_deactivate/${subject_code}`, subjectData, {
-    //     headers: {
-    //       Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-    //     },
-    //   })
-    //   .then((result) => {
-    //     toast.error(result.data.message, { duration: 7000 });
-    //     fetchSubjects();
-    //   });
-  };
-
-  const handleSubjectActivate = (subject_code) => {
-    // const subjectData = {
-    //   subject_status: "Active",
-    // };
-    // https
-    //   .put(`subject_activate/${subject_code}`, subjectData, {
-    //     headers: {
-    //       Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-    //     },
-    //   })
-    //   .then((result) => {
-    //     toast.success(result.data.message, { duration: 7000 });
-    //     fetchSubjects();
-    //   });
-  };
-
   const handleSubjectsSearchBar = (e) => {
     e.preventDefault();
   };
 
-  const clearSubject = () => {
-    setSubjectCode("");
-    setSubjectName("");
-    setSubjectDescription("");
-    setSubjectDay("");
-    setStartTime("");
-    setEndTime("");
-  };
-
-  const clearUpdateSubject = () => {
-    setUpdateSubjectCode("");
-    setUpdateSubjectName("");
-    setUpdateSubjectDescription("");
-    setUpdateProfessorID("");
-    setUpdateSubjectDay("");
-    setUpdateStartTime("");
-    setUpdateEndTime("");
-  };
-
   const clearLoadSubjects = () => {
-    setSubjectCode("");
-    setSubjectName("");
-    setSelectedSubjects([]);
+    setSelectedClasses([]);
+    setErrorMessage("");
+    setError(false);
   };
 
   const loadSubjects = () => {
-    console.log(selectedSubjects);
+    console.log(selectedClasses);
     const laboratory = "lab_prog";
     https
-      .post(`create_laboratory_subjects/${laboratory}`, selectedSubjects, {
+      .post(`create_laboratory_classes/${laboratory}`, selectedClasses, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -301,6 +172,8 @@ function SuperAdminProgrammingLab() {
             });
           } else {
             toast.success(result.data.message, { duration: 7000 });
+            fetchLaboratoryClassSchedules();
+            clearLoadSubjects();
           }
         } else {
           console.error("Server response doesn't contain data property");
@@ -311,7 +184,7 @@ function SuperAdminProgrammingLab() {
         console.log(error);
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-
+          setSelectedClasses([]);
           console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
@@ -322,25 +195,50 @@ function SuperAdminProgrammingLab() {
       });
   };
 
-  const handleSubjectSelection = (subject) => {
-    if (selectedSubjects.includes(subject)) {
-      setSelectedSubjects(selectedSubjects.filter((s) => s !== subject));
+  const handleClassSelection = (classes) => {
+    if (selectedClasses.includes(classes)) {
+      setSelectedClasses(selectedClasses.filter((s) => s !== classes));
     } else {
-      setSelectedSubjects([...selectedSubjects, subject]);
+      setSelectedClasses([...selectedClasses, classes]);
     }
   };
 
   // Filter function to check if all required fields have values
-  const hasRequiredFields = (subject) => {
-    return (
-      subject.subject_day &&
-      subject.start_time &&
-      subject.end_time &&
-      subject.subject_status === "Active"
-    );
+  const hasRequiredFields = (classes) => {
+    return classes.class_day && classes.start_time && classes.end_time;
   };
 
   const filteredData = currentItems.filter(hasRequiredFields);
+
+  const sortedClassSchedules = filteredData.sort((a, b) => {
+    const classNameComparison = a.class.class_name.localeCompare(
+      b.class.class_name
+    );
+    if (classNameComparison !== 0) {
+      return classNameComparison;
+    }
+
+    // If class names are the same, sort by class day
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    const dayIndexA = days.indexOf(a.class_day);
+    const dayIndexB = days.indexOf(b.class_day);
+    if (dayIndexA !== dayIndexB) {
+      return dayIndexA - dayIndexB;
+    }
+
+    // If class day is the same, sort by start time
+    const startTimeA = new Date(`2000-01-01T${a.start_time}`);
+    const startTimeB = new Date(`2000-01-01T${b.start_time}`);
+    return startTimeA - startTimeB;
+  });
 
   const goBackToLogin = () => {
     sessionStorage.clear();
@@ -350,9 +248,9 @@ function SuperAdminProgrammingLab() {
   return (
     <div className="base_bg w-100 p-4">
       <h1 className="my-1">
-        <b>{NametoUpperCase}'S SUBJECT MANAGEMENT PAGE</b>
+        <b>{NametoUpperCase}'S PROGRAMMING LAB PAGE</b>
       </h1>
-      <h4 className="">LIST OF SUBJECTS</h4>
+      <h4 className="">LIST OF CLASS SCHEDULES IN PROGRAMMING LAB</h4>
       <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
@@ -366,7 +264,7 @@ function SuperAdminProgrammingLab() {
                     <input
                       className="form-control"
                       type="search"
-                      placeholder="Search Subject..."
+                      placeholder="Search Class Schedule..."
                       aria-label="Search"
                     />
                     <button
@@ -386,7 +284,7 @@ function SuperAdminProgrammingLab() {
                 data-bs-target="#staticBackdrop4"
                 className="btn btn-primary btn-sm"
               >
-                LOAD SUBJECT
+                LOAD CLASS
               </button>
             </div>
           </div>
@@ -394,8 +292,8 @@ function SuperAdminProgrammingLab() {
           <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
             <thead className="table-light">
               <tr>
-                <th>SUBJECT CODE</th>
-                <th>SUBJECT NAME</th>
+                <th>CLASS CODE</th>
+                <th>CLASS NAME</th>
                 <th>PROFESSOR ID</th>
                 <th>SUBJECT DAY</th>
                 <th>START TIME</th>
@@ -404,15 +302,15 @@ function SuperAdminProgrammingLab() {
               </tr>
             </thead>
             <tbody className="table-group-divider">
-              {currentItems.length > 0 ? (
-                currentItems.map((subject, index) => (
+              {sortedData.length > 0 ? (
+                sortedData.map((classes, index) => (
                   <tr className="table-light" key={index}>
-                    <td className="p-2">{subject.subject_code}</td>
-                    <td className="p-2">{subject.subject_name}</td>
-                    <td className="p-2">{subject.prof_id}</td>
-                    <td className="p-2">{subject.subject_day}</td>
-                    <td className="p-2">{subject.start_time}</td>
-                    <td className="p-2">{subject.end_time}</td>
+                    <td className="p-2">{classes.class_code}</td>
+                    <td className="p-2">{classes.class.class_name}</td>
+                    <td className="p-2">{classes.class.prof_id}</td>
+                    <td className="p-2">{classes.class_day}</td>
+                    <td className="p-2">{classes.start_time}</td>
+                    <td className="p-2">{classes.end_time}</td>
                     <td className="p-2">
                       <button
                         type="button"
@@ -423,7 +321,7 @@ function SuperAdminProgrammingLab() {
                           handleSubjectRemove(subject.subject_code)
                         }
                       >
-                        REMOVE
+                        UNLOAD
                       </button>
                     </td>
                   </tr>
@@ -451,7 +349,7 @@ function SuperAdminProgrammingLab() {
               onPageChange={(event) => setCurrentPage(event.selected)}
               pageRangeDisplayed={3}
               marginPagesDisplayed={2}
-              pageCount={Math.ceil(subjects.length / itemsPerPage)}
+              pageCount={Math.ceil(labClassSchedules.length / itemsPerPage)}
               previousLabel="< Previous"
               pageClassName="page-item"
               pageLinkClassName="page-link"
@@ -470,7 +368,7 @@ function SuperAdminProgrammingLab() {
         </div>
       </div>
 
-      {/* START OF MODAL FOR LOADING SUBJECTS */}
+      {/* START OF MODAL FOR LOADING CLASSES */}
       <div
         className="modal fade"
         id="staticBackdrop4"
@@ -480,11 +378,11 @@ function SuperAdminProgrammingLab() {
         aria-labelledby="staticBackdropLabel4"
         aria-hidden="true"
       >
-        <div className="modal-dialog modal-lg">
+        <div className="modal-dialog modal-xl">
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="staticBackdropLabel4">
-                <b>LOAD SUBJECT</b>
+                <b>LOAD CLASS</b>
               </h1>
             </div>
 
@@ -503,7 +401,7 @@ function SuperAdminProgrammingLab() {
                 <div className="card-body p-4 p-md-5">
                   <div className="container d-flex justify-content-center">
                     <h1 className="fontfam fw-bolder mb-4 pb-2 pb-md-0 mb-md-5 px-md-2 text-justify">
-                      SUBJECTS
+                      CLASS SCHEDULES
                     </h1>
                   </div>
                   {error == true ? (
@@ -540,34 +438,43 @@ function SuperAdminProgrammingLab() {
                       <thead className="table-light">
                         <tr>
                           <th></th>
-                          <th>SUBJECT CODE</th>
-                          <th>SUBJECT NAME</th>
-                          <th>SUBJECT DAY</th>
+                          <th>CLASS CODE</th>
+                          <th>CLASS NAME</th>
+                          <th>PROFESSOR ID</th>
+                          <th>CLASS DAY</th>
                           <th>START TIME</th>
                           <th>END TIME</th>
                         </tr>
                       </thead>
                       <tbody className="table-group-divider">
-                        {filteredData.length > 0 ? (
-                          filteredData.map((subject, index) => (
-                            <tr className="table-light" key={index}>
-                              <td className="p-2">
-                                <input
-                                  type="checkbox"
-                                  checked={selectedSubjects.includes(subject)}
-                                  onChange={() =>
-                                    handleSubjectSelection(subject)
-                                  }
-                                />
-                              </td>
-                              <td className="p-2">{subject.subject_code}</td>
-                              <td className="p-2">{subject.subject_name}</td>
-
-                              <td className="p-2">{subject.subject_day}</td>
-                              <td className="p-2">{subject.start_time}</td>
-                              <td className="p-2">{subject.end_time}</td>
-                            </tr>
-                          ))
+                        {sortedClassSchedules.length > 0 ? (
+                          sortedClassSchedules
+                            .sort((class1, class2) =>
+                              class1.class.class_name.localeCompare(
+                                class2.class.class_name
+                              )
+                            )
+                            .map((classes, index) => (
+                              <tr className="table-light" key={index}>
+                                <td className="p-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedClasses.includes(classes)}
+                                    onChange={() =>
+                                      handleClassSelection(classes)
+                                    }
+                                  />
+                                </td>
+                                <td className="p-2">{classes.class_code}</td>
+                                <td className="p-2">
+                                  {classes.class.class_name}
+                                </td>
+                                <td className="p-2">{classes.class.prof_id}</td>
+                                <td className="p-2">{classes.class_day}</td>
+                                <td className="p-2">{classes.start_time}</td>
+                                <td className="p-2">{classes.end_time}</td>
+                              </tr>
+                            ))
                         ) : (
                           <tr className="table-light" key="loading-row">
                             <td colSpan="8" className="text-center">
@@ -585,8 +492,28 @@ function SuperAdminProgrammingLab() {
                         )}
                       </tbody>
                     </table>
+                    <ReactPaginate
+                      nextLabel="Next >"
+                      onPageChange={(event) => setCurrentPage(event.selected)}
+                      pageRangeDisplayed={3}
+                      marginPagesDisplayed={2}
+                      pageCount={Math.ceil(filteredData.length / itemsPerPage)}
+                      previousLabel="< Previous"
+                      pageClassName="page-item"
+                      pageLinkClassName="page-link"
+                      previousClassName="page-item"
+                      previousLinkClassName="page-link"
+                      nextClassName="page-item"
+                      nextLinkClassName="page-link"
+                      breakLabel="..."
+                      breakClassName="page-item"
+                      breakLinkClassName="page-link"
+                      containerClassName="pagination"
+                      activeClassName="active"
+                      renderOnZeroPageCount={null}
+                    />
                     <p>
-                      Note: Subjects Displayed are only those with Professors,
+                      Note: Classes displayed are only those with Professors,
                       Day, Start Time and End Time
                     </p>
                   </div>

@@ -232,6 +232,7 @@ function AdminClassManagement() {
             });
           } else {
             toast.success(result.data.message, { duration: 7000 });
+            clearAddStudentsToClass();
           }
         } else {
           console.error("Server response doesn't contain data property");
@@ -316,7 +317,10 @@ function AdminClassManagement() {
         student.std_status === "Active" &&
         (filterCourse === "" || student.std_course === filterCourse) &&
         student.std_level.toLowerCase().includes(filterLevel.toLowerCase()) &&
-        student.std_section.toLowerCase().includes(filterSection.toLowerCase())
+        student.std_section
+          .toLowerCase()
+          .includes(filterSection.toLowerCase()) &&
+        student.student_images_count >= 3
     )
     .sort((student1, student2) =>
       student1.std_lname.localeCompare(student2.std_lname)
@@ -822,6 +826,12 @@ function AdminClassManagement() {
                     renderOnZeroPageCount={null}
                   />
                 </div>
+                <p>
+                  <i>
+                    Note: Students need to have a status of active and have 3
+                    images for them to be displayed here
+                  </i>
+                </p>
               </div>
             </div>
             <div className="modal-footer">

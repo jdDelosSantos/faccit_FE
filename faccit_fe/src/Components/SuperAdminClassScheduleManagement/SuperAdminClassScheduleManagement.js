@@ -33,13 +33,27 @@ function SuperAdminClassScheduleManagement() {
   const [updateStartTime, setUpdateStartTime] = useState("");
   const [updateEndTime, setUpdateEndTime] = useState("");
 
+  //SEARCHTERM FOR SEARCH BAR
+  const [searchTerm, setSearchTerm] = useState("");
+
   //REACT-PAGINATION
   const [classSchedules, setClassSchedules] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(7);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = classSchedules.slice(startIndex, endIndex);
+
+  console.log(classSchedules);
+  const filteredSortedData = classSchedules.filter(
+    (item) =>
+      item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.class.class_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.class_day.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentItems = filteredSortedData.slice(startIndex, endIndex);
 
   const classes = useSelector((state) => state.class.classes);
   const professors = useSelector((state) => state.professor.professors);
@@ -81,30 +95,6 @@ function SuperAdminClassScheduleManagement() {
         }
       });
   };
-
-  //Function for fetching Professors
-  // const fetchProfessors = () => {
-  //   https
-  //     .get("getProfessors", {
-  //       headers: {
-  //         Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-  //       },
-  //     })
-  //     .then((result) => {
-  //       dispatch(setProfessors(result.data));
-  //     })
-  //     .catch((error) => {
-  //       if (error.response.data.message != "Unauthenticated.") {
-  //         setError(true);
-  //         console.log(error.response.data.message);
-  //         setErrorMessage(error.response.data.message);
-  //         toast.error(error.response.data.message, { duration: 7000 });
-  //       } else {
-  //         console.log(error.response.data.message);
-  //         goBackToLogin();
-  //       }
-  //     });
-  // };
 
   //Function for fetching Classes
   const fetchClasses = () => {
@@ -281,26 +271,20 @@ function SuperAdminClassScheduleManagement() {
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
             <div className="w-100 d-flex">
-              <form
-                className="d-flex w-75 searchbar-form"
-                onSubmit={handleSubjectSearchBar}
-              >
-                <div className="w-100">
-                  <div className="input-group">
-                    <input
-                      className="form-control"
-                      type="search"
-                      placeholder="Search Class Schedules..."
-                      aria-label="Search"
-                    />
-                    <button
-                      className="fa-solid fa-magnifying-glass searchbtn"
-                      type="submit"
-                      style={{ color: "#ffffff" }}
-                    ></button>
-                  </div>
+              <div className="w-75">
+                <div className="input-group">
+                  <input
+                    className="form-control"
+                    type="search"
+                    placeholder="Search Class Schedules..."
+                    aria-label="Search"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                    }}
+                  />
                 </div>
-              </form>
+              </div>
             </div>
 
             <div className="w-25 d-flex justify-content-end">
@@ -346,7 +330,7 @@ function SuperAdminClassScheduleManagement() {
                           type="button"
                           data-bs-toggle="modal"
                           data-bs-target="#staticBackdrop1"
-                          className="btn btn-primary"
+                          className="btn btn-primary btn-sm"
                           onClick={() => {
                             handleClassUpdate(
                               classes.class_code,
@@ -361,7 +345,7 @@ function SuperAdminClassScheduleManagement() {
                         </button>
                         <button
                           type="button"
-                          className="btn btn-danger mx-2"
+                          className="btn btn-danger mx-2 btn-sm"
                           onClick={() => {
                             handleClassDelete(classes.id);
                           }}

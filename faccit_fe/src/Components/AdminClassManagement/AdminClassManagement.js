@@ -829,7 +829,7 @@ function AdminClassManagement() {
                 <p>
                   <i>
                     Note: Students need to have a status of active and have 3
-                    images for them to be displayed here
+                    images before they are displayed in this list...
                   </i>
                 </p>
               </div>

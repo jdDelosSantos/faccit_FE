@@ -16,13 +16,33 @@ function SuperAdminCollegeManagement() {
   const [updateCollegeName, setUpdateCollegeName] = useState("");
   const [updateCollegeDescription, setUpdateCollegeDescription] = useState("");
 
+  //SEARCHTERM FOR SEARCH BAR
+  const [searchTerm, setSearchTerm] = useState("");
+
   //REACT-PAGINATION
   const [colleges, setColleges] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = colleges.slice(startIndex, endIndex);
+
+  const filteredSortedData = colleges.filter((item) => {
+    const searchTerms = searchTerm.toLowerCase().split(" ");
+    const matchingColumns = [
+      "college_name",
+      "college_description",
+      "college_status",
+    ];
+
+    return searchTerms.every((term) => {
+      return matchingColumns.some((column) => {
+        const regex = new RegExp(term, "i");
+        return regex.test(item[column].toLowerCase());
+      });
+    });
+  });
+
+  const currentItems = filteredSortedData.slice(startIndex, endIndex);
 
   // const reduxColleges = useSelector((state) => state.college.colleges);
 
@@ -200,26 +220,20 @@ function SuperAdminCollegeManagement() {
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
             <div className="w-100 d-flex">
-              <form
-                className="d-flex w-75 searchbar-form"
-                onSubmit={handleCollegeSearchBar}
-              >
-                <div className="w-100">
-                  <div className="input-group">
-                    <input
-                      className="form-control"
-                      type="search"
-                      placeholder="Search College..."
-                      aria-label="Search"
-                    />
-                    <button
-                      className="fa-solid fa-magnifying-glass searchbtn"
-                      type="submit"
-                      style={{ color: "#ffffff" }}
-                    ></button>
-                  </div>
+              <div className="w-75">
+                <div className="input-group">
+                  <input
+                    className="form-control"
+                    type="search"
+                    placeholder="Search College..."
+                    aria-label="Search"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                    }}
+                  />
                 </div>
-              </form>
+              </div>
             </div>
 
             <div className="w-25 d-flex justify-content-end">
@@ -261,7 +275,7 @@ function SuperAdminCollegeManagement() {
                         type="button"
                         data-bs-toggle="modal"
                         data-bs-target="#staticBackdrop5"
-                        className="btn btn-primary"
+                        className="btn btn-primary btn-sm"
                         onClick={() => {
                           handleCollegeUpdate(
                             college.college_name,
@@ -276,24 +290,24 @@ function SuperAdminCollegeManagement() {
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop6"
-                          className="btn btn-danger mx-3"
+                          className="btn btn-danger mx-2 btn-sm"
                           onClick={() =>
                             handleCollegeDeactivate(college.college_name)
                           }
                         >
-                          DEACTIVATE
+                          DISABLE
                         </button>
                       ) : (
                         <button
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop7"
-                          className="btn btn-success mx-3"
+                          className="btn btn-success mx-2 btn-sm"
                           onClick={() =>
                             handleCollegeActivate(college.college_name)
                           }
                         >
-                          REACTIVATE
+                          ENABLE
                         </button>
                       )}
                     </td>

@@ -20,6 +20,8 @@ import SuperAdminCollegeManagement from "./Components/SuperAdminCollegeManagemen
 import SuperAdminProfessorManagement from "./Components/SuperAdminProfessorManagement/SuperAdminProfessorManagement";
 import SuperAdminProgrammingLab from "./Components/SuperAdminProgrammingLab/SuperAdminProgrammingLab";
 import SuperAdminClassScheduleManagement from "./Components/SuperAdminClassScheduleManagement/SuperAdminClassScheduleManagement";
+import TestingEsp from "./Components/TestingEsp/TestingEsp";
+import SuperAdminMachineLab from "./Components/SuperAdminMachineLab/SuperAdminMachineLab";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -39,6 +41,7 @@ function App() {
   return (
     <div>
       {/* <TESTING /> */}
+      {/* <TestingEsp /> */}
       <Toaster position="top-right" reverseOrder={false} />
       <Router>
         <Routes>
@@ -49,6 +52,10 @@ function App() {
             <Route
               path="/labs/programming-lab"
               element={<SuperAdminProgrammingLab />}
+            />
+            <Route
+              path="/labs/machine-lab"
+              element={<SuperAdminMachineLab />}
             />
             <Route
               path="/managements/students"

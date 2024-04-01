@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import https from "../../https";
 
-function SuperAdminProgrammingLab() {
+function SuperAdminMachineLab() {
   const [selectedClasses, setSelectedClasses] = useState([]);
 
   const NametoUpperCase = sessionStorage.getItem("Firstname").toUpperCase();
@@ -152,7 +152,7 @@ function SuperAdminProgrammingLab() {
 
   //Function for fetching Laboratory Class Schedules
   const fetchLaboratoryClassSchedules = () => {
-    const laboratory = "lab_prog";
+    const laboratory = "lab_machine";
     https
       .get(`laboratory_class_schedules/${laboratory}`, {
         headers: {
@@ -201,7 +201,7 @@ function SuperAdminProgrammingLab() {
       toast.error("No Selected Classes!", { duration: 7000 });
     } else if (selectedClasses != null) {
       console.log(selectedClasses);
-      const laboratory = "lab_prog";
+      const laboratory = "lab_machine";
       https
         .post(`create_laboratory_classes/${laboratory}`, selectedClasses, {
           headers: {
@@ -287,9 +287,9 @@ function SuperAdminProgrammingLab() {
   return (
     <div className="base_bg w-100 p-4">
       <h1 className="my-1">
-        <b>{NametoUpperCase}'S PROGRAMMING LAB PAGE</b>
+        <b>{NametoUpperCase}'S MACHINE LAB PAGE</b>
       </h1>
-      <h4 className="">LIST OF CLASS SCHEDULES IN PROGRAMMING LAB</h4>
+      <h4 className="">LIST OF CLASS SCHEDULES IN MACHINE LAB</h4>
       <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
@@ -566,4 +566,4 @@ function SuperAdminProgrammingLab() {
   );
 }
 
-export default SuperAdminProgrammingLab;
+export default SuperAdminMachineLab;

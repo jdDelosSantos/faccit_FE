@@ -50,13 +50,35 @@ function SuperAdminProfessorManagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  //SEARCHTERM FOR SEARCH BAR
+  const [searchTerm, setSearchTerm] = useState("");
+
   //REACT-PAGINATION
   const [professors, setProfessors] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = professors.slice(startIndex, endIndex);
+
+  const filteredSortedData = professors.filter((item) => {
+    const searchTerms = searchTerm.toLowerCase().split(" ");
+    const matchingColumns = [
+      "prof_id",
+      "user_lastname",
+      "user_firstname",
+      "email",
+      "user_status",
+    ];
+
+    return searchTerms.every((term) => {
+      return matchingColumns.some((column) => {
+        const regex = new RegExp(term, "i");
+        return regex.test(item[column].toLowerCase());
+      });
+    });
+  });
+
+  const currentItems = filteredSortedData.slice(startIndex, endIndex);
 
   // const reduxProfessors = useSelector((state) => state.professor.professors);
 
@@ -458,26 +480,20 @@ function SuperAdminProfessorManagement() {
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
             <div className="w-100 d-flex">
-              <form
-                className="d-flex w-75 searchbar-form"
-                onSubmit={handleSearchBar}
-              >
-                <div className="w-100">
-                  <div className="input-group">
-                    <input
-                      className="form-control"
-                      type="search"
-                      placeholder="Search Professor..."
-                      aria-label="Search"
-                    />
-                    <button
-                      className="fa-solid fa-magnifying-glass searchbtn"
-                      type="submit"
-                      style={{ color: "#ffffff" }}
-                    ></button>
-                  </div>
+              <div className="w-100">
+                <div className="input-group">
+                  <input
+                    className="form-control"
+                    type="search"
+                    placeholder="Search Professor..."
+                    aria-label="Search"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                    }}
+                  />
                 </div>
-              </form>
+              </div>
             </div>
 
             <div className="w-25 d-flex justify-content-end">
@@ -578,7 +594,7 @@ function SuperAdminProfessorManagement() {
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop2"
-                          className="btn btn-danger mx-3"
+                          className="btn btn-danger btn-sm mx-2"
                           onClick={() =>
                             handleProfessorDeactivate(professor.prof_id)
                           }
@@ -590,7 +606,7 @@ function SuperAdminProfessorManagement() {
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop3"
-                          className="btn btn-success mx-3"
+                          className="btn btn-success btn-sm mx-2"
                           onClick={() =>
                             handleProfessorActivate(professor.prof_id)
                           }
@@ -602,7 +618,7 @@ function SuperAdminProfessorManagement() {
                         type="button"
                         data-bs-toggle="modal"
                         data-bs-target="#staticBackdrop4"
-                        className="btn btn-warning"
+                        className="btn btn-sm btn-warning"
                       >
                         RESET
                       </button>

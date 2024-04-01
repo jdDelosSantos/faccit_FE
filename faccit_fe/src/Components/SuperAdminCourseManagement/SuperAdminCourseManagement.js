@@ -26,13 +26,34 @@ function SuperAdminCourseManagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  //SEARCHTERM FOR SEARCH BAR
+  const [searchTerm, setSearchTerm] = useState("");
+
   //REACT-PAGINATION
   const [courses, setCourses] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = courses.slice(startIndex, endIndex);
+
+  const filteredSortedData = courses.filter((item) => {
+    const searchTerms = searchTerm.toLowerCase().split(" ");
+    const matchingColumns = [
+      "course_name",
+      "course_description",
+      "course_college",
+      "course_status",
+    ];
+
+    return searchTerms.every((term) => {
+      return matchingColumns.some((column) => {
+        const regex = new RegExp(term, "i");
+        return regex.test(item[column].toLowerCase());
+      });
+    });
+  });
+
+  const currentItems = filteredSortedData.slice(startIndex, endIndex);
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -230,26 +251,20 @@ function SuperAdminCourseManagement() {
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
             <div className="w-100 d-flex">
-              <form
-                className="d-flex w-75 searchbar-form"
-                onSubmit={handleCourseSearchBar}
-              >
-                <div className="w-100">
-                  <div className="input-group">
-                    <input
-                      className="form-control"
-                      type="search"
-                      placeholder="Search Course..."
-                      aria-label="Search"
-                    />
-                    <button
-                      className="fa-solid fa-magnifying-glass searchbtn"
-                      type="submit"
-                      style={{ color: "#ffffff" }}
-                    ></button>
-                  </div>
+              <div className="w-75">
+                <div className="input-group">
+                  <input
+                    className="form-control"
+                    type="search"
+                    placeholder="Search Course..."
+                    aria-label="Search"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                    }}
+                  />
                 </div>
-              </form>
+              </div>
             </div>
 
             <div className="w-25 d-flex justify-content-end">
@@ -293,7 +308,7 @@ function SuperAdminCourseManagement() {
                         type="button"
                         data-bs-toggle="modal"
                         data-bs-target="#staticBackdrop5"
-                        className="btn btn-primary"
+                        className="btn btn-primary btn-sm"
                         onClick={() => {
                           handleCourseUpdate(
                             course.course_name,
@@ -309,24 +324,24 @@ function SuperAdminCourseManagement() {
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop6"
-                          className="btn btn-danger mx-3"
+                          className="btn btn-danger mx-2 btn-sm"
                           onClick={() =>
                             handleCourseDeactivate(course.course_name)
                           }
                         >
-                          DEACTIVATE
+                          DISABLE
                         </button>
                       ) : (
                         <button
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop7"
-                          className="btn btn-success mx-3"
+                          className="btn btn-success mx-2 btn-sm"
                           onClick={() =>
                             handleCourseActivate(course.course_name)
                           }
                         >
-                          REACTIVATE
+                          ENABLE
                         </button>
                       )}
                     </td>

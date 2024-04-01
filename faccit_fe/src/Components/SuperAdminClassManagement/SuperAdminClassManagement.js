@@ -28,13 +28,36 @@ function SuperAdminClassManagement() {
   // const [updateStartTime, setUpdateStartTime] = useState("");
   // const [updateEndTime, setUpdateEndTime] = useState("");
 
+  //SEARCHTERM FOR SEARCH BAR
+  const [searchTerm, setSearchTerm] = useState("");
+
   //REACT-PAGINATION
   const [classes, setClasses] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = classes.slice(startIndex, endIndex);
+
+  const filteredSortedData = classes.filter((item) => {
+    const searchTerms = searchTerm.toLowerCase().split(" ");
+    const matchingColumns = [
+      "class_code",
+      "class_name",
+      "class_description",
+      "college_name",
+      "prof_id",
+      "class_status",
+    ];
+
+    return searchTerms.every((term) => {
+      return matchingColumns.some((column) => {
+        const regex = new RegExp(term, "i");
+        return regex.test(item[column].toLowerCase());
+      });
+    });
+  });
+
+  const currentItems = filteredSortedData.slice(startIndex, endIndex);
 
   const reduxClasses = useSelector((state) => state.class.classes);
   const professors = useSelector((state) => state.professor.professors);
@@ -302,26 +325,20 @@ function SuperAdminClassManagement() {
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
             <div className="w-100 d-flex">
-              <form
-                className="d-flex w-75 searchbar-form"
-                onSubmit={handleSubjectSearchBar}
-              >
-                <div className="w-100">
-                  <div className="input-group">
-                    <input
-                      className="form-control"
-                      type="search"
-                      placeholder="Search Subject..."
-                      aria-label="Search"
-                    />
-                    <button
-                      className="fa-solid fa-magnifying-glass searchbtn"
-                      type="submit"
-                      style={{ color: "#ffffff" }}
-                    ></button>
-                  </div>
+              <div className="w-75">
+                <div className="input-group">
+                  <input
+                    className="form-control"
+                    type="search"
+                    placeholder="Search Class..."
+                    aria-label="Search"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                    }}
+                  />
                 </div>
-              </form>
+              </div>
             </div>
 
             <div className="w-25 d-flex justify-content-end">
@@ -344,9 +361,6 @@ function SuperAdminClassManagement() {
                 <th>CLASS DESCRIPTION</th>
                 <th>CLASS COLLEGE</th>
                 <th>PROFESSOR ID</th>
-                {/* <th>SUBJECT DAY</th>
-                <th>START TIME</th>
-                <th>END TIME</th> */}
                 <th>CLASS STATUS</th>
                 <th>ACTIONS</th>
               </tr>
@@ -372,7 +386,7 @@ function SuperAdminClassManagement() {
                         type="button"
                         data-bs-toggle="modal"
                         data-bs-target="#staticBackdrop5"
-                        className="btn btn-primary"
+                        className="btn btn-primary btn-sm"
                         onClick={() => {
                           handleClassUpdate(
                             classes.class_code,
@@ -390,7 +404,7 @@ function SuperAdminClassManagement() {
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop6"
-                          className="btn btn-danger mx-3"
+                          className="btn btn-danger mx-2 btn-sm"
                           onClick={() =>
                             handleClassDeactivate(classes.class_code)
                           }
@@ -402,7 +416,7 @@ function SuperAdminClassManagement() {
                           type="button"
                           // data-bs-toggle="modal"
                           // data-bs-target="#staticBackdrop7"
-                          className="btn btn-success mx-3"
+                          className="btn btn-success mx-2 btn-sm"
                           onClick={() =>
                             handleClassActivate(classes.class_code)
                           }

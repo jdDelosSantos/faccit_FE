@@ -52,13 +52,37 @@ function SuperAdminStudentManagement() {
   //THE ARRAY FOR UPDATE STUDENT MODAL FOR DISPLAYING IMAGES FROM AWS S3
   const [updateImageUrls, setUpdateImageUrls] = useState([]);
 
+  //SEARCHTERM FOR SEARCH BAR
+  const [searchTerm, setSearchTerm] = useState("");
+
   //REACT-PAGINATION
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentItems = students.slice(startIndex, endIndex);
+
+  const filteredSortedData = students.filter((item) => {
+    const searchTerms = searchTerm.toLowerCase().split(" ");
+    const matchingColumns = [
+      "faith_id",
+      "std_lname",
+      "std_fname",
+      "std_course",
+      "std_level",
+      "std_section",
+      "std_status",
+    ];
+
+    return searchTerms.every((term) => {
+      return matchingColumns.some((column) => {
+        const regex = new RegExp(term, "i");
+        return regex.test(item[column].toLowerCase());
+      });
+    });
+  });
+
+  const currentItems = filteredSortedData.slice(startIndex, endIndex);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -496,26 +520,20 @@ function SuperAdminStudentManagement() {
         <div className="table-responsive">
           <div className="w-100 d-flex justify-content-between align-items-center my-3">
             <div className="w-100 d-flex">
-              <form
-                className="d-flex w-75 searchbar-form"
-                onSubmit={handleSearchBar}
-              >
-                <div className="w-100">
-                  <div className="input-group">
-                    <input
-                      className="form-control"
-                      type="search"
-                      placeholder="Search Student..."
-                      aria-label="Search"
-                    />
-                    <button
-                      className="fa-solid fa-magnifying-glass searchbtn"
-                      type="submit"
-                      style={{ color: "#ffffff" }}
-                    ></button>
-                  </div>
+              <div className="w-75">
+                <div className="input-group">
+                  <input
+                    className="form-control"
+                    type="search"
+                    placeholder="Search Student..."
+                    aria-label="Search"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                    }}
+                  />
                 </div>
-              </form>
+              </div>
             </div>
 
             <div className="w-25 d-flex justify-content-end">
@@ -603,7 +621,7 @@ function SuperAdminStudentManagement() {
                         type="button"
                         data-bs-toggle="modal"
                         data-bs-target="#staticBackdrop1"
-                        className="btn btn-primary"
+                        className="btn btn-sm btn-primary"
                         onClick={() => {
                           handleStudentUpdate(
                             student.faith_id,
@@ -621,22 +639,22 @@ function SuperAdminStudentManagement() {
                       {student.std_status == "Active" ? (
                         <button
                           type="button"
-                          className="btn btn-danger mx-3"
+                          className="btn btn-sm btn-danger mx-2"
                           onClick={() => {
                             handleStudentDeactivate(student.faith_id);
                           }}
                         >
-                          DEACTIVATE
+                          DISABLE
                         </button>
                       ) : (
                         <button
                           type="button"
-                          className="btn btn-success mx-3"
+                          className="btn btn-success btn-sm mx-2"
                           onClick={() => {
                             handleStudentActivate(student.faith_id);
                           }}
                         >
-                          ACTIVATE
+                          ENABLE
                         </button>
                       )}
                     </td>

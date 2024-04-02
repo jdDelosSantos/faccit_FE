@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import https from "../../https";
-import { setClasses } from "../../Redux/classes";
+// import { setClasses } from "../../Redux/classes";
 // import { setStudents } from "../../Redux/students";
 import { setCourses } from "../../Redux/courses";
 import ReactPaginate from "react-paginate";
@@ -29,6 +29,19 @@ function AdminClassManagement() {
 
   const [delClassCode, setDelClassCode] = useState("");
   const [delClassName, setDelClassName] = useState("");
+
+  //REACT-PAGINATION PROFESSOR CLASSES
+  const [profClasses, setProfClasses] = useState([]);
+  const [currentPageCS, setCurrentPageCS] = useState(0);
+  const [itemsPerPageCS, setItemsPerPageCS] = useState(10);
+  const startIndexCS = currentPageCS * itemsPerPageCS;
+  const endIndexCS = startIndexCS + itemsPerPageCS;
+
+  const filteredClasses = profClasses.sort((class1, class2) =>
+    class1.class_code.localeCompare(class2.class_code)
+  );
+
+  const currentClasses = filteredClasses.slice(startIndexCS, endIndexCS);
 
   //REACT-PAGINATION CLASS STUDENTS
   const [classStudents, setClassStudents] = useState([]);
@@ -62,7 +75,7 @@ function AdminClassManagement() {
   const endIndexes = startIndexes + itemsPerPages;
 
   const filteredListStudents = listClassStudents.sort((student1, student2) =>
-    student1.std_lname.localeCompare(student2.std_lname)
+    student1.student.std_lname.localeCompare(student2.student.std_lname)
   );
 
   const currentListStudents = filteredListStudents.slice(
@@ -78,7 +91,7 @@ function AdminClassManagement() {
   const endInde = startInde + itemsPerPag;
 
   const filteredRemoveStudents = delClassStudents.sort((student1, student2) =>
-    student1.std_lname.localeCompare(student2.std_lname)
+    student1.student.std_lname.localeCompare(student2.student.std_lname)
   );
 
   const currentRemoveStudents = filteredRemoveStudents.slice(
@@ -99,10 +112,12 @@ function AdminClassManagement() {
           },
         })
         .then((result) => {
-          dispatch(setClasses(result.data));
-          console.log(classes);
+          // dispatch(setClasses(result.data));
+          setProfClasses(result.data);
+          console.log(result.data);
         })
         .catch((error) => {
+          console.log(error);
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
             console.log(error.response.data.message);
@@ -171,7 +186,7 @@ function AdminClassManagement() {
     fetchCourses();
   }, []);
 
-  const classes = useSelector((state) => state.class.classes);
+  //const reduxClasses = useSelector((state) => state.class.classes);
   // const reduxStudents = useSelector((state) => state.student.students);
   const courses = useSelector((state) => state.course.courses);
 
@@ -260,7 +275,6 @@ function AdminClassManagement() {
   };
 
   const addStudentsToClass = () => {
-    console.log(selectedStudents);
     https
       .post(`create_class_students/${classCode}`, selectedStudents, {
         headers: {
@@ -300,7 +314,6 @@ function AdminClassManagement() {
   };
 
   const removeStudentsToClass = () => {
-    console.log(removeSelectedStudents);
     try {
       https
         .delete(`remove_class_students/${delClassCode}`, {
@@ -439,17 +452,19 @@ function AdminClassManagement() {
                   <th>CLASS NAME</th>
                   <th>CLASS DESCRIPTION</th>
                   <th>COLLEGE</th>
+                  <th># OF STUDENTS</th>
                   <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody className="table-group-divider">
-                {classes.length > 0 ? (
-                  classes.map((classes, index) => (
+                {currentClasses.length > 0 ? (
+                  currentClasses.map((classes, index) => (
                     <tr className="table-light" key={index}>
                       <td className="p-2">{classes.class_code}</td>
                       <td className="p-2">{classes.class_name}</td>
                       <td className="p-2">{classes.class_description}</td>
                       <td className="p-2">{classes.college_name}</td>
+                      <td className="p-2">{classes.class_students_count}</td>
 
                       <td className="p-2">
                         <button
@@ -543,6 +558,28 @@ function AdminClassManagement() {
                 )}
               </tbody>
             </table>
+            <div className="d-flex flex-row">
+              <ReactPaginate
+                nextLabel="Next >"
+                onPageChange={(event) => setCurrentPageCS(event.selected)}
+                pageRangeDisplayed={3}
+                marginPagesDisplayed={2}
+                pageCount={Math.ceil(profClasses.length / itemsPerPageCS)}
+                previousLabel="< Previous"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakLabel="..."
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                containerClassName="pagination"
+                activeClassName="active"
+                renderOnZeroPageCount={null}
+              />
+            </div>
           </div>
         </div>
 
@@ -622,11 +659,15 @@ function AdminClassManagement() {
                         currentListStudents.map((student, index) => (
                           <tr key={student.id} className="table-primary">
                             <td className="p-2">{student.faith_id}</td>
-                            <td className="p-2">{student.std_lname}</td>
-                            <td className="p-2">{student.std_fname}</td>
-                            <td className="p-2">{student.std_course}</td>
-                            <td className="p-2">{student.std_level}</td>
-                            <td className="p-2">{student.std_section}</td>
+                            <td className="p-2">{student.student.std_lname}</td>
+                            <td className="p-2">{student.student.std_fname}</td>
+                            <td className="p-2">
+                              {student.student.std_course}
+                            </td>
+                            <td className="p-2">{student.student.std_level}</td>
+                            <td className="p-2">
+                              {student.student.std_section}
+                            </td>
                           </tr>
                         ))
                       ) : (
@@ -1009,12 +1050,16 @@ function AdminClassManagement() {
                                 }
                               />
                             </td>
-                            <td className="p-2">{student.faith_id}</td>
-                            <td className="p-2">{student.std_lname}</td>
-                            <td className="p-2">{student.std_fname}</td>
-                            <td className="p-2">{student.std_course}</td>
-                            <td className="p-2">{student.std_level}</td>
-                            <td className="p-2">{student.std_section}</td>
+                            <td className="p-2">{student.student.faith_id}</td>
+                            <td className="p-2">{student.student.std_lname}</td>
+                            <td className="p-2">{student.student.std_fname}</td>
+                            <td className="p-2">
+                              {student.student.std_course}
+                            </td>
+                            <td className="p-2">{student.student.std_level}</td>
+                            <td className="p-2">
+                              {student.student.std_section}
+                            </td>
                           </tr>
                         ))
                       ) : (

@@ -19,6 +19,7 @@ function SuperAdminCourseManagement() {
   const [updateCourseName, setUpdateCourseName] = useState("");
   const [updateCourseDescription, setUpdateCourseDescription] = useState("");
   const [updateCourseCollege, setUpdateCourseCollege] = useState("");
+  const [id, setId] = useState(0);
 
   const reduxCourses = useSelector((state) => state.course.courses);
   const colleges = useSelector((state) => state.college.colleges);
@@ -41,7 +42,7 @@ function SuperAdminCourseManagement() {
     const matchingColumns = [
       "course_name",
       "course_description",
-      "course_college",
+      "college_name",
       "course_status",
     ];
 
@@ -122,9 +123,10 @@ function SuperAdminCourseManagement() {
     const courseData = {
       course_name: courseName,
       course_description: courseDescription,
-      course_college: courseCollege,
+      college_name: courseCollege,
     };
 
+    console.log(courseData);
     https
       .post("courses", courseData, {
         headers: {
@@ -145,10 +147,10 @@ function SuperAdminCourseManagement() {
           console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          console.log(error.response.data.message);
+          goBackToLogin();
         }
-
-        console.log(error.response.data.message);
-        goBackToLogin();
       });
   };
 
@@ -156,11 +158,11 @@ function SuperAdminCourseManagement() {
   const handleCourseUpdate = (
     course_name,
     course_description,
-    course_college
+    college_name
   ) => {
     setUpdateCourseName(course_name);
     setUpdateCourseDescription(course_description);
-    setUpdateCourseCollege(course_college);
+    setUpdateCourseCollege(college_name);
   };
 
   //FUNCTION FOR ADDING UPDATING A COURSE
@@ -170,11 +172,12 @@ function SuperAdminCourseManagement() {
     const updateCourseData = {
       course_name: updateCourseName,
       course_description: updateCourseDescription,
-      course_college: updateCourseCollege,
+      college_name: updateCourseCollege,
     };
 
+    console.log(updateCourseData);
     https
-      .put(`update_course/${updateCourseName}`, updateCourseData, {
+      .put(`update_course/${id}`, updateCourseData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -336,7 +339,7 @@ function SuperAdminCourseManagement() {
                     <tr className="table-light" key={index}>
                       <td className="p-2">{course.course_name}</td>
                       <td className="p-2">{course.course_description}</td>
-                      <td className="p-2">{course.course_college}</td>
+                      <td className="p-2">{course.college_name}</td>
                       <td className="p-2">
                         {course.course_status === "Active" ? (
                           <span style={{ color: "green" }}>ACTIVE</span>
@@ -354,8 +357,9 @@ function SuperAdminCourseManagement() {
                             handleCourseUpdate(
                               course.course_name,
                               course.course_description,
-                              course.course_college
+                              course.college_name
                             );
+                            setId(course.id);
                           }}
                         >
                           <img
@@ -650,7 +654,7 @@ function SuperAdminCourseManagement() {
                       {/* Start of Course Name*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
+                          <div className="inputBox1 w-100">
                             <input
                               type="text"
                               id="updateCourseName"
@@ -659,7 +663,6 @@ function SuperAdminCourseManagement() {
                                 setUpdateCourseName(e.target.value);
                               }}
                               required
-                              disabled
                             />
                             <span className="">Course Name</span>
                           </div>

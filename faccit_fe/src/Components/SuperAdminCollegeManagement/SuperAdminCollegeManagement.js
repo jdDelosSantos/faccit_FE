@@ -17,6 +17,8 @@ function SuperAdminCollegeManagement() {
   const [updateCollegeName, setUpdateCollegeName] = useState("");
   const [updateCollegeDescription, setUpdateCollegeDescription] = useState("");
 
+  const [id, setId] = useState(0);
+
   //SEARCHTERM FOR SEARCH BAR
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -130,13 +132,15 @@ function SuperAdminCollegeManagement() {
   const handleUpdateCollegeSubmit = (e) => {
     e.preventDefault();
 
+    console.log(id);
+
     const updateCollegeData = {
       college_name: updateCollegeName,
       college_description: updateCollegeDescription,
     };
 
     https
-      .put(`update_college/${updateCollegeName}`, updateCollegeData, {
+      .put(`update_college/${id}`, updateCollegeData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -319,6 +323,7 @@ function SuperAdminCollegeManagement() {
                               college.college_name,
                               college.college_description
                             );
+                            setId(college.id);
                           }}
                         >
                           <img
@@ -579,7 +584,7 @@ function SuperAdminCollegeManagement() {
                       {/* Start of College Name*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
+                          <div className="inputBox1 w-100">
                             <input
                               type="text"
                               id="updateCollegeName"

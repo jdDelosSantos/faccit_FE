@@ -134,6 +134,7 @@ function SuperAdminProgrammingLab() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
+        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {

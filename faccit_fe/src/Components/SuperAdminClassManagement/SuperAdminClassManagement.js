@@ -32,6 +32,8 @@ function SuperAdminClassManagement() {
   //SEARCHTERM FOR SEARCH BAR
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [id, setId] = useState(0);
+
   //REACT-PAGINATION
   const [classes, setClasses] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
@@ -228,9 +230,9 @@ function SuperAdminClassManagement() {
       prof_id: updateProfessorID,
     };
     console.log(updateClassData);
-
+    console.log(id);
     https
-      .put(`update_classes/${updateClassCode}`, updateClassData, {
+      .put(`update_classes/${id}`, updateClassData, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -435,6 +437,7 @@ function SuperAdminClassManagement() {
                               classes.college_name,
                               classes.prof_id
                             );
+                            setId(classes.id);
                           }}
                         >
                           <img
@@ -787,7 +790,7 @@ function SuperAdminClassManagement() {
                       {/* Start of Class Code */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
+                          <div className="inputBox1 w-100">
                             <input
                               type="text"
                               id="updateClassCode"
@@ -798,7 +801,6 @@ function SuperAdminClassManagement() {
                               }}
                               maxLength="4"
                               required
-                              disabled
                             />
                             <span className="">Class Code</span>
                           </div>

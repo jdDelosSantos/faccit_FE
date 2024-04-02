@@ -341,28 +341,16 @@ function SuperAdminProgrammingLab() {
                   data-bs-target="#staticBackdrop4"
                   className="btn btn-primary btn-sm"
                 >
-                  <svg
+                  <img
+                    src={require("../../Assets/images/add.png")}
                     width="25"
                     height="25"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-                    <g
-                      id="SVGRepo_tracerCarrier"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <g id="SVGRepo_iconCarrier">
-                      <path
-                        fillRule="evenodd"
-                        clipRule="evenodd"
-                        d="M4 2C2.34315 2 1 3.34315 1 5V9V10V19C1 20.6569 2.34315 22 4 22H12C12.5523 22 13 21.5523 13 21C13 20.4477 12.5523 20 12 20H4C3.44772 20 3 19.5523 3 19V10V9C3 8.44772 3.44772 8 4 8H11.7808H13.5H20.1C20.5971 8 21 8.40294 21 8.9V9C21 9.55228 21.4477 10 22 10C22.5523 10 23 9.55228 23 9V8.9C23 7.29837 21.7016 6 20.1 6H13.5H11.7808L11.3489 4.27239C11.015 2.93689 9.81505 2 8.43845 2H4ZM4 6C3.64936 6 3.31278 6.06015 3 6.17071V5C3 4.44772 3.44772 4 4 4H8.43845C8.89732 4 9.2973 4.3123 9.40859 4.75746L9.71922 6H4ZM20 13C20 12.4477 19.5523 12 19 12C18.4477 12 18 12.4477 18 13V16H15C14.4477 16 14 16.4477 14 17C14 17.5523 14.4477 18 15 18H18V21C18 21.5523 18.4477 22 19 22C19.5523 22 20 21.5523 20 21V18H23C23.5523 18 24 17.5523 24 17C24 16.4477 23.5523 16 23 16H20V13Z"
-                        fill="#ffffff"
-                      />
-                    </g>
-                  </svg>
+                    style={{
+                      TopLeftRadius: ".3rem",
+                      TopRightRadius: ".3rem",
+                    }}
+                    alt="add"
+                  />
                 </button>
               </div>
             </div>
@@ -397,29 +385,16 @@ function SuperAdminProgrammingLab() {
                           className="btn btn-danger mx-3"
                           onClick={() => handleClassScheduleRemove(classes.id)}
                         >
-                          <svg
+                          <img
+                            src={require("../../Assets/images/delete.png")}
                             width="25"
                             height="25"
-                            viewBox="0 0 32 32"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="#000000"
-                          >
-                            <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-                            <g
-                              id="SVGRepo_tracerCarrier"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <g id="SVGRepo_iconCarrier">
-                              <g fill="none" fillRule="evenodd">
-                                <path d="m0 0h32v32h-32z" />
-                                <path
-                                  d="m31 6c.5522847 0 1 .44771525 1 1s-.4477153 1-1 1l-3-.001v18.001c0 3.3137085-2.6862915 6-6 6h-12c-3.3137085 0-6-2.6862915-6-6v-18h-3c-.55228475 0-1-.44771525-1-1s.44771525-1 1-1zm-18 8c-.5522847 0-1 .4477153-1 1v7c0 .5522847.4477153 1 1 1s1-.4477153 1-1v-7c0-.5522847-.4477153-1-1-1zm6 0c-.5522847 0-1 .4477153-1 1v7c0 .5522847.4477153 1 1 1s1-.4477153 1-1v-7c0-.5522847-.4477153-1-1-1zm4.5-13c.8284271 0 1.5.67157288 1.5 1.5s-.6715729 1.5-1.5 1.5h-15c-.82842712 0-1.5-.67157288-1.5-1.5s.67157288-1.5 1.5-1.5z"
-                                  fill="#ffffff"
-                                />
-                              </g>
-                            </g>
-                          </svg>
+                            style={{
+                              TopLeftRadius: ".3rem",
+                              TopRightRadius: ".3rem",
+                            }}
+                            alt="delete"
+                          />
                         </button>
                       </td>
                     </tr>

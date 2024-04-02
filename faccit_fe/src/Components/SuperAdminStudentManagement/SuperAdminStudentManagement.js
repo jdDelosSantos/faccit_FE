@@ -578,29 +578,16 @@ function SuperAdminStudentManagement() {
                     setIsWebcamActive(true);
                   }}
                 >
-                  <svg
+                  <img
+                    src={require("../../Assets/images/add_user.png")}
                     width="25"
                     height="25"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-                    <g
-                      id="SVGRepo_tracerCarrier"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <g id="SVGRepo_iconCarrier">
-                      <path
-                        d="M20 18L17 18M17 18L14 18M17 18V15M17 18V21M11 21H4C4 17.134 7.13401 14 11 14C11.695 14 12.3663 14.1013 13 14.2899M15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z"
-                        stroke="#ffffff"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </g>
-                  </svg>
+                    style={{
+                      TopLeftRadius: ".3rem",
+                      TopRightRadius: ".3rem",
+                    }}
+                    alt="add_user"
+                  />
                 </button>
               </div>
             </div>
@@ -716,73 +703,16 @@ function SuperAdminStudentManagement() {
                             setIsWebcamActive(!isWebcamActive);
                           }}
                         >
-                          <svg
-                            fill="#ffffff"
+                          <img
+                            src={require("../../Assets/images/update_user.png")}
                             width="25"
                             height="25"
-                            viewBox="0 0 24 24"
-                            id="update-alt-2"
-                            data-name="Flat Line"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="icon flat-line"
-                            stroke="#ffffff"
-                          >
-                            <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-                            <g
-                              id="SVGRepo_tracerCarrier"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <g id="SVGRepo_iconCarrier">
-                              <path
-                                id="primary"
-                                d="M6,5H16a2,2,0,0,1,2,2v7"
-                                style={{
-                                  fill: "none",
-                                  stroke: "#ffffff",
-                                  strokeLinecap: "round",
-                                  strokeLinejoin: "round",
-                                  strokeWidth: 2,
-                                }}
-                              />
-                              <path
-                                id="primary-2"
-                                data-name="primary"
-                                d="M18,19H8a2,2,0,0,1-2-2V10"
-                                style={{
-                                  fill: "none",
-                                  stroke: "#ffffff",
-                                  strokeLinecap: "round",
-                                  strokeLinejoin: "round",
-                                  strokeWidth: 2,
-                                }}
-                              />
-                              <polyline
-                                id="primary-3"
-                                data-name="primary"
-                                points="15 11 18 14 21 11"
-                                style={{
-                                  fill: "none",
-                                  stroke: "#ffffff",
-                                  strokeLinecap: "round",
-                                  strokeLinejoin: "round",
-                                  strokeWidth: 2,
-                                }}
-                              />
-                              <polyline
-                                id="primary-4"
-                                data-name="primary"
-                                points="9 13 6 10 3 13"
-                                style={{
-                                  fill: "none",
-                                  stroke: "#ffffff",
-                                  strokeLinecap: "round",
-                                  strokeLinejoin: "round",
-                                  strokeWidth: 2,
-                                }}
-                              />
-                            </g>
-                          </svg>
+                            style={{
+                              TopLeftRadius: ".3rem",
+                              TopRightRadius: ".3rem",
+                            }}
+                            alt="update_user"
+                          />
                         </button>
                         {student.std_status == "Active" ? (
                           <button
@@ -792,29 +722,16 @@ function SuperAdminStudentManagement() {
                               handleStudentDeactivate(student.faith_id);
                             }}
                           >
-                            <svg
+                            <img
+                              src={require("../../Assets/images/lock_user.png")}
                               width="25"
                               height="25"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-                              <g
-                                id="SVGRepo_tracerCarrier"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <g id="SVGRepo_iconCarrier">
-                                <path
-                                  d="M19 18.0039V17C19 15.8954 18.1046 15 17 15C15.8954 15 15 15.8954 15 17V18.0039M10 21H4C4 17.134 7.13401 14 11 14C11.3395 14 11.6734 14.0242 12 14.0709M15.5 21H18.5C18.9659 21 19.1989 21 19.3827 20.9239C19.6277 20.8224 19.8224 20.6277 19.9239 20.3827C20 20.1989 20 19.9659 20 19.5C20 19.0341 20 18.8011 19.9239 18.6173C19.8224 18.3723 19.6277 18.1776 19.3827 18.0761C19.1989 18 18.9659 18 18.5 18H15.5C15.0341 18 14.8011 18 14.6173 18.0761C14.3723 18.1776 14.1776 18.3723 14.0761 18.6173C14 18.8011 14 19.0341 14 19.5C14 19.9659 14 20.1989 14.0761 20.3827C14.1776 20.6277 14.3723 20.8224 14.6173 20.9239C14.8011 21 15.0341 21 15.5 21ZM15 7C15 9.20914 13.2091 11 11 11C8.79086 11 7 9.20914 7 7C7 4.79086 8.79086 3 11 3C13.2091 3 15 4.79086 15 7Z"
-                                  stroke="#ffffff"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </g>
-                            </svg>
+                              style={{
+                                TopLeftRadius: ".3rem",
+                                TopRightRadius: ".3rem",
+                              }}
+                              alt="lock_user"
+                            />
                           </button>
                         ) : (
                           <button
@@ -824,29 +741,16 @@ function SuperAdminStudentManagement() {
                               handleStudentActivate(student.faith_id);
                             }}
                           >
-                            <svg
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
+                            <img
+                              src={require("../../Assets/images/check_user.png")}
                               width="25"
                               height="25"
-                            >
-                              <g id="SVGRepo_bgCarrier" strokeWidth="0" />
-                              <g
-                                id="SVGRepo_tracerCarrier"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                              <g id="SVGRepo_iconCarrier">
-                                <path
-                                  d="M14.9999 15.2547C13.8661 14.4638 12.4872 14 10.9999 14C7.40399 14 4.44136 16.7114 4.04498 20.2013C4.01693 20.4483 4.0029 20.5718 4.05221 20.6911C4.09256 20.7886 4.1799 20.8864 4.2723 20.9375C4.38522 21 4.52346 21 4.79992 21H9.94465M13.9999 19.2857L15.7999 21L19.9999 17M14.9999 7C14.9999 9.20914 13.2091 11 10.9999 11C8.79078 11 6.99992 9.20914 6.99992 7C6.99992 4.79086 8.79078 3 10.9999 3C13.2091 3 14.9999 4.79086 14.9999 7Z"
-                                  stroke="white"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </g>
-                            </svg>
+                              style={{
+                                TopLeftRadius: ".3rem",
+                                TopRightRadius: ".3rem",
+                              }}
+                              alt="check_user"
+                            />
                           </button>
                         )}
                       </td>

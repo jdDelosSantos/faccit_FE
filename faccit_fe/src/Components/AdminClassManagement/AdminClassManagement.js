@@ -30,17 +30,61 @@ function AdminClassManagement() {
   const [delClassCode, setDelClassCode] = useState("");
   const [delClassName, setDelClassName] = useState("");
 
-  //REACT-PAGINATION
+  //REACT-PAGINATION CLASS STUDENTS
   const [classStudents, setClassStudents] = useState([]);
-
-  const [listClassStudents, setListClassStudents] = useState([]);
-
-  const [delClassStudents, setDelClassStudents] = useState([]);
-
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
+
+  const filteredStudents = classStudents
+    .filter(
+      (student) =>
+        student.std_status === "Active" &&
+        (filterCourse === "" || student.std_course === filterCourse) &&
+        student.std_level.toLowerCase().includes(filterLevel.toLowerCase()) &&
+        student.std_section
+          .toLowerCase()
+          .includes(filterSection.toLowerCase()) &&
+        student.student_images_count >= 3
+    )
+    .sort((student1, student2) =>
+      student1.std_lname.localeCompare(student2.std_lname)
+    );
+
+  const currentItems = filteredStudents.slice(startIndex, endIndex);
+
+  //REACT-PAGINATION LIST CLASS STUDENTS
+  const [listClassStudents, setListClassStudents] = useState([]);
+  const [currentPages, setCurrentPages] = useState(0);
+  const [itemsPerPages, setItemsPerPages] = useState(10);
+  const startIndexes = currentPages * itemsPerPages;
+  const endIndexes = startIndexes + itemsPerPages;
+
+  const filteredListStudents = listClassStudents.sort((student1, student2) =>
+    student1.std_lname.localeCompare(student2.std_lname)
+  );
+
+  const currentListStudents = filteredListStudents.slice(
+    startIndexes,
+    endIndexes
+  );
+
+  //REACT-PAGINATION DELETE CLASS STUDENTS
+  const [delClassStudents, setDelClassStudents] = useState([]);
+  const [currentPag, setCurrentPag] = useState(0);
+  const [itemsPerPag, setItemsPerPag] = useState(10);
+  const startInde = currentPag * itemsPerPag;
+  const endInde = startInde + itemsPerPag;
+
+  const filteredRemoveStudents = delClassStudents.sort((student1, student2) =>
+    student1.std_lname.localeCompare(student2.std_lname)
+  );
+
+  const currentRemoveStudents = filteredRemoveStudents.slice(
+    startInde,
+    endInde
+  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -312,38 +356,6 @@ function AdminClassManagement() {
     setRemoveSelectedStudents([]);
   };
 
-  const filteredStudents = classStudents
-    .filter(
-      (student) =>
-        student.std_status === "Active" &&
-        (filterCourse === "" || student.std_course === filterCourse) &&
-        student.std_level.toLowerCase().includes(filterLevel.toLowerCase()) &&
-        student.std_section
-          .toLowerCase()
-          .includes(filterSection.toLowerCase()) &&
-        student.student_images_count >= 3
-    )
-    .sort((student1, student2) =>
-      student1.std_lname.localeCompare(student2.std_lname)
-    );
-
-  const filteredListStudents = listClassStudents.sort((student1, student2) =>
-    student1.std_lname.localeCompare(student2.std_lname)
-  );
-
-  const filteredRemoveStudents = delClassStudents.sort((student1, student2) =>
-    student1.std_lname.localeCompare(student2.std_lname)
-  );
-
-  const currentItems = filteredStudents.slice(startIndex, endIndex);
-
-  const currentListStudents = filteredListStudents.slice(startIndex, endIndex);
-
-  const currentRemoveStudents = filteredRemoveStudents.slice(
-    startIndex,
-    endIndex
-  );
-
   const handleClassSearchBar = (e) => {
     e.preventDefault();
   };
@@ -417,16 +429,7 @@ function AdminClassManagement() {
                 </form>
               </div>
 
-              <div className="w-25 d-flex justify-content-end">
-                {/* <button
-                type="button"
-                data-bs-toggle="modal"
-                data-bs-target="#staticBackdrop4"
-                className="btn btn-primary btn-sm"
-              >
-                ADD STUDENTS
-              </button> */}
-              </div>
+              <div className="w-25 d-flex justify-content-end"></div>
             </div>
 
             <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
@@ -646,11 +649,11 @@ function AdminClassManagement() {
                   <div className="d-flex flex-row">
                     <ReactPaginate
                       nextLabel="Next >"
-                      onPageChange={(event) => setCurrentPage(event.selected)}
+                      onPageChange={(event) => setCurrentPages(event.selected)}
                       pageRangeDisplayed={3}
                       marginPagesDisplayed={2}
                       pageCount={Math.ceil(
-                        listClassStudents.length / itemsPerPage
+                        listClassStudents.length / itemsPerPages
                       )}
                       previousLabel="< Previous"
                       pageClassName="page-item"
@@ -1034,11 +1037,11 @@ function AdminClassManagement() {
                   <div className="d-flex flex-row">
                     <ReactPaginate
                       nextLabel="Next >"
-                      onPageChange={(event) => setCurrentPage(event.selected)}
+                      onPageChange={(event) => setCurrentPag(event.selected)}
                       pageRangeDisplayed={3}
                       marginPagesDisplayed={2}
                       pageCount={Math.ceil(
-                        delClassStudents.length / itemsPerPage
+                        delClassStudents.length / itemsPerPag
                       )}
                       previousLabel="< Previous"
                       pageClassName="page-item"

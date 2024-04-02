@@ -608,7 +608,7 @@ function SuperAdminMachineLab() {
                   data-bs-dismiss="modal"
                   onClick={() => loadSubjects()}
                 >
-                  LOAD SUBJECTS
+                  LOAD CLASSES
                 </button>
               </div>
             </div>

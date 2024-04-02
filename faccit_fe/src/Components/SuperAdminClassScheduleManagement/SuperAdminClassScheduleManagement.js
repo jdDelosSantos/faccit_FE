@@ -14,11 +14,6 @@ function SuperAdminClassScheduleManagement() {
   //NEW SUBJECT USE STATES
   const [classCode, setClassCode] = useState("");
   const [className, setClassName] = useState("");
-  const [classDescription, setClassDescription] = useState("");
-  const [professorID, setProfessorID] = useState("");
-  // const [subjectDay, setSubjectDay] = useState("");
-  // const [startTime, setStartTime] = useState("");
-  // const [endTime, setEndTime] = useState("");
 
   const [classSelected, setClassSelected] = useState("");
   const [classDay, setClassDay] = useState("");

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "../SuperAdminProgrammingLab/SuperAdminProgrammingLab.css";
+import "../SuperAdminMultimediaLab/SuperAdminMultimediaLab.css";
 import { setProfessors } from "../../Redux/professors";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import ReactPaginate from "react-paginate";
 import https from "../../https";
 import { jwtDecode } from "jwt-decode";
 
-function SuperAdminMachineLab() {
+function SuperAdminMultimediaLab() {
   const [selectedClasses, setSelectedClasses] = useState([]);
 
   const dispatch = useDispatch();
@@ -126,7 +126,7 @@ function SuperAdminMachineLab() {
   //Function for fetching Class Schedules
   const fetchClassSchedules = () => {
     https
-      .get("class_schedule_prof", {
+      .get("get_schedules_students", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -151,7 +151,7 @@ function SuperAdminMachineLab() {
 
   //Function for fetching Laboratory Class Schedules
   const fetchLaboratoryClassSchedules = () => {
-    const laboratory = "lab_machine";
+    const laboratory = "lab_multimedia";
     https
       .get(`laboratory_class_schedules/${laboratory}`, {
         headers: {
@@ -200,7 +200,7 @@ function SuperAdminMachineLab() {
       toast.error("No Selected Classes!", { duration: 7000 });
     } else if (selectedClasses != null) {
       console.log(selectedClasses);
-      const laboratory = "lab_machine";
+      const laboratory = "lab_multimedia";
       https
         .post(`create_laboratory_classes/${laboratory}`, selectedClasses, {
           headers: {
@@ -318,9 +318,9 @@ function SuperAdminMachineLab() {
     return (
       <div className="base_bg w-100 p-4">
         <h1 className="my-1">
-          <b>{tokenFirstname}'S MACHINE LAB PAGE</b>
+          <b>{tokenFirstname}'S MULTIMEDIA LAB PAGE</b>
         </h1>
-        <h4 className="">LIST OF CLASS SCHEDULES IN MACHINE LAB</h4>
+        <h4 className="">LIST OF CLASS SCHEDULES IN MULTIMEDIA LAB</h4>
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center my-3">
@@ -590,6 +590,12 @@ function SuperAdminMachineLab() {
                         renderOnZeroPageCount={null}
                       />
                     </div>
+                    <p>
+                      <i>
+                        Note: Class schedules displayed are classes that have
+                        student records assigned to them...
+                      </i>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -620,4 +626,4 @@ function SuperAdminMachineLab() {
   }
 }
 
-export default SuperAdminMachineLab;
+export default SuperAdminMultimediaLab;

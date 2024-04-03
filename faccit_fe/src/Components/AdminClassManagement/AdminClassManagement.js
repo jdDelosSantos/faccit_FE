@@ -256,6 +256,20 @@ function AdminClassManagement() {
     }
   };
 
+  const handleSelectAll = (event) => {
+    const isChecked = event.target.checked;
+    setSelectedStudents(
+      isChecked ? currentItems.map((student) => student) : []
+    );
+  };
+
+  const handleRemoveSelectAll = (event) => {
+    const isChecked = event.target.checked;
+    setRemoveSelectedStudents(
+      isChecked ? currentRemoveStudents.map((student) => student) : []
+    );
+  };
+
   const handleStudentSelection = (student) => {
     if (selectedStudents.includes(student)) {
       setSelectedStudents(selectedStudents.filter((s) => s !== student));
@@ -275,58 +289,34 @@ function AdminClassManagement() {
   };
 
   const addStudentsToClass = () => {
-    https
-      .post(`create_class_students/${classCode}`, selectedStudents, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-        },
-      })
-      .then((result) => {
-        if (result && result.data) {
-          const errors = result.data.errors;
-          if (errors) {
-            // Check if errors exist before iterating
-            errors.forEach((error) => {
-              toast.error(error, { duration: 7000 });
-            });
-          } else {
-            toast.success(result.data.message, { duration: 7000 });
-            clearAddStudentsToClass();
-            fetchClasses();
-          }
-        } else {
-          console.error("Server response doesn't contain data property");
-          // Handle the error appropriately
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        if (error.response.data.message != "Unauthenticated.") {
-          setError(true);
-
-          console.log(error.response.data.message);
-          setErrorMessage(error.response.data.message);
-          toast.error(error.response.data.message, { duration: 7000 });
-        } else {
-          console.log(error.response.data.message);
-          goBackToLogin();
-        }
-      });
-  };
-
-  const removeStudentsToClass = () => {
-    try {
+    if (selectedStudents && selectedStudents.length === 0) {
+      toast.error("No Selected Students to Add!", { duration: 7000 });
+    } else if (selectedStudents != null) {
       https
-        .delete(`remove_class_students/${delClassCode}`, {
+        .post(`create_class_students/${classCode}`, selectedStudents, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
-          data: removeSelectedStudents,
         })
         .then((result) => {
-          toast.success(result.data.message, { duration: 7000 });
-          clearRemoveStudentsToClass();
-          fetchClasses();
+          if (result && result.data) {
+            const errors = result.data.errors;
+            if (errors) {
+              // Check if errors exist before iterating
+              errors.forEach((error) => {
+                toast.error(error, { duration: 7000 });
+                clearAddStudentsToClass();
+                fetchClasses();
+              });
+            } else {
+              toast.success(result.data.message, { duration: 7000 });
+              clearAddStudentsToClass();
+              fetchClasses();
+            }
+          } else {
+            console.error("Server response doesn't contain data property");
+            // Handle the error appropriately
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -341,13 +331,47 @@ function AdminClassManagement() {
             goBackToLogin();
           }
         });
-    } catch (error) {
-      console.error("Error removing students:", error);
-      setError(true);
-      setErrorMessage("An unexpected error occurred.");
-      toast.error("An unexpected error occurred.", { duration: 7000 });
-    } finally {
-      clearRemoveStudentsToClass();
+    }
+  };
+
+  const removeStudentsToClass = () => {
+    if (removeSelectedStudents && removeSelectedStudents.length === 0) {
+      toast.error("No Selected Students to Remove!", { duration: 7000 });
+    } else if (removeSelectedStudents != null) {
+      try {
+        https
+          .delete(`remove_class_students/${delClassCode}`, {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+            },
+            data: removeSelectedStudents,
+          })
+          .then((result) => {
+            toast.success(result.data.message, { duration: 7000 });
+            clearRemoveStudentsToClass();
+            fetchClasses();
+          })
+          .catch((error) => {
+            console.log(error);
+            if (error.response.data.message != "Unauthenticated.") {
+              setError(true);
+
+              console.log(error.response.data.message);
+              setErrorMessage(error.response.data.message);
+              toast.error(error.response.data.message, { duration: 7000 });
+            } else {
+              console.log(error.response.data.message);
+              goBackToLogin();
+            }
+          });
+      } catch (error) {
+        console.error("Error removing students:", error);
+        setError(true);
+        setErrorMessage("An unexpected error occurred.");
+        toast.error("An unexpected error occurred.", { duration: 7000 });
+      } finally {
+        clearRemoveStudentsToClass();
+      }
     }
   };
 
@@ -869,7 +893,18 @@ function AdminClassManagement() {
                   <table className="table table-hover table-bordered border-secondary table-secondary align-middle">
                     <thead className="table-light">
                       <tr>
-                        <th></th>
+                        <th>
+                          <th>
+                            <input
+                              type="checkbox"
+                              checked={
+                                currentItems.length > 0 &&
+                                selectedStudents.length === currentItems.length
+                              }
+                              onChange={handleSelectAll}
+                            />
+                          </th>
+                        </th>
                         <th>FAITH ID</th>
                         <th>LAST NAME</th>
                         <th>FIRST NAME</th>
@@ -1028,7 +1063,17 @@ function AdminClassManagement() {
                   <table className="table table-hover table-bordered border-secondary table-secondary align-middle">
                     <thead className="table-light">
                       <tr>
-                        <th></th>
+                        <th>
+                          <input
+                            type="checkbox"
+                            checked={
+                              currentRemoveStudents.length > 0 &&
+                              removeSelectedStudents.length ===
+                                currentRemoveStudents.length
+                            }
+                            onChange={handleRemoveSelectAll}
+                          />
+                        </th>
                         <th>FAITH ID</th>
                         <th>LAST NAME</th>
                         <th>FIRST NAME</th>

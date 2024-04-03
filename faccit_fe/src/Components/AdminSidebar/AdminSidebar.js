@@ -105,13 +105,19 @@ function AdminSidebar() {
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <a href="#" className="sidebar-link">
+                    <a
+                      href="/admin/labs/programming-lab"
+                      className="sidebar-link"
+                    >
                       Programming Lab
                     </a>
                   </li>
                   <li className="sidebar-item">
-                    <a href="#" className="sidebar-link">
-                      Machine Lab
+                    <a
+                      href="/admin/labs/multimedia-lab"
+                      className="sidebar-link"
+                    >
+                      Multimedia Lab
                     </a>
                   </li>
                 </ul>

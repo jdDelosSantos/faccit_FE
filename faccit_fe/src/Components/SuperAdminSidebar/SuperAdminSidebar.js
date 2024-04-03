@@ -110,8 +110,8 @@ function SuperAdminSidebar() {
                     </a>
                   </li>
                   <li className="sidebar-item">
-                    <a href="/labs/machine-lab" className="sidebar-link">
-                      Machine Lab
+                    <a href="/labs/multimedia-lab" className="sidebar-link">
+                      Multimedia Lab
                     </a>
                   </li>
                 </ul>

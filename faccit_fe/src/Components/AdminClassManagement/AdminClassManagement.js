@@ -292,6 +292,7 @@ function AdminClassManagement() {
           } else {
             toast.success(result.data.message, { duration: 7000 });
             clearAddStudentsToClass();
+            fetchClasses();
           }
         } else {
           console.error("Server response doesn't contain data property");
@@ -325,6 +326,7 @@ function AdminClassManagement() {
         .then((result) => {
           toast.success(result.data.message, { duration: 7000 });
           clearRemoveStudentsToClass();
+          fetchClasses();
         })
         .catch((error) => {
           console.log(error);

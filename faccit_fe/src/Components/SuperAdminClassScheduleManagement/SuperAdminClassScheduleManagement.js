@@ -37,16 +37,22 @@ function SuperAdminClassScheduleManagement() {
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
-  const filteredSortedData = classSchedules.filter(
-    (item) =>
-      item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.class.class_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.class_day.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const sortClassSchedule = classSchedules
+    .sort((classes1, classes2) =>
+      classes1.class.class_name.localeCompare(classes2.class.class_name)
+    )
+    .filter(
+      (item) =>
+        item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.class.class_name
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        item.class_day.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  const currentItems = filteredSortedData.slice(startIndex, endIndex);
+  const currentItems = sortClassSchedule.slice(startIndex, endIndex);
 
   const classes = useSelector((state) => state.class.classes);
   const professors = useSelector((state) => state.professor.professors);
@@ -72,7 +78,6 @@ function SuperAdminClassScheduleManagement() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
-        console.log(currentItems);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -344,67 +349,61 @@ function SuperAdminClassScheduleManagement() {
               </thead>
               <tbody className="table-group-divider">
                 {currentItems.length > 0 ? (
-                  currentItems
-                    .sort((classes1, classes2) =>
-                      classes1.class.class_name.localeCompare(
-                        classes2.class.class_name
-                      )
-                    )
-                    .map((classes, index) => (
-                      <tr className="table-light" key={index}>
-                        <td className="p-2">{classes.class_code}</td>
-                        <td className="p-2">{classes.class.class_name}</td>
-                        <td className="p-2">{classes.class_day}</td>
-                        <td className="p-2">{classes.start_time}</td>
-                        <td className="p-2">{classes.end_time}</td>
-                        <td className="p-2">
-                          <button
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop1"
-                            className="btn btn-primary btn-sm"
-                            onClick={() => {
-                              handleClassUpdate(
-                                classes.class_code,
-                                classes.class_day,
-                                classes.start_time,
-                                classes.end_time
-                              );
-                              setUpdateClassID(classes.id);
+                  currentItems.map((classes, index) => (
+                    <tr className="table-light" key={index}>
+                      <td className="p-2">{classes.class_code}</td>
+                      <td className="p-2">{classes.class.class_name}</td>
+                      <td className="p-2">{classes.class_day}</td>
+                      <td className="p-2">{classes.start_time}</td>
+                      <td className="p-2">{classes.end_time}</td>
+                      <td className="p-2">
+                        <button
+                          type="button"
+                          data-bs-toggle="modal"
+                          data-bs-target="#staticBackdrop1"
+                          className="btn btn-primary btn-sm"
+                          onClick={() => {
+                            handleClassUpdate(
+                              classes.class_code,
+                              classes.class_day,
+                              classes.start_time,
+                              classes.end_time
+                            );
+                            setUpdateClassID(classes.id);
+                          }}
+                        >
+                          <img
+                            src={require("../../Assets/images/update_user.png")}
+                            width="25"
+                            height="25"
+                            style={{
+                              TopLeftRadius: ".3rem",
+                              TopRightRadius: ".3rem",
                             }}
-                          >
-                            <img
-                              src={require("../../Assets/images/update_user.png")}
-                              width="25"
-                              height="25"
-                              style={{
-                                TopLeftRadius: ".3rem",
-                                TopRightRadius: ".3rem",
-                              }}
-                              alt="update_user"
-                            />
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-danger mx-2 btn-sm"
-                            onClick={() => {
-                              handleClassDelete(classes.id);
+                            alt="update_user"
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-danger mx-2 btn-sm"
+                          onClick={() => {
+                            handleClassDelete(classes.id);
+                          }}
+                        >
+                          <img
+                            src={require("../../Assets/images/delete.png")}
+                            width="25"
+                            height="25"
+                            style={{
+                              TopLeftRadius: ".3rem",
+                              TopRightRadius: ".3rem",
                             }}
-                          >
-                            <img
-                              src={require("../../Assets/images/delete.png")}
-                              width="25"
-                              height="25"
-                              style={{
-                                TopLeftRadius: ".3rem",
-                                TopRightRadius: ".3rem",
-                              }}
-                              alt="delete"
-                            />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                            alt="delete"
+                          />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
                 ) : (
                   <tr className="table-light" key="loading-row">
                     <td colSpan="8" className="text-center">
@@ -602,6 +601,12 @@ function SuperAdminClassScheduleManagement() {
                           </div>
                         </div>
                       </div>
+                      <p>
+                        <i>
+                          Note: Mininum time is 07:30 am and Maximum time is
+                          09:00pm
+                        </i>
+                      </p>
                     </div>
                   </div>
                 </div>

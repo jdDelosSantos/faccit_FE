@@ -182,7 +182,7 @@ function AdminClassManagement() {
 
   useEffect(() => {
     fetchClasses();
-    fetchStudents();
+
     fetchCourses();
   }, []);
 
@@ -224,6 +224,7 @@ function AdminClassManagement() {
   const handleAddStudents = (class_code, class_name) => {
     setClassCode(class_code);
     setClassName(class_name);
+    fetchStudents();
   };
 
   const handleRemoveStudents = (class_code, class_name) => {

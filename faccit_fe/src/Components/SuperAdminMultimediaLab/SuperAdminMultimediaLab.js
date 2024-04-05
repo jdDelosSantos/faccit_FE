@@ -176,7 +176,6 @@ function SuperAdminMultimediaLab() {
   };
 
   useEffect(() => {
-    fetchClassSchedules();
     fetchLaboratoryClassSchedules();
   }, []);
 
@@ -347,6 +346,7 @@ function SuperAdminMultimediaLab() {
                   data-bs-toggle="modal"
                   data-bs-target="#staticBackdrop4"
                   className="btn btn-primary btn-sm"
+                  onClick={() => fetchClassSchedules()}
                 >
                   <img
                     src={require("../../Assets/images/add.png")}

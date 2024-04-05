@@ -151,7 +151,7 @@ function SuperAdminProgrammingLab() {
 
   //Function for fetching Laboratory Class Schedules
   const fetchLaboratoryClassSchedules = () => {
-    const laboratory = "lab_prog";
+    const laboratory = "lab_programming";
     https
       .get(`laboratory_class_schedules/${laboratory}`, {
         headers: {
@@ -175,7 +175,6 @@ function SuperAdminProgrammingLab() {
   };
 
   useEffect(() => {
-    fetchClassSchedules();
     fetchLaboratoryClassSchedules();
   }, []);
 
@@ -198,7 +197,7 @@ function SuperAdminProgrammingLab() {
     if (selectedClasses && selectedClasses.length === 0) {
       toast.error("No Selected Classes!", { duration: 7000 });
     } else if (selectedClasses != null) {
-      const laboratory = "lab_prog";
+      const laboratory = "lab_programming";
       https
         .post(`create_laboratory_classes/${laboratory}`, selectedClasses, {
           headers: {
@@ -341,6 +340,7 @@ function SuperAdminProgrammingLab() {
                   data-bs-toggle="modal"
                   data-bs-target="#staticBackdrop4"
                   className="btn btn-primary btn-sm"
+                  onClick={() => fetchClassSchedules()}
                 >
                   <img
                     src={require("../../Assets/images/add.png")}
@@ -584,6 +584,12 @@ function SuperAdminProgrammingLab() {
                         renderOnZeroPageCount={null}
                       />
                     </div>
+                    <p>
+                      <i>
+                        Note: Class schedules displayed are classes that have
+                        student records assigned to them...
+                      </i>
+                    </p>
                   </div>
                 </div>
               </div>

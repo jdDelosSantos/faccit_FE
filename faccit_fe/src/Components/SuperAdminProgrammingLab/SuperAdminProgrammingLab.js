@@ -198,6 +198,7 @@ function SuperAdminProgrammingLab() {
       toast.error("No Selected Classes!", { duration: 7000 });
     } else if (selectedClasses != null) {
       const laboratory = "lab_programming";
+      console.log(selectedClasses);
       https
         .post(`create_laboratory_classes/${laboratory}`, selectedClasses, {
           headers: {

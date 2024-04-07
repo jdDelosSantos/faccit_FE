@@ -189,7 +189,7 @@ function SuperAdminProfessorManagement() {
         console.error("Error uploading screenshot to S3:", err);
       } else {
         const profImageUrl = {
-          prof_id: profID,
+          faith_id: profID,
           std_folder_url: `${profID}/`,
           std_folder_img_url: `${index + 1}.jpg`,
         };
@@ -242,7 +242,7 @@ function SuperAdminProfessorManagement() {
         console.error("Error uploading screenshot to S3:", err);
       } else {
         const professorImageUrl = {
-          prof_id: updateProfID,
+          faith_id: updateProfID,
           std_folder_url: `${updateProfID}/`,
           std_folder_img_url: `${index + 1}.jpg`,
         };
@@ -275,9 +275,10 @@ function SuperAdminProfessorManagement() {
 
   const fetchProfessorImages = (prof_id) => {
     const professorImages = {
-      prof_id: prof_id,
+      faith_id: prof_id,
     };
     // Implement your logic to fetch image URLs from the S3 bucket
+    console.log(prof_id);
     https
       .post("prof_img_url", professorImages, {
         headers: {
@@ -315,7 +316,7 @@ function SuperAdminProfessorManagement() {
       });
   };
 
-  //FUNCTION FOR ADDING A STUDENT
+  //FUNCTION FOR ADDING A PROFESSOR
   const handleProfessorSubmit = (e) => {
     e.preventDefault();
 
@@ -378,7 +379,7 @@ function SuperAdminProfessorManagement() {
   const handleUpdateProfessorSubmit = (e) => {
     e.preventDefault();
     const updateProfessorData = {
-      prof_id: updateProfID,
+      faith_id: updateProfID,
       user_lastname: updateLastname,
       user_firstname: updateFirstname,
     };

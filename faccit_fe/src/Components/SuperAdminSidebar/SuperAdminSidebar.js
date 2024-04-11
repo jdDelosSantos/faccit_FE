@@ -167,6 +167,14 @@ function SuperAdminSidebar() {
                       Class Schedules
                     </a>
                   </li>
+                  <li className="sidebar-item">
+                    <a
+                      href="/managements/makeup-classes/requests"
+                      className="sidebar-link"
+                    >
+                      Makeup Class Requests
+                    </a>
+                  </li>
                 </ul>
               </li>
               <li className="sidebar-item">

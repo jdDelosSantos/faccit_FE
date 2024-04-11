@@ -167,6 +167,14 @@ function AdminSidebar() {
                       Classes
                     </a>
                   </li>
+                  <li className="sidebar-item">
+                    <a
+                      href="/admin/managements/makeup-classes"
+                      className="sidebar-link"
+                    >
+                      Makeup Classes
+                    </a>
+                  </li>
                 </ul>
               </li>
               <li className="sidebar-item">

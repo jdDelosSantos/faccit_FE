@@ -4,7 +4,7 @@ img {
 
 .login {
     min-height: 100vh !important;
-    background: linear-gradient(31deg, rgba(67, 33, 60, 1) 0%, rgba(74, 36, 61, 1) 35%, rgba(122, 51, 69, 1) 52%, rgba(175, 70, 78, 1) 73%, rgba(210, 82, 83, 1) 100%);
+    background: linear-gradient(31deg, rgb(3, 3, 16) 0%, rgb(29, 12, 105) 35%, rgb(50, 37, 171) 52%, rgb(66, 74, 217) 73%, rgb(79, 65, 236) 100%);
 }
 
 .p-class{
@@ -13,7 +13,7 @@ img {
 }
 
 .left-side{
-    background: rgb(67, 33, 60);
+    background: rgb(28, 28, 79);
 }
 
 .left-img{
@@ -35,7 +35,7 @@ color: #fff;
 }
 
 .main-container{
-    background: rgba(210, 82, 83, 0.5);
+    background: rgb(48, 37, 149, 0.5);
     
 }
 

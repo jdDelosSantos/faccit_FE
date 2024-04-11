@@ -126,7 +126,7 @@ function SuperAdminProgrammingLab() {
   //Function for fetching Class Schedules
   const fetchClassSchedules = () => {
     https
-      .get("class_schedule_prof", {
+      .get("get_schedules_students", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },

@@ -30,6 +30,8 @@ function AdminClassManagement() {
   const [delClassCode, setDelClassCode] = useState("");
   const [delClassName, setDelClassName] = useState("");
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   //REACT-PAGINATION PROFESSOR CLASSES
   const [profClasses, setProfClasses] = useState([]);
   const [currentPageCS, setCurrentPageCS] = useState(0);
@@ -41,7 +43,15 @@ function AdminClassManagement() {
     class1.class_code.localeCompare(class2.class_code)
   );
 
-  const currentClasses = filteredClasses.slice(startIndexCS, endIndexCS);
+  const filteredSortedData = filteredClasses.filter(
+    (item) =>
+      item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.class_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.class_description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.college_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentClasses = filteredSortedData.slice(startIndexCS, endIndexCS);
 
   //REACT-PAGINATION CLASS STUDENTS
   const [classStudents, setClassStudents] = useState([]);
@@ -447,26 +457,20 @@ function AdminClassManagement() {
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center my-3">
               <div className="w-100 d-flex">
-                <form
-                  className="d-flex w-75 searchbar-form"
-                  onSubmit={handleClassSearchBar}
-                >
-                  <div className="w-100">
-                    <div className="input-group">
-                      <input
-                        className="form-control"
-                        type="search"
-                        placeholder="Search Classes..."
-                        aria-label="Search"
-                      />
-                      <button
-                        className="fa-solid fa-magnifying-glass searchbtn"
-                        type="submit"
-                        style={{ color: "#ffffff" }}
-                      ></button>
-                    </div>
+                <div className="w-100">
+                  <div className="input-group">
+                    <input
+                      className="form-control"
+                      type="search"
+                      placeholder="Search Classes..."
+                      aria-label="Search"
+                      value={searchTerm}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                      }}
+                    />
                   </div>
-                </form>
+                </div>
               </div>
 
               <div className="w-25 d-flex justify-content-end"></div>
@@ -895,16 +899,14 @@ function AdminClassManagement() {
                     <thead className="table-light">
                       <tr>
                         <th>
-                          <th>
-                            <input
-                              type="checkbox"
-                              checked={
-                                currentItems.length > 0 &&
-                                selectedStudents.length === currentItems.length
-                              }
-                              onChange={handleSelectAll}
-                            />
-                          </th>
+                          <input
+                            type="checkbox"
+                            checked={
+                              currentItems.length > 0 &&
+                              selectedStudents.length === currentItems.length
+                            }
+                            onChange={handleSelectAll}
+                          />
                         </th>
                         <th>FAITH ID</th>
                         <th>LAST NAME</th>

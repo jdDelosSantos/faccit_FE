@@ -24,6 +24,8 @@ import TestingEsp from "./Components/TestingEsp/TestingEsp";
 import SuperAdminMultimediaLab from "./Components/SuperAdminMultimediaLab/SuperAdminMultimediaLab";
 import AdminProgrammingLab from "./Components/AdminProgrammingLab/AdminProgrammingLab";
 import AdminMultimediaLab from "./Components/AdminMultimediaLab/AdminMultimediaLab";
+import AdminMakeupClassHistory from "./Components/AdminMakeupClassHistory/AdminMakeupClassHistory";
+import SuperAdminMakeupClassRequests from "./Components/SuperAdminMakeupClassRequests/SuperAdminMakeupClassRequests";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -84,6 +86,10 @@ function App() {
               path="/managements/classes/schedules"
               element={<SuperAdminClassScheduleManagement />}
             />
+            <Route
+              path="/managements/makeup-classes/requests"
+              element={<SuperAdminMakeupClassRequests />}
+            />
             <Route path="/" element={<LoginPage />} />
           </Route>
 
@@ -99,6 +105,10 @@ function App() {
             <Route
               path="/admin/labs/multimedia-lab"
               element={<AdminMultimediaLab />}
+            />
+            <Route
+              path="/admin/managements/makeup-classes"
+              element={<AdminMakeupClassHistory />}
             />
 
             <Route path="/" element={<LoginPage />} />

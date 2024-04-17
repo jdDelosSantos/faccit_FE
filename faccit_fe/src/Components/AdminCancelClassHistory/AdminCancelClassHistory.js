@@ -1,29 +1,64 @@
 import React, { useState, useRef, useEffect } from "react";
+import "../AdminCancelClassHistory/AdminCancelClassHistory.css";
+import { jwtDecode } from "jwt-decode";
+
 import { useDispatch, useSelector } from "react-redux";
-import "../AdminProgrammingLab/AdminProgrammingLab.css";
+
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import https from "../../https";
-import { jwtDecode } from "jwt-decode";
-import TestTable from "../TestTable/TestTable";
 
-function AdminProgrammingLab() {
+function AdminCancelClassHistory() {
+  //NEW SUBJECT USE STATES
+  const [classCode, setClassCode] = useState("");
+  const [className, setClassName] = useState("");
+
+  const [laboratory, setLaboratory] = useState("");
+  const [classDay, setClassDay] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+
+  //SEARCHTERM FOR SEARCH BAR
+  const [searchTerm, setSearchTerm] = useState("");
+
+  //REACT-PAGINATION
+  const [classSchedules, setClassSchedules] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(7);
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+
+  const sortClassSchedule = classSchedules
+    .sort((a, b) => {
+      return new Date(b.created_at) - new Date(a.created_at);
+    })
+    .filter(
+      (item) =>
+        item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.class.class_name
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        item.class_day.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.professor.user_firstname
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        item.professor.user_lastname
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        item.created_date.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+  const currentItems = sortClassSchedule.slice(startIndex, endIndex);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchClass, setSearchClass] = useState("");
 
-  //NEW CLASS USE STATES
-  const [classCode, setClassCode] = useState("");
-
-  const [classDay, setClassDay] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [laboratory, setLaboratory] = useState("");
   const [text, setText] = useState("");
 
   const [absentClassCode, setAbsentClassCode] = useState("");
@@ -35,24 +70,47 @@ function AdminProgrammingLab() {
 
   const [classes, setClasses] = useState([]);
   // const classes = useSelector((state) => state.class.classes);
+
   const sessionToken = sessionStorage.getItem("Token");
   const decoded = jwtDecode(sessionToken);
-  const id = decoded.prof_id;
+  const tokenId = decoded.prof_id;
+
+  //Function for fetching Class Schedules
+  const fetchClassSchedules = () => {
+    https
+      .get(`makeup_classes_prof/${tokenId}`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        // dispatch(setSubjects(result.data));
+        setClassSchedules(result.data);
+        console.log(result.data);
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          console.log(error.response.data.message);
+          goBackToLogin();
+        }
+      });
+  };
 
   //Function for fetching Classes
   const fetchClasses = () => {
-    const lab = {
-      laboratory: "lab_programming",
-    };
     https
-      .post(`get_laboratory_scheds/${id}`, lab, {
+      .get("classes", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
         setClasses(result.data);
-        console.log(classes);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -67,140 +125,47 @@ function AdminProgrammingLab() {
       });
   };
 
-  //REACT-PAGINATION CLASS SCHEDULES
-  const [classSchedules, setClassSchedules] = useState([]);
-  const [currentPageCS, setCurrentPageCS] = useState(0); // Renamed state variable for class schedules
-  const [itemsPerPageCS, setItemsPerPageCS] = useState(6); // Renamed state variable for class schedules
-  const startIndexCS = currentPageCS * itemsPerPageCS;
-  const endIndexCS = startIndexCS + itemsPerPageCS;
+  useEffect(() => {
+    fetchClassSchedules();
+    fetchClasses();
+  }, []);
 
-  //SORTING CLASS SCHEDULES BY DAY THEN TIME
-  const sortedClassSchedules = [...classSchedules].sort((a, b) => {
-    const days = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ];
-    const dayIndexA = days.indexOf(a.class_day);
-    const dayIndexB = days.indexOf(b.class_day);
+  const [id, setId] = useState(0);
+  const [status, setStatus] = useState("");
+  //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
+  const handleClassUpdate = (
+    id,
+    absent_class_code,
+    absent_class_day,
+    absent_start_time,
+    absent_end_time,
+    absent_laboratory,
+    class_name,
+    class_code,
+    class_day,
+    laboratory,
+    start_time,
+    end_time,
+    makeup_class_status
+  ) => {
+    setId(id);
+    setAbsentLaboratory(absent_laboratory);
+    setAbsentClassCode(absent_class_code);
+    setAbsentClassDay(absent_class_day);
+    setAbsentStartTime(absent_start_time);
+    setAbsentEndTime(absent_end_time);
 
-    if (dayIndexA !== dayIndexB) {
-      return dayIndexA - dayIndexB;
-    }
+    setLaboratory(laboratory);
+    setClassCode(class_code);
+    setClassName(class_name);
+    setClassDay(class_day);
+    setStartTime(start_time);
+    setEndTime(end_time);
 
-    const startTimeA = new Date(`2000-01-01T${a.start_time}`);
-    const startTimeB = new Date(`2000-01-01T${b.start_time}`);
-
-    if (startTimeA !== startTimeB) {
-      return startTimeA - startTimeB;
-    }
-
-    const endTimeA = new Date(`2000-01-01T${a.end_time}`);
-    const endTimeB = new Date(`2000-01-01T${b.end_time}`);
-
-    return endTimeA - endTimeB;
-  });
-
-  //CODE FOR FILTERING BASED ON SEARCHCLASS
-  const filteredClassSchedules = sortedClassSchedules.filter(
-    (item) =>
-      item.class_code.toLowerCase().includes(searchClass.toLowerCase()) ||
-      item.class.class_name.toLowerCase().includes(searchClass.toLowerCase()) ||
-      item.class.prof_id.toLowerCase().includes(searchClass.toLowerCase()) ||
-      item.class_day.toLowerCase().includes(searchClass.toLowerCase())
-  );
-
-  //PUTTING SORTED AND FILTERED CLASS SCHEDULES TO CURRENT CLASS SCHEDULES
-  const currentClassSchedules = filteredClassSchedules.slice(
-    startIndexCS,
-    endIndexCS
-  );
-
-  //REACT-PAGINATION LAB CLASS SCHEDULES
-  const [labClassSchedules, setLabClassSchedules] = useState([]);
-  const [currentPages, setCurrentPages] = useState(0);
-  const [itemsPerPages, setItemsPerPages] = useState(10);
-  const startIndexs = currentPages * itemsPerPages;
-  const endIndexs = startIndexs + itemsPerPages;
-
-  const sortedData = [...labClassSchedules].sort((a, b) => {
-    const days = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ];
-    const dayIndexA = days.indexOf(a.class_day);
-    const dayIndexB = days.indexOf(b.class_day);
-
-    if (dayIndexA !== dayIndexB) {
-      return dayIndexA - dayIndexB;
-    }
-
-    const startTimeA = new Date(`2000-01-01T${a.start_time}`);
-    const startTimeB = new Date(`2000-01-01T${b.start_time}`);
-
-    if (startTimeA !== startTimeB) {
-      return startTimeA - startTimeB;
-    }
-
-    const endTimeA = new Date(`2000-01-01T${a.end_time}`);
-    const endTimeB = new Date(`2000-01-01T${b.end_time}`);
-
-    return endTimeA - endTimeB;
-  });
-
-  //CODE FOR FILTERING BASED ON SEARCHTERM
-  const filteredSortedData = sortedData.filter(
-    (item) =>
-      item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.class.class_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.class.prof_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.class_day.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const currentLabClassSchedules = filteredSortedData.slice(
-    startIndexs,
-    endIndexs
-  );
-
-  console.log(currentLabClassSchedules);
-
-  //Function for fetching Laboratory Class Schedules
-  const fetchLaboratoryClassSchedules = () => {
-    const laboratory = "lab_programming";
-    https
-      .get(`laboratory_class_schedules/${laboratory}`, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-        },
-      })
-      .then((result) => {
-        setLabClassSchedules(result.data);
-        console.log(labClassSchedules);
-      })
-      .catch((error) => {
-        if (error.response.data.message != "Unauthenticated.") {
-          setError(true);
-          console.log(error.response.data.message);
-          setErrorMessage(error.response.data.message);
-          toast.error(error.response.data.message, { duration: 7000 });
-        } else {
-          console.log(error.response.data.message);
-          goBackToLogin();
-        }
-      });
+    setStatus(makeup_class_status);
   };
 
   const clearClass = () => {
-    setSelectedClass(null);
     setAbsentClassCode("");
     setAbsentClassDay("");
     setAbsentStartTime("");
@@ -210,85 +175,86 @@ function AdminProgrammingLab() {
     setStartTime("");
     setEndTime("");
     setErrorMessage("");
+    setStatus("");
   };
-
-  useEffect(() => {
-    fetchLaboratoryClassSchedules();
-  }, []);
 
   const handleMakeUpClassRequest = (e) => {
     e.preventDefault();
 
-    const makeupClassData = {
-      laboratory: laboratory,
-      absent_laboratory: absentLaboratory,
+    const forApproval = {
       absent_class_code: absentClassCode,
       absent_class_day: absentClassDay,
       absent_start_time: absentStartTime,
       absent_end_time: absentEndTime,
+      absent_laboratory: absentLaboratory,
+      status: status,
       class_code: classCode,
       class_day: classDay,
       start_time: startTime,
       end_time: endTime,
+      laboratory: laboratory,
     };
 
-    console.log(id);
-    console.log(makeupClassData);
+    console.log(forApproval);
 
-    https
-      .post(`request_makeup_class/${id}`, makeupClassData, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-        },
-      })
-      .then((result) => {
-        toast.success(result.data.message, { duration: 7000 });
-        clearClass();
-      })
-      .catch((error) => {
-        if (error.response.data.message != "Unauthenticated.") {
-          setError(true);
-          console.log(error.response.data.message);
-          setErrorMessage(error.response.data.message);
-          toast.error(error.response.data.message, { duration: 7000 });
-        } else {
-          console.log(error.response.data.message);
-          goBackToLogin();
-        }
-      });
-  };
-
-  const handleClassChange = (e) => {
-    const selectedClassCode = e.target.value;
-    setAbsentClassCode(selectedClassCode);
-    setClassCode(selectedClassCode);
-
-    const selectedClass = classes.find(
-      (classItem) => classItem.class_code === selectedClassCode
-    );
-    setSelectedClass(selectedClass);
-  };
-
-  useEffect(() => {
-    if (selectedClass && absentClassDay) {
-      const classDetails = selectedClass.facilities.find(
-        (facility) => facility.class_day === absentClassDay
-      );
-      if (classDetails) {
-        setAbsentStartTime(classDetails.start_time);
-        setAbsentEndTime(classDetails.end_time);
-        setAbsentLaboratory(classDetails.laboratory);
-      } else {
-        setAbsentStartTime("");
-        setAbsentEndTime("");
-        setAbsentLaboratory("");
-      }
-    } else {
-      setAbsentStartTime("");
-      setAbsentEndTime("");
-      setAbsentLaboratory("");
+    try {
+      https
+        .post(`approve_makeup_class/${id}`, forApproval, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+          },
+        })
+        .then((result) => {
+          fetchClassSchedules();
+          console.log(result.data);
+        })
+        .catch((error) => {
+          if (error.response.data.message != "Unauthenticated.") {
+            setError(true);
+            console.log(error.response.data.message);
+            setErrorMessage(error.response.data.message);
+            toast.error(error.response.data.message, { duration: 7000 });
+          } else {
+            console.log(error.response.data.message);
+            goBackToLogin();
+          }
+        });
+    } catch (error) {
+      console.log(error);
     }
-  }, [selectedClass, absentClassDay]);
+  };
+
+  const handleMakeUpClassReject = () => {
+    const data = {
+      id: id,
+    };
+
+    try {
+      https
+        .post(`reject_makeup_class`, data, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+          },
+        })
+        .then((result) => {
+          fetchClassSchedules();
+          console.log(result.data);
+        })
+        .catch((error) => {
+          if (error.response.data.message != "Unauthenticated.") {
+            setError(true);
+            console.log(error.response.data.message);
+            setErrorMessage(error.response.data.message);
+            toast.error(error.response.data.message, { duration: 7000 });
+          } else {
+            console.log(error.response.data.message);
+            goBackToLogin();
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const goBackToLogin = () => {
     sessionStorage.clear();
@@ -330,9 +296,9 @@ function AdminProgrammingLab() {
     return (
       <div className="base_bg w-100 p-4">
         <h1 className="my-1">
-          <b>{tokenFirstname}'S PROGRAMMING LAB PAGE</b>
+          <b>{tokenFirstname}'S CANCEL CLASS REQUESTS MANAGEMENT PAGE</b>
         </h1>
-        <h4 className="">LIST OF CLASS SCHEDULES IN PROGRAMMING LAB</h4>
+        <h4 className="">LIST OF CANCEL CLASS REQUESTS</h4>
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center my-3">
@@ -342,7 +308,7 @@ function AdminProgrammingLab() {
                     <input
                       className="form-control"
                       type="search"
-                      placeholder="Search Class Schedule..."
+                      placeholder="Search Cancel Class Requests..."
                       aria-label="Search"
                       value={searchTerm}
                       onChange={(e) => {
@@ -353,49 +319,155 @@ function AdminProgrammingLab() {
                 </div>
               </div>
 
-              <div className="w-25 d-flex justify-content-end">
-                <button
-                  type="button"
-                  data-bs-toggle="modal"
-                  data-bs-target="#staticBackdrop4"
-                  className="btn btn-primary btn-sm"
-                  onClick={() => fetchClasses()}
-                >
-                  <img
-                    src={require("../../Assets/images/add.png")}
-                    width="25"
-                    height="25"
-                    style={{
-                      TopLeftRadius: ".3rem",
-                      TopRightRadius: ".3rem",
-                    }}
-                    alt="add"
-                  />
-                </button>
-              </div>
+              <div className="w-25 d-flex justify-content-end"></div>
             </div>
 
             <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
               <thead className="table-light">
                 <tr>
-                  <th>CLASS CODE</th>
-                  <th>CLASS NAME</th>
-                  <th>PROFESSOR ID</th>
-                  <th>CLASS DAY</th>
-                  <th>START TIME</th>
-                  <th>END TIME</th>
+                  <th>DATE</th>
+                  <th>CANCEL CLASS REQUESTER</th>
+                  <th>CLASS</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody className="table-group-divider">
-                {currentLabClassSchedules.length > 0 ? (
-                  currentLabClassSchedules.map((classes, index) => (
+                {currentItems.length > 0 ? (
+                  currentItems.map((makeup, index) => (
                     <tr className="table-light" key={index}>
-                      <td className="p-2">{classes.class_code}</td>
-                      <td className="p-2">{classes.class.class_name}</td>
-                      <td className="p-2">{classes.class.prof_id}</td>
-                      <td className="p-2">{classes.class_day}</td>
-                      <td className="p-2">{classes.start_time}</td>
-                      <td className="p-2">{classes.end_time}</td>
+                      <td className="p-2">{makeup.created_date}</td>
+                      <td className="p-2">
+                        {makeup.professor.user_lastname},{" "}
+                        {makeup.professor.user_firstname}
+                      </td>
+                      <td className="p-2">{makeup.class.class_name}</td>
+                      {makeup.makeup_class_status === "Pending" ? (
+                        <td className="p-2 text-warning">
+                          {makeup.makeup_class_status}
+                        </td>
+                      ) : makeup.makeup_class_status === "Approved" ? (
+                        <td className="p-2 text-success">
+                          {makeup.makeup_class_status}
+                        </td>
+                      ) : (
+                        <td className="p-2 text-danger">
+                          {makeup.makeup_class_status}
+                        </td>
+                      )}
+
+                      {makeup.makeup_class_status === "Pending" ? (
+                        <td className="p-2">
+                          <button
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop1"
+                            className="btn btn-primary btn-sm"
+                            onClick={() => {
+                              handleClassUpdate(
+                                makeup.id,
+                                makeup.absent_class_code,
+                                makeup.absent_class_day,
+                                makeup.absent_start_time,
+                                makeup.absent_end_time,
+                                makeup.absent_laboratory,
+                                makeup.class.class_name,
+                                makeup.class_code,
+                                makeup.class_day,
+                                makeup.laboratory,
+                                makeup.start_time,
+                                makeup.end_time,
+                                makeup.makeup_class_status
+                              );
+                            }}
+                          >
+                            <img
+                              src={require("../../Assets/images/update_user.png")}
+                              width="25"
+                              height="25"
+                              style={{
+                                TopLeftRadius: ".3rem",
+                                TopRightRadius: ".3rem",
+                              }}
+                              alt="update_user"
+                            />
+                          </button>
+                        </td>
+                      ) : makeup.makeup_class_status === "Approved" ? (
+                        <td className="p-2">
+                          <button
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop1"
+                            className="btn btn-primary btn-sm"
+                            onClick={() => {
+                              handleClassUpdate(
+                                makeup.id,
+                                makeup.absent_class_code,
+                                makeup.absent_class_day,
+                                makeup.absent_start_time,
+                                makeup.absent_end_time,
+                                makeup.absent_laboratory,
+                                makeup.class.class_name,
+                                makeup.class_code,
+                                makeup.class_day,
+                                makeup.laboratory,
+                                makeup.start_time,
+                                makeup.end_time,
+                                makeup.makeup_class_status
+                              );
+                            }}
+                          >
+                            <img
+                              src={require("../../Assets/images/update_user.png")}
+                              width="25"
+                              height="25"
+                              style={{
+                                TopLeftRadius: ".3rem",
+                                TopRightRadius: ".3rem",
+                              }}
+                              alt="update_user"
+                            />
+                          </button>
+                        </td>
+                      ) : (
+                        <td className="p-2">
+                          <button
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop1"
+                            className="btn btn-primary btn-sm"
+                            onClick={() => {
+                              handleClassUpdate(
+                                makeup.id,
+                                makeup.absent_class_code,
+                                makeup.absent_class_day,
+                                makeup.absent_start_time,
+                                makeup.absent_end_time,
+                                makeup.absent_laboratory,
+                                makeup.class.class_name,
+                                makeup.class_code,
+                                makeup.class_day,
+                                makeup.laboratory,
+                                makeup.start_time,
+                                makeup.end_time,
+                                makeup.makeup_class_status
+                              );
+                            }}
+                          >
+                            <img
+                              src={require("../../Assets/images/update_user.png")}
+                              width="25"
+                              height="25"
+                              style={{
+                                TopLeftRadius: ".3rem",
+                                TopRightRadius: ".3rem",
+                              }}
+                              alt="update_user"
+                            />
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (
@@ -418,10 +490,10 @@ function AdminProgrammingLab() {
             <div className="d-flex flex-row">
               <ReactPaginate
                 nextLabel="Next >"
-                onPageChange={(event) => setCurrentPages(event.selected)}
+                onPageChange={(event) => setCurrentPage(event.selected)}
                 pageRangeDisplayed={3}
                 marginPagesDisplayed={2}
-                pageCount={Math.ceil(labClassSchedules.length / itemsPerPages)}
+                pageCount={Math.ceil(classSchedules.length / itemsPerPage)}
                 previousLabel="< Previous"
                 pageClassName="page-item"
                 pageLinkClassName="page-link"
@@ -439,22 +511,21 @@ function AdminProgrammingLab() {
             </div>
           </div>
         </div>
-
         {/* START OF MODAL FOR ADDING COURSE */}
         <div
           className="modal fade"
-          id="staticBackdrop4"
+          id="staticBackdrop1"
           data-bs-backdrop="static"
           data-bs-keyboard="false"
           tabIndex="-1"
-          aria-labelledby="staticBackdropLabel4"
+          aria-labelledby="staticBackdropLabel1"
           aria-hidden="true"
         >
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
-                <h1 className="modal-title fs-5" id="staticBackdropLabel4">
-                  <b>REQUEST MAKEUP CLASS SCHEDULE</b>
+                <h1 className="modal-title fs-5" id="staticBackdropLabel1">
+                  <b>MAKEUP CLASS SCHEDULE</b>
                 </h1>
               </div>
 
@@ -489,10 +560,13 @@ function AdminProgrammingLab() {
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
-                              onChange={handleClassChange}
+                              onChange={(e) =>
+                                setAbsentClassCode(e.target.value)
+                              }
                               id="absentClassCode"
                               value={absentClassCode || ""}
                               required
+                              disabled
                             >
                               <option value="" disabled>
                                 Select a Class
@@ -521,7 +595,7 @@ function AdminProgrammingLab() {
                       {/* Start of Class day*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox2 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -531,19 +605,17 @@ function AdminProgrammingLab() {
                               id="absentClassDay"
                               value={absentClassDay || ""}
                               required
+                              disabled
                             >
                               <option value="" disabled>
                                 Select a Day
                               </option>
-                              {selectedClass &&
-                                selectedClass.facilities.map((facility) => (
-                                  <option
-                                    key={facility.class_day}
-                                    value={facility.class_day}
-                                  >
-                                    {facility.class_day}
-                                  </option>
-                                ))}
+                              <option value="Monday">Monday</option>
+                              <option value="Tuesday">Tuesday</option>
+                              <option value="Wednesday">Wednesday</option>
+                              <option value="Thursday">Thursday</option>
+                              <option value="Friday">Friday</option>
+                              <option value="Saturday">Saturday</option>
                             </select>
                           </div>
                         </div>
@@ -564,7 +636,7 @@ function AdminProgrammingLab() {
                                 setErrorMessage("");
                               }}
                               required
-                              disabled={!selectedClass || !absentClassDay}
+                              disabled
                             />
                             <span>Start Time</span>
                           </div>
@@ -586,7 +658,7 @@ function AdminProgrammingLab() {
                                 setErrorMessage("");
                               }}
                               required
-                              disabled={!selectedClass || !absentClassDay}
+                              disabled
                             />
                             <span>End Time</span>
                           </div>
@@ -611,36 +683,20 @@ function AdminProgrammingLab() {
                               <option value="" disabled>
                                 Select a Laboratory
                               </option>
-                              {selectedClass &&
-                                selectedClass.facilities
-                                  .filter(
-                                    (facility) =>
-                                      facility.class_day === absentClassDay
-                                  )
-                                  .map((facility) => (
-                                    <option
-                                      key={facility.laboratory}
-                                      value={facility.laboratory}
-                                    >
-                                      {facility.laboratory === "lab_multimedia"
-                                        ? "Multimedia Lab"
-                                        : facility.laboratory ===
-                                          "lab_programming"
-                                        ? "Programming Lab"
-                                        : facility.laboratory}
-                                    </option>
-                                  ))}
+                              <option
+                                key={absentLaboratory}
+                                value={absentLaboratory}
+                              >
+                                {absentLaboratory === "lab_multimedia"
+                                  ? "Multimedia Lab"
+                                  : absentLaboratory === "lab_programming"
+                                  ? "Programming Lab"
+                                  : absentLaboratory}
+                              </option>
                             </select>
                           </div>
                         </div>
                       </div>
-                      <p>
-                        <i>
-                          Note: Class Schedules displayed are only for within
-                          Multimedia lab.
-                        </i>
-                      </p>
-
                       <hr />
 
                       <h3>Makeup Class Schedule</h3>
@@ -648,7 +704,7 @@ function AdminProgrammingLab() {
                       {/* Start of Class Select */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox2 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -658,6 +714,7 @@ function AdminProgrammingLab() {
                               id="classCode"
                               value={classCode || ""}
                               required
+                              disabled
                             >
                               <option value="" disabled>
                                 Select a Class
@@ -690,7 +747,7 @@ function AdminProgrammingLab() {
                       {/* Start of Class day*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox2 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -701,6 +758,7 @@ function AdminProgrammingLab() {
                               id="classDay"
                               value={classDay || ""}
                               required
+                              disabled
                             >
                               <option value="" disabled>
                                 Select a Day
@@ -719,7 +777,7 @@ function AdminProgrammingLab() {
                       {/* Start of Class Start time */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox2 w-100">
                             <input
                               type="time"
                               id="startTime"
@@ -731,6 +789,7 @@ function AdminProgrammingLab() {
                                 setErrorMessage("");
                               }}
                               required
+                              disabled
                             />
                             <span>Start Time</span>
                           </div>
@@ -740,7 +799,7 @@ function AdminProgrammingLab() {
                       {/* Start of Class End time */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox2 w-100">
                             <input
                               type="time"
                               id="endTime"
@@ -752,35 +811,35 @@ function AdminProgrammingLab() {
                                 setErrorMessage("");
                               }}
                               required
+                              disabled
                             />
                             <span>End Time</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Start of Class day*/}
+                      {/* Start of Class Laboratory*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox2 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
-                              onChange={(e) => {
-                                setLaboratory(e.target.value);
-                                setErrorMessage("");
-                              }}
+                              onChange={(e) => setLaboratory(e.target.value)}
                               id="laboratory"
                               value={laboratory || ""}
+                              disabled
                               required
                             >
                               <option value="" disabled>
                                 Select a Laboratory
                               </option>
-                              <option value="lab_multimedia">
-                                Multimedia Lab
-                              </option>
-                              <option value="lab_programming">
-                                Programming Lab
+                              <option key={laboratory} value={laboratory}>
+                                {laboratory === "lab_multimedia"
+                                  ? "Multimedia Lab"
+                                  : laboratory === "lab_programming"
+                                  ? "Programming Lab"
+                                  : laboratory}
                               </option>
                             </select>
                           </div>
@@ -806,22 +865,14 @@ function AdminProgrammingLab() {
                   >
                     CANCEL
                   </button>
-                  <button
-                    type="submit"
-                    className="btn btn-success mb-1"
-                    data-bs-dismiss="modal"
-                    // onClick={() => requestMakeupClass()}
-                  >
-                    REQUEST MAKEUP CLASS SCHEDULE
-                  </button>
                 </div>
               </form>
             </div>
           </div>
         </div>
-        {/* END OF MODAL FOR ADDING CLASS */}
+        {/*END OF MODAL FOR UPDATING CLASS */}
       </div>
     );
   }
 }
-export default AdminProgrammingLab;
+export default AdminCancelClassHistory;

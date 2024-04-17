@@ -139,26 +139,6 @@ function AdminSidebar() {
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
-                  {/* <li className="sidebar-item">
-                  <a href="/managements/students" className="sidebar-link">
-                    Students
-                  </a>
-                </li>
-                <li className="sidebar-item">
-                  <a href="/managements/professors" className="sidebar-link">
-                    Professors
-                  </a>
-                </li> */}
-                  {/* <li className="sidebar-item">
-                  <a href="/managements/colleges" className="sidebar-link">
-                    Colleges
-                  </a>
-                </li>
-                <li className="sidebar-item">
-                  <a href="/managements/courses" className="sidebar-link">
-                    Courses
-                  </a>
-                </li> */}
                   <li className="sidebar-item">
                     <a
                       href="/admin/managements/classes"
@@ -167,15 +147,25 @@ function AdminSidebar() {
                       Classes
                     </a>
                   </li>
-                  <li className="sidebar-item">
-                    <a
-                      href="/admin/managements/makeup-classes"
-                      className="sidebar-link"
-                    >
-                      Makeup Classes
-                    </a>
-                  </li>
                 </ul>
+              </li>
+              <li className="sidebar-item">
+                <a
+                  href="/admin/managements/makeup-classes"
+                  className="sidebar-link"
+                >
+                  <i className="lni lni-list"></i>
+                  <span>Makeup Requests</span>
+                </a>
+              </li>
+              <li className="sidebar-item">
+                <a
+                  href="/admin/managements/cancel-classes"
+                  className="sidebar-link"
+                >
+                  <i className="lni lni-list"></i>
+                  <span>Cancel Requests</span>
+                </a>
               </li>
               <li className="sidebar-item">
                 <a href="#" className="sidebar-link">

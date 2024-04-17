@@ -26,6 +26,7 @@ import AdminProgrammingLab from "./Components/AdminProgrammingLab/AdminProgrammi
 import AdminMultimediaLab from "./Components/AdminMultimediaLab/AdminMultimediaLab";
 import AdminMakeupClassHistory from "./Components/AdminMakeupClassHistory/AdminMakeupClassHistory";
 import SuperAdminMakeupClassRequests from "./Components/SuperAdminMakeupClassRequests/SuperAdminMakeupClassRequests";
+import AdminCancelClassHistory from "./Components/AdminCancelClassHistory/AdminCancelClassHistory";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -109,6 +110,10 @@ function App() {
             <Route
               path="/admin/managements/makeup-classes"
               element={<AdminMakeupClassHistory />}
+            />
+            <Route
+              path="/admin/managements/cancel-classes"
+              element={<AdminCancelClassHistory />}
             />
 
             <Route path="/" element={<LoginPage />} />

@@ -249,6 +249,10 @@ function SuperAdminClassScheduleManagement() {
     setUpdateClassDay("");
     setUpdateStartTime("");
     setUpdateEndTime("");
+  };
+
+  const clearErrorMsg = () => {
+    setError(false);
     setErrorMessage("");
   };
 
@@ -500,6 +504,7 @@ function SuperAdminClassScheduleManagement() {
                               aria-label=".form-select-md example"
                               onChange={(e) => {
                                 setClassCode(e.target.value);
+                                clearErrorMsg();
                               }}
                               id="classCode"
                               value={classCode || ""}
@@ -542,7 +547,7 @@ function SuperAdminClassScheduleManagement() {
                               aria-label=".form-select-md example"
                               onChange={(e) => {
                                 setClassDay(e.target.value);
-                                setErrorMessage("");
+                                clearErrorMsg();
                               }}
                               id="classDay"
                               value={classDay || ""}

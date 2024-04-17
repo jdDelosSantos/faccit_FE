@@ -138,6 +138,7 @@ function SuperAdminMakeupClassRequests() {
   }, []);
 
   const [id, setId] = useState(0);
+  const [status, setStatus] = useState("");
   //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
   const handleClassUpdate = (
     id,
@@ -151,7 +152,8 @@ function SuperAdminMakeupClassRequests() {
     class_day,
     laboratory,
     start_time,
-    end_time
+    end_time,
+    makeup_class_status
   ) => {
     setId(id);
     setAbsentLaboratory(absent_laboratory);
@@ -160,13 +162,14 @@ function SuperAdminMakeupClassRequests() {
     setAbsentStartTime(absent_start_time);
     setAbsentEndTime(absent_end_time);
 
+    setLaboratory(laboratory);
     setClassCode(class_code);
     setClassName(class_name);
     setClassDay(class_day);
     setStartTime(start_time);
     setEndTime(end_time);
 
-    setLaboratory(laboratory);
+    setStatus(makeup_class_status);
   };
 
   const clearClass = () => {
@@ -179,6 +182,7 @@ function SuperAdminMakeupClassRequests() {
     setStartTime("");
     setEndTime("");
     setErrorMessage("");
+    setStatus("");
   };
 
   const handleMakeUpClassRequest = (e) => {
@@ -190,7 +194,7 @@ function SuperAdminMakeupClassRequests() {
       absent_start_time: absentStartTime,
       absent_end_time: absentEndTime,
       absent_laboratory: absentLaboratory,
-
+      status: status,
       class_code: classCode,
       class_day: classDay,
       start_time: startTime,
@@ -397,7 +401,8 @@ function SuperAdminMakeupClassRequests() {
                                 makeup.class_day,
                                 makeup.laboratory,
                                 makeup.start_time,
-                                makeup.end_time
+                                makeup.end_time,
+                                makeup.makeup_class_status
                               );
                             }}
                           >
@@ -418,8 +423,25 @@ function SuperAdminMakeupClassRequests() {
                           <button
                             type="button"
                             data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop2"
+                            data-bs-target="#staticBackdrop1"
                             className="btn btn-primary btn-sm"
+                            onClick={() => {
+                              handleClassUpdate(
+                                makeup.id,
+                                makeup.absent_class_code,
+                                makeup.absent_class_day,
+                                makeup.absent_start_time,
+                                makeup.absent_end_time,
+                                makeup.absent_laboratory,
+                                makeup.class.class_name,
+                                makeup.class_code,
+                                makeup.class_day,
+                                makeup.laboratory,
+                                makeup.start_time,
+                                makeup.end_time,
+                                makeup.makeup_class_status
+                              );
+                            }}
                           >
                             <img
                               src={require("../../Assets/images/update_user.png")}
@@ -438,8 +460,25 @@ function SuperAdminMakeupClassRequests() {
                           <button
                             type="button"
                             data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop3"
+                            data-bs-target="#staticBackdrop1"
                             className="btn btn-primary btn-sm"
+                            onClick={() => {
+                              handleClassUpdate(
+                                makeup.id,
+                                makeup.absent_class_code,
+                                makeup.absent_class_day,
+                                makeup.absent_start_time,
+                                makeup.absent_end_time,
+                                makeup.absent_laboratory,
+                                makeup.class.class_name,
+                                makeup.class_code,
+                                makeup.class_day,
+                                makeup.laboratory,
+                                makeup.start_time,
+                                makeup.end_time,
+                                makeup.makeup_class_status
+                              );
+                            }}
                           >
                             <img
                               src={require("../../Assets/images/update_user.png")}
@@ -852,22 +891,27 @@ function SuperAdminMakeupClassRequests() {
                     CANCEL
                   </button>
 
-                  <button
-                    type="button"
-                    className="btn btn-danger mb-1"
-                    data-bs-dismiss="modal"
-                    onClick={handleMakeUpClassReject}
-                  >
-                    REJECT
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-success mb-1"
-                    data-bs-dismiss="modal"
-                    // onClick={() => requestMakeupClass()}
-                  >
-                    APRROVE
-                  </button>
+                  {status === "Pending" ? (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-danger mb-1"
+                        data-bs-dismiss="modal"
+                        onClick={handleMakeUpClassReject}
+                      >
+                        REJECT
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn btn-success mb-1"
+                        data-bs-dismiss="modal"
+                      >
+                        APPROVE
+                      </button>
+                    </>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </form>
             </div>

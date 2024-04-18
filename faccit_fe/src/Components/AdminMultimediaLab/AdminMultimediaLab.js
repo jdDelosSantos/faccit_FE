@@ -707,7 +707,7 @@ function AdminMultimediaLab() {
                     data-bs-dismiss="modal"
                     // onClick={() => requestMakeupClass()}
                   >
-                    REQUEST MAKEUP CLASS SCHEDULE
+                    REQUEST MAKEUP CLASS
                   </button>
                 </div>
               </form>

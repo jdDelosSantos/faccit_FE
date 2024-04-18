@@ -179,6 +179,15 @@ function SuperAdminSidebar() {
                 </a>
               </li>
               <li className="sidebar-item">
+                <a
+                  href="/managements/cancel-classes/requests"
+                  className="sidebar-link"
+                >
+                  <i className="lni lni-list"></i>
+                  <span>Cancel Requests</span>
+                </a>
+              </li>
+              <li className="sidebar-item">
                 <a href="#" className="sidebar-link">
                   <i className="lni lni-popup"></i>
                   <span>Notification</span>

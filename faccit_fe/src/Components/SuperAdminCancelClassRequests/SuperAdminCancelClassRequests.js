@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../SuperAdminMakeupClassRequests/SuperAdminMakeupClassRequests.css";
+import "../SuperAdminCancelClassRequests/SuperAdminCancelClassRequests.css";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import https from "../../https";
 
-function SuperAdminMakeupClassRequests() {
+function SuperAdminCancelClassRequests() {
   //NEW SUBJECT USE STATES
   const [classCode, setClassCode] = useState("");
   const [className, setClassName] = useState("");
@@ -51,11 +51,11 @@ function SuperAdminMakeupClassRequests() {
 
   const currentItems = sortClassSchedule.slice(startIndex, endIndex);
 
-  const professors = useSelector((state) => state.professor.professors);
-  const colleges = useSelector((state) => state.college.colleges);
+  //   const professors = useSelector((state) => state.professor.professors);
+  //   const colleges = useSelector((state) => state.college.colleges);
 
-  const [classCollege, setClassCollege] = useState("");
-  const [updateClassCollege, setUpdateClassCollege] = useState("");
+  //   const [classCollege, setClassCollege] = useState("");
+  //   const [updateClassCollege, setUpdateClassCollege] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -63,14 +63,11 @@ function SuperAdminMakeupClassRequests() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [text, setText] = useState("");
-
   const [absentClassCode, setAbsentClassCode] = useState("");
   const [absentClassDay, setAbsentClassDay] = useState("");
   const [absentStartTime, setAbsentStartTime] = useState("");
   const [absentEndTime, setAbsentEndTime] = useState("");
   const [absentLaboratory, setAbsentLaboratory] = useState("");
-  const [selectedClass, setSelectedClass] = useState(null);
 
   const [classes, setClasses] = useState([]);
   // const classes = useSelector((state) => state.class.classes);
@@ -81,13 +78,12 @@ function SuperAdminMakeupClassRequests() {
   //Function for fetching Class Schedules
   const fetchClassSchedules = () => {
     https
-      .get("makeup_classes", {
+      .get("cancel_classes", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
         console.log(result.data);
       })
@@ -145,7 +141,7 @@ function SuperAdminMakeupClassRequests() {
     laboratory,
     start_time,
     end_time,
-    makeup_class_status
+    cancel_class_status
   ) => {
     setId(id);
 
@@ -156,7 +152,7 @@ function SuperAdminMakeupClassRequests() {
     setStartTime(start_time);
     setEndTime(end_time);
 
-    setStatus(makeup_class_status);
+    setStatus(cancel_class_status);
   };
 
   const clearClass = () => {
@@ -187,19 +183,20 @@ function SuperAdminMakeupClassRequests() {
 
     try {
       https
-        .post(`approve_makeup_class/${id}`, forApproval, {
+        .post(`approve_cancel_class/${id}`, forApproval, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
         })
         .then((result) => {
           fetchClassSchedules();
+          console.log(result.data);
           toast.success(result.data.message, { duration: 7000 });
         })
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data);
+            console.log(error.response.data.message);
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
@@ -219,13 +216,14 @@ function SuperAdminMakeupClassRequests() {
 
     try {
       https
-        .post(`reject_makeup_class`, data, {
+        .post(`reject_cancel_class`, data, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
         })
         .then((result) => {
           fetchClassSchedules();
+          console.log(result.data);
           toast.success(result.data.message, { duration: 7000 });
         })
         .catch((error) => {
@@ -284,9 +282,9 @@ function SuperAdminMakeupClassRequests() {
     return (
       <div className="base_bg w-100 p-4">
         <h1 className="my-1">
-          <b>{tokenFirstname}'S MAKEUP CLASS REQUESTS MANAGEMENT PAGE</b>
+          <b>{tokenFirstname}'S CANCEL CLASS REQUESTS MANAGEMENT PAGE</b>
         </h1>
-        <h4 className="">LIST OF MAKEUP CLASS REQUESTS</h4>
+        <h4 className="">LIST OF CANCEL CLASS REQUESTS</h4>
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center my-3">
@@ -296,7 +294,7 @@ function SuperAdminMakeupClassRequests() {
                     <input
                       className="form-control"
                       type="search"
-                      placeholder="Search Makeup Classes..."
+                      placeholder="Search Cancel Class Requests..."
                       aria-label="Search"
                       value={searchTerm}
                       onChange={(e) => {
@@ -332,7 +330,7 @@ function SuperAdminMakeupClassRequests() {
               <thead className="table-light">
                 <tr>
                   <th>DATE</th>
-                  <th>MAKEUP CLASS REQUESTER</th>
+                  <th>CANCEL CLASS REQUESTER</th>
                   <th>CLASS</th>
                   <th>STATUS</th>
                   <th>ACTIONS</th>
@@ -348,21 +346,21 @@ function SuperAdminMakeupClassRequests() {
                         {makeup.professor.user_firstname}
                       </td>
                       <td className="p-2">{makeup.class.class_name}</td>
-                      {makeup.makeup_class_status === "Pending" ? (
+                      {makeup.cancel_class_status === "Pending" ? (
                         <td className="p-2 text-warning">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
-                      ) : makeup.makeup_class_status === "Approved" ? (
+                      ) : makeup.cancel_class_status === "Approved" ? (
                         <td className="p-2 text-success">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
                       ) : (
                         <td className="p-2 text-danger">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
                       )}
 
-                      {makeup.makeup_class_status === "Pending" ? (
+                      {makeup.cancel_class_status === "Pending" ? (
                         <td className="p-2">
                           <button
                             type="button"
@@ -378,7 +376,7 @@ function SuperAdminMakeupClassRequests() {
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
-                                makeup.makeup_class_status
+                                makeup.cancel_class_status
                               );
                             }}
                           >
@@ -394,7 +392,7 @@ function SuperAdminMakeupClassRequests() {
                             />
                           </button>
                         </td>
-                      ) : makeup.makeup_class_status === "Approved" ? (
+                      ) : makeup.cancel_class_status === "Approved" ? (
                         <td className="p-2">
                           <button
                             type="button"
@@ -410,7 +408,7 @@ function SuperAdminMakeupClassRequests() {
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
-                                makeup.makeup_class_status
+                                makeup.cancel_class_status
                               );
                             }}
                           >
@@ -442,7 +440,7 @@ function SuperAdminMakeupClassRequests() {
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
-                                makeup.makeup_class_status
+                                makeup.cancel_class_status
                               );
                             }}
                           >
@@ -516,7 +514,7 @@ function SuperAdminMakeupClassRequests() {
             <div className="modal-content">
               <div className="modal-header">
                 <h1 className="modal-title fs-5" id="staticBackdropLabel1">
-                  <b>MAKEUP CLASS SCHEDULE</b>
+                  <b>CANCEL CLASS SCHEDULE</b>
                 </h1>
               </div>
 
@@ -544,7 +542,7 @@ function SuperAdminMakeupClassRequests() {
                       )}
 
                       <h3 className="text-center">
-                        Requested Makeup Class Schedule
+                        Requested Class Schedule to be Cancelled
                       </h3>
 
                       {/* Start of Class Select */}
@@ -799,4 +797,4 @@ function SuperAdminMakeupClassRequests() {
     );
   }
 }
-export default SuperAdminMakeupClassRequests;
+export default SuperAdminCancelClassRequests;

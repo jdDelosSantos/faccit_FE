@@ -45,10 +45,7 @@ function AdminCancelClassHistory() {
           .includes(searchTerm.toLowerCase()) ||
         item.professor.user_lastname
           .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        item.created_date.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
+          .includes(searchTerm.toLowerCase())
     );
 
   const currentItems = sortClassSchedule.slice(startIndex, endIndex);
@@ -78,7 +75,7 @@ function AdminCancelClassHistory() {
   //Function for fetching Class Schedules
   const fetchClassSchedules = () => {
     https
-      .get(`makeup_classes_prof/${tokenId}`, {
+      .get(`cancel_classes_prof/${tokenId}`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -135,25 +132,15 @@ function AdminCancelClassHistory() {
   //FUNCTION FOR PUTTING SELECTED COURSE TO UPDATE FIELDS
   const handleClassUpdate = (
     id,
-    absent_class_code,
-    absent_class_day,
-    absent_start_time,
-    absent_end_time,
-    absent_laboratory,
     class_name,
     class_code,
     class_day,
     laboratory,
     start_time,
     end_time,
-    makeup_class_status
+    cancel_class_status
   ) => {
     setId(id);
-    setAbsentLaboratory(absent_laboratory);
-    setAbsentClassCode(absent_class_code);
-    setAbsentClassDay(absent_class_day);
-    setAbsentStartTime(absent_start_time);
-    setAbsentEndTime(absent_end_time);
 
     setLaboratory(laboratory);
     setClassCode(class_code);
@@ -162,14 +149,10 @@ function AdminCancelClassHistory() {
     setStartTime(start_time);
     setEndTime(end_time);
 
-    setStatus(makeup_class_status);
+    setStatus(cancel_class_status);
   };
 
   const clearClass = () => {
-    setAbsentClassCode("");
-    setAbsentClassDay("");
-    setAbsentStartTime("");
-    setAbsentEndTime("");
     setClassCode("");
     setClassDay("");
     setStartTime("");
@@ -182,11 +165,6 @@ function AdminCancelClassHistory() {
     e.preventDefault();
 
     const forApproval = {
-      absent_class_code: absentClassCode,
-      absent_class_day: absentClassDay,
-      absent_start_time: absentStartTime,
-      absent_end_time: absentEndTime,
-      absent_laboratory: absentLaboratory,
       status: status,
       class_code: classCode,
       class_day: classDay,
@@ -296,7 +274,7 @@ function AdminCancelClassHistory() {
     return (
       <div className="base_bg w-100 p-4">
         <h1 className="my-1">
-          <b>{tokenFirstname}'S CANCEL CLASS REQUESTS MANAGEMENT PAGE</b>
+          <b>{tokenFirstname}'S CANCEL CLASS REQUESTS PAGE</b>
         </h1>
         <h4 className="">LIST OF CANCEL CLASS REQUESTS</h4>
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
@@ -342,21 +320,21 @@ function AdminCancelClassHistory() {
                         {makeup.professor.user_firstname}
                       </td>
                       <td className="p-2">{makeup.class.class_name}</td>
-                      {makeup.makeup_class_status === "Pending" ? (
+                      {makeup.cancel_class_status === "Pending" ? (
                         <td className="p-2 text-warning">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
-                      ) : makeup.makeup_class_status === "Approved" ? (
+                      ) : makeup.cancel_class_status === "Approved" ? (
                         <td className="p-2 text-success">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
                       ) : (
                         <td className="p-2 text-danger">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
                       )}
 
-                      {makeup.makeup_class_status === "Pending" ? (
+                      {makeup.cancel_class_status === "Pending" ? (
                         <td className="p-2">
                           <button
                             type="button"
@@ -366,11 +344,6 @@ function AdminCancelClassHistory() {
                             onClick={() => {
                               handleClassUpdate(
                                 makeup.id,
-                                makeup.absent_class_code,
-                                makeup.absent_class_day,
-                                makeup.absent_start_time,
-                                makeup.absent_end_time,
-                                makeup.absent_laboratory,
                                 makeup.class.class_name,
                                 makeup.class_code,
                                 makeup.class_day,
@@ -393,21 +366,16 @@ function AdminCancelClassHistory() {
                             />
                           </button>
                         </td>
-                      ) : makeup.makeup_class_status === "Approved" ? (
+                      ) : makeup.cancel_class_status === "Approved" ? (
                         <td className="p-2">
                           <button
                             type="button"
                             data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop1"
-                            className="btn btn-primary btn-sm"
+                            className="btn btn-secondary btn-sm"
                             onClick={() => {
                               handleClassUpdate(
                                 makeup.id,
-                                makeup.absent_class_code,
-                                makeup.absent_class_day,
-                                makeup.absent_start_time,
-                                makeup.absent_end_time,
-                                makeup.absent_laboratory,
                                 makeup.class.class_name,
                                 makeup.class_code,
                                 makeup.class_day,
@@ -419,7 +387,7 @@ function AdminCancelClassHistory() {
                             }}
                           >
                             <img
-                              src={require("../../Assets/images/update_user.png")}
+                              src={require("../../Assets/images/list.png")}
                               width="25"
                               height="25"
                               style={{
@@ -436,27 +404,22 @@ function AdminCancelClassHistory() {
                             type="button"
                             data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop1"
-                            className="btn btn-primary btn-sm"
+                            className="btn btn-secondary btn-sm"
                             onClick={() => {
                               handleClassUpdate(
                                 makeup.id,
-                                makeup.absent_class_code,
-                                makeup.absent_class_day,
-                                makeup.absent_start_time,
-                                makeup.absent_end_time,
-                                makeup.absent_laboratory,
                                 makeup.class.class_name,
                                 makeup.class_code,
                                 makeup.class_day,
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
-                                makeup.makeup_class_status
+                                makeup.cancel_class_status
                               );
                             }}
                           >
                             <img
-                              src={require("../../Assets/images/update_user.png")}
+                              src={require("../../Assets/images/list.png")}
                               width="25"
                               height="25"
                               style={{
@@ -525,7 +488,7 @@ function AdminCancelClassHistory() {
             <div className="modal-content">
               <div className="modal-header">
                 <h1 className="modal-title fs-5" id="staticBackdropLabel1">
-                  <b>MAKEUP CLASS SCHEDULE</b>
+                  <b>CANCEL CLASS SCHEDULE</b>
                 </h1>
               </div>
 
@@ -552,154 +515,7 @@ function AdminCancelClassHistory() {
                         ""
                       )}
 
-                      <h3>Absent for this Class Schedule</h3>
-                      {/* Start of Class Select */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={(e) =>
-                                setAbsentClassCode(e.target.value)
-                              }
-                              id="absentClassCode"
-                              value={absentClassCode || ""}
-                              required
-                              disabled
-                            >
-                              <option value="" disabled>
-                                Select a Class
-                              </option>
-                              {classes.length > 0
-                                ? classes
-                                    .sort((classes1, classes2) =>
-                                      classes1.class_name.localeCompare(
-                                        classes2.class_name
-                                      )
-                                    )
-                                    .map((classes) => (
-                                      <option
-                                        key={`${classes.id}-${classes.class_name}`}
-                                        value={classes.class_code}
-                                      >
-                                        {classes.class_name}
-                                      </option>
-                                    ))
-                                : ""}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class day*/}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={(e) =>
-                                setAbsentClassDay(e.target.value)
-                              }
-                              id="absentClassDay"
-                              value={absentClassDay || ""}
-                              required
-                              disabled
-                            >
-                              <option value="" disabled>
-                                Select a Day
-                              </option>
-                              <option value="Monday">Monday</option>
-                              <option value="Tuesday">Tuesday</option>
-                              <option value="Wednesday">Wednesday</option>
-                              <option value="Thursday">Thursday</option>
-                              <option value="Friday">Friday</option>
-                              <option value="Saturday">Saturday</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class Start time */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <input
-                              type="time"
-                              id="absentStartTime"
-                              value={absentStartTime}
-                              min="07:30"
-                              max="21:00"
-                              onChange={(e) => {
-                                setAbsentStartTime(e.target.value);
-                                setErrorMessage("");
-                              }}
-                              required
-                              disabled
-                            />
-                            <span>Start Time</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class End time */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <input
-                              type="time"
-                              id="endTime"
-                              value={absentEndTime}
-                              min="07:30"
-                              max="21:00"
-                              onChange={(e) => {
-                                setAbsentEndTime(e.target.value);
-                                setErrorMessage("");
-                              }}
-                              required
-                              disabled
-                            />
-                            <span>End Time</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class Laboratory*/}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={(e) =>
-                                setAbsentLaboratory(e.target.value)
-                              }
-                              id="absentLaboratory"
-                              value={absentLaboratory || ""}
-                              disabled
-                              required
-                            >
-                              <option value="" disabled>
-                                Select a Laboratory
-                              </option>
-                              <option
-                                key={absentLaboratory}
-                                value={absentLaboratory}
-                              >
-                                {absentLaboratory === "lab_multimedia"
-                                  ? "Multimedia Lab"
-                                  : absentLaboratory === "lab_programming"
-                                  ? "Programming Lab"
-                                  : absentLaboratory}
-                              </option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <hr />
-
-                      <h3>Makeup Class Schedule</h3>
+                      <h3 className="text-center">Cancel Class Schedule</h3>
 
                       {/* Start of Class Select */}
                       <div className="">

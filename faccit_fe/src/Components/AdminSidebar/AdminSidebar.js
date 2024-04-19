@@ -147,26 +147,61 @@ function AdminSidebar() {
                       Classes
                     </a>
                   </li>
+                  <li className="sidebar-item">
+                    <a
+                      href="/admin/managements/attendances/students"
+                      className="sidebar-link"
+                    >
+                      Student Attendances
+                    </a>
+                  </li>
+                  <li className="sidebar-item">
+                    <a
+                      href="/admin/managements/attendances/professor"
+                      className="sidebar-link"
+                    >
+                      Professor Attendances
+                    </a>
+                  </li>
                 </ul>
               </li>
+
               <li className="sidebar-item">
                 <a
-                  href="/admin/managements/makeup-classes"
-                  className="sidebar-link"
+                  href="#"
+                  className="sidebar-link has-dropdown collapsed"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#request"
+                  aria-expanded="true"
+                  aria-controls="request"
                 >
-                  <i className="lni lni-list"></i>
-                  <span>Makeup Requests</span>
+                  <i className="lni lni-keyboard"></i>
+                  <span>Requests Handling</span>
                 </a>
-              </li>
-              <li className="sidebar-item">
-                <a
-                  href="/admin/managements/cancel-classes"
-                  className="sidebar-link"
+                <ul
+                  id="request"
+                  className="sidebar-dropdown list-unstyle collapse"
+                  data-bs-parent="#sidebar"
                 >
-                  <i className="lni lni-list"></i>
-                  <span>Cancel Requests</span>
-                </a>
+                  <li className="sidebar-item">
+                    <a
+                      href="/admin/managements/makeup-classes"
+                      className="sidebar-link"
+                    >
+                      <span>Makeup Requests</span>
+                    </a>
+                  </li>
+                  <li className="sidebar-item">
+                    <a
+                      href="/admin/managements/cancel-classes"
+                      className="sidebar-link"
+                    >
+                      <span>Cancel Requests</span>
+                    </a>
+                  </li>
+                </ul>
               </li>
+
               <li className="sidebar-item">
                 <a href="#" className="sidebar-link">
                   <i className="lni lni-popup"></i>

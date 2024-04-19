@@ -171,8 +171,6 @@ function AdminProgrammingLab() {
     endIndexs
   );
 
-  console.log(currentLabClassSchedules);
-
   //Function for fetching Laboratory Class Schedules
   const fetchLaboratoryClassSchedules = () => {
     const laboratory = "lab_programming";
@@ -221,11 +219,6 @@ function AdminProgrammingLab() {
 
     const makeupClassData = {
       laboratory: laboratory,
-      absent_laboratory: absentLaboratory,
-      absent_class_code: absentClassCode,
-      absent_class_day: absentClassDay,
-      absent_start_time: absentStartTime,
-      absent_end_time: absentEndTime,
       class_code: classCode,
       class_day: classDay,
       start_time: startTime,
@@ -258,11 +251,47 @@ function AdminProgrammingLab() {
       });
   };
 
+  const handleClassCancelationRequest = (e) => {
+    e.preventDefault();
+
+    const cancelClassData = {
+      laboratory: absentLaboratory,
+      class_code: absentClassCode,
+      class_day: absentClassDay,
+      start_time: absentStartTime,
+      end_time: absentEndTime,
+    };
+
+    console.log(id);
+    console.log(cancelClassData);
+
+    https
+      .post(`request_cancel_class/${id}`, cancelClassData, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        toast.success(result.data.message, { duration: 7000 });
+        clearClass();
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          console.log(error.response.data.message);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          console.log(error.response.data.message);
+          goBackToLogin();
+        }
+      });
+  };
+
   const handleClassChange = (e) => {
     const selectedClassCode = e.target.value;
     setAbsentClassCode(selectedClassCode);
     setClassCode(selectedClassCode);
-
     const selectedClass = classes.find(
       (classItem) => classItem.class_code === selectedClassCode
     );
@@ -271,13 +300,24 @@ function AdminProgrammingLab() {
 
   useEffect(() => {
     if (selectedClass && absentClassDay) {
-      const classDetails = selectedClass.facilities.find(
+      const classDetails = selectedClass.facilities.filter(
         (facility) => facility.class_day === absentClassDay
       );
-      if (classDetails) {
-        setAbsentStartTime(classDetails.start_time);
-        setAbsentEndTime(classDetails.end_time);
-        setAbsentLaboratory(classDetails.laboratory);
+
+      if (classDetails.length > 0) {
+        const selectedFacility = classDetails.find(
+          (facility) => facility.start_time === absentStartTime
+        );
+
+        if (selectedFacility) {
+          setAbsentStartTime(selectedFacility.start_time);
+          setAbsentEndTime(selectedFacility.end_time);
+          setAbsentLaboratory(selectedFacility.laboratory);
+        } else {
+          setAbsentStartTime(classDetails[0].start_time);
+          setAbsentEndTime(classDetails[0].end_time);
+          setAbsentLaboratory(classDetails[0].laboratory);
+        }
       } else {
         setAbsentStartTime("");
         setAbsentEndTime("");
@@ -358,11 +398,29 @@ function AdminProgrammingLab() {
                   type="button"
                   data-bs-toggle="modal"
                   data-bs-target="#staticBackdrop4"
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-primary btn-sm mx-2"
                   onClick={() => fetchClasses()}
                 >
                   <img
-                    src={require("../../Assets/images/add.png")}
+                    src={require("../../Assets/images/request.png")}
+                    width="25"
+                    height="25"
+                    style={{
+                      TopLeftRadius: ".3rem",
+                      TopRightRadius: ".3rem",
+                    }}
+                    alt="add"
+                  />
+                </button>
+                <button
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop5"
+                  className="btn btn-danger btn-sm"
+                  onClick={() => fetchClasses()}
+                >
+                  <img
+                    src={require("../../Assets/images/request.png")}
                     width="25"
                     height="25"
                     style={{
@@ -440,7 +498,7 @@ function AdminProgrammingLab() {
           </div>
         </div>
 
-        {/* START OF MODAL FOR ADDING COURSE */}
+        {/* START OF MODAL FOR REQUESTING MAKEUP CLASS */}
         <div
           className="modal fade"
           id="staticBackdrop4"
@@ -480,170 +538,9 @@ function AdminProgrammingLab() {
                       ) : (
                         ""
                       )}
-
-                      <h3>Absent for this Class Schedule</h3>
-                      {/* Start of Class Select */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={handleClassChange}
-                              id="absentClassCode"
-                              value={absentClassCode || ""}
-                              required
-                            >
-                              <option value="" disabled>
-                                Select a Class
-                              </option>
-                              {classes.length > 0
-                                ? classes
-                                    .sort((classes1, classes2) =>
-                                      classes1.class_name.localeCompare(
-                                        classes2.class_name
-                                      )
-                                    )
-                                    .map((classes) => (
-                                      <option
-                                        key={`${classes.id}-${classes.class_name}`}
-                                        value={classes.class_code}
-                                      >
-                                        {classes.class_name}
-                                      </option>
-                                    ))
-                                : ""}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class day*/}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={(e) =>
-                                setAbsentClassDay(e.target.value)
-                              }
-                              id="absentClassDay"
-                              value={absentClassDay || ""}
-                              required
-                            >
-                              <option value="" disabled>
-                                Select a Day
-                              </option>
-                              {selectedClass &&
-                                selectedClass.facilities.map((facility) => (
-                                  <option
-                                    key={facility.class_day}
-                                    value={facility.class_day}
-                                  >
-                                    {facility.class_day}
-                                  </option>
-                                ))}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class Start time */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <input
-                              type="time"
-                              id="absentStartTime"
-                              value={absentStartTime}
-                              min="07:30"
-                              max="21:00"
-                              onChange={(e) => {
-                                setAbsentStartTime(e.target.value);
-                                setErrorMessage("");
-                              }}
-                              required
-                              disabled={!selectedClass || !absentClassDay}
-                            />
-                            <span>Start Time</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class End time */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <input
-                              type="time"
-                              id="endTime"
-                              value={absentEndTime}
-                              min="07:30"
-                              max="21:00"
-                              onChange={(e) => {
-                                setAbsentEndTime(e.target.value);
-                                setErrorMessage("");
-                              }}
-                              required
-                              disabled={!selectedClass || !absentClassDay}
-                            />
-                            <span>End Time</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class Laboratory*/}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={(e) =>
-                                setAbsentLaboratory(e.target.value)
-                              }
-                              id="absentLaboratory"
-                              value={absentLaboratory || ""}
-                              disabled
-                              required
-                            >
-                              <option value="" disabled>
-                                Select a Laboratory
-                              </option>
-                              {selectedClass &&
-                                selectedClass.facilities
-                                  .filter(
-                                    (facility) =>
-                                      facility.class_day === absentClassDay
-                                  )
-                                  .map((facility) => (
-                                    <option
-                                      key={facility.laboratory}
-                                      value={facility.laboratory}
-                                    >
-                                      {facility.laboratory === "lab_multimedia"
-                                        ? "Multimedia Lab"
-                                        : facility.laboratory ===
-                                          "lab_programming"
-                                        ? "Programming Lab"
-                                        : facility.laboratory}
-                                    </option>
-                                  ))}
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <p>
-                        <i>
-                          Note: Class Schedules displayed are only for within
-                          Multimedia lab.
-                        </i>
-                      </p>
-
-                      <hr />
-
-                      <h3>Makeup Class Schedule</h3>
+                      <h3 className="text-center">
+                        Request a Makeup Class Schedule
+                      </h3>
 
                       {/* Start of Class Select */}
                       <div className="">
@@ -776,7 +673,7 @@ function AdminProgrammingLab() {
                               <option value="" disabled>
                                 Select a Laboratory
                               </option>
-                              <option value="lab_multimedia">
+                              <option value="lab_programming">
                                 Multimedia Lab
                               </option>
                               <option value="lab_programming">
@@ -812,7 +709,241 @@ function AdminProgrammingLab() {
                     data-bs-dismiss="modal"
                     // onClick={() => requestMakeupClass()}
                   >
-                    REQUEST MAKEUP CLASS SCHEDULE
+                    REQUEST MAKEUP CLASS
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {/* END OF MODAL FOR REQUESTING MAKEUP CLASS */}
+
+        {/* END OF MODAL FOR REQUESTING CANCEL CLASS */}
+        <div
+          className="modal fade"
+          id="staticBackdrop5"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabIndex="-1"
+          aria-labelledby="staticBackdropLabel5"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="staticBackdropLabel5">
+                  <b>REQUEST CLASS CANCELATION</b>
+                </h1>
+              </div>
+
+              <form onSubmit={(e) => handleClassCancelationRequest(e)}>
+                <div className="modal-body">
+                  <div className="row d-flex justify-content-center align-items-center h-100">
+                    <img
+                      src={require("../../Assets/images/faith-cover-1280x420.png")}
+                      className="w-100 rounded-top"
+                      style={{
+                        TopLeftRadius: ".3rem",
+                        TopRightRadius: ".3rem",
+                      }}
+                      alt="cover"
+                    />
+
+                    <div className="card-body p-4 p-md-5">
+                      <div className="container d-flex justify-content-center"></div>
+                      {error == true ? (
+                        <div className="d-flex justify-content-center">
+                          <p className="text-danger fs-4">{errorMessage}</p>
+                        </div>
+                      ) : (
+                        ""
+                      )}
+
+                      <h3 className="text-center">
+                        Request Cancelation of a Class
+                      </h3>
+                      {/* Start of Class Select */}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox1 w-100">
+                            <select
+                              className="form-select form-select-md mb-3"
+                              aria-label=".form-select-md example"
+                              onChange={handleClassChange}
+                              id="absentClassCode"
+                              value={absentClassCode || ""}
+                              required
+                            >
+                              <option value="" disabled>
+                                Select a Class
+                              </option>
+                              {classes.length > 0
+                                ? classes
+                                    .sort((classes1, classes2) =>
+                                      classes1.class_name.localeCompare(
+                                        classes2.class_name
+                                      )
+                                    )
+                                    .map((classes) => (
+                                      <option
+                                        key={`${classes.id}-${classes.class_name}`}
+                                        value={classes.class_code}
+                                      >
+                                        {classes.class_name}
+                                      </option>
+                                    ))
+                                : ""}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class day*/}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox1 w-100">
+                            <select
+                              className="form-select form-select-md mb-3"
+                              aria-label=".form-select-md example"
+                              onChange={(e) => {
+                                const [day, startTime] =
+                                  e.target.value.split("|");
+                                setAbsentClassDay(day);
+                                setAbsentStartTime(startTime);
+                              }}
+                              id="absentClassDay"
+                              value={`${absentClassDay || ""}|${
+                                absentStartTime || ""
+                              }`}
+                              required
+                            >
+                              <option value="">Select a Day and Time</option>
+                              {selectedClass &&
+                                selectedClass.facilities.map((facility) => (
+                                  <option
+                                    key={`${facility.class_day}|${facility.start_time}`}
+                                    value={`${facility.class_day}|${facility.start_time}`}
+                                  >
+                                    {`${facility.class_day} (${facility.start_time} - ${facility.end_time})`}
+                                  </option>
+                                ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class Start time */}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox2 w-100">
+                            <input
+                              type="time"
+                              id="absentStartTime"
+                              value={absentStartTime}
+                              min="07:30"
+                              max="21:00"
+                              onChange={(e) => {
+                                setAbsentStartTime(e.target.value);
+                                setErrorMessage("");
+                              }}
+                              required
+                              disabled={!selectedClass || !absentClassDay}
+                            />
+                            <span>Start Time</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class End time */}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox2 w-100">
+                            <input
+                              type="time"
+                              id="endTime"
+                              value={absentEndTime}
+                              min="07:30"
+                              max="21:00"
+                              onChange={(e) => {
+                                setAbsentEndTime(e.target.value);
+                                setErrorMessage("");
+                              }}
+                              required
+                              disabled={!selectedClass || !absentClassDay}
+                            />
+                            <span>End Time</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class Laboratory*/}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox2 w-100">
+                            <select
+                              className="form-select form-select-md mb-3"
+                              aria-label=".form-select-md example"
+                              onChange={(e) =>
+                                setAbsentLaboratory(e.target.value)
+                              }
+                              id="absentLaboratory"
+                              value={absentLaboratory || ""}
+                              disabled={!selectedClass || !absentClassDay}
+                              required
+                            >
+                              <option value="" disabled>
+                                Select a Laboratory
+                              </option>
+                              {selectedClass &&
+                                selectedClass.facilities
+                                  .filter(
+                                    (facility) =>
+                                      facility.class_day === absentClassDay
+                                  )
+                                  .map((facility) => (
+                                    <option
+                                      key={`${facility.id}-${facility.laboratory}`}
+                                      value={facility.laboratory}
+                                    >
+                                      {facility.laboratory === "lab_programming"
+                                        ? "Programming Lab"
+                                        : facility.laboratory ===
+                                          "lab_multimedia"
+                                        ? "Multimedia Lab"
+                                        : facility.laboratory}
+                                    </option>
+                                  ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                      <p>
+                        <i>
+                          Note: Class Schedules displayed are only for within
+                          Programming Lab.
+                        </i>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                    onClick={() => {
+                      clearClass();
+                    }}
+                  >
+                    CANCEL
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-success mb-1"
+                    data-bs-dismiss="modal"
+                    // onClick={() => requestMakeupClass()}
+                  >
+                    REQUEST CLASS CANCELATION
                   </button>
                 </div>
               </form>

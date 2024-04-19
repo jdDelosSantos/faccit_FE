@@ -282,7 +282,7 @@ function SuperAdminCancelClassRequests() {
     return (
       <div className="base_bg w-100 p-4">
         <h1 className="my-1">
-          <b>{tokenFirstname}'S CANCEL CLASS REQUESTS MANAGEMENT PAGE</b>
+          <b>{tokenFirstname}'S CANCEL CLASS REQUESTS PAGE</b>
         </h1>
         <h4 className="">LIST OF CANCEL CLASS REQUESTS</h4>
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
@@ -398,7 +398,7 @@ function SuperAdminCancelClassRequests() {
                             type="button"
                             data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop1"
-                            className="btn btn-primary btn-sm"
+                            className="btn btn-secondary btn-sm"
                             onClick={() => {
                               handleClassUpdate(
                                 makeup.id,
@@ -413,7 +413,7 @@ function SuperAdminCancelClassRequests() {
                             }}
                           >
                             <img
-                              src={require("../../Assets/images/update_user.png")}
+                              src={require("../../Assets/images/list.png")}
                               width="25"
                               height="25"
                               style={{
@@ -430,7 +430,7 @@ function SuperAdminCancelClassRequests() {
                             type="button"
                             data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop1"
-                            className="btn btn-primary btn-sm"
+                            className="btn btn-secondary btn-sm"
                             onClick={() => {
                               handleClassUpdate(
                                 makeup.id,
@@ -445,7 +445,7 @@ function SuperAdminCancelClassRequests() {
                             }}
                           >
                             <img
-                              src={require("../../Assets/images/update_user.png")}
+                              src={require("../../Assets/images/list.png")}
                               width="25"
                               height="25"
                               style={{

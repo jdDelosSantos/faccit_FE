@@ -28,6 +28,8 @@ import AdminMakeupClassHistory from "./Components/AdminMakeupClassHistory/AdminM
 import SuperAdminMakeupClassRequests from "./Components/SuperAdminMakeupClassRequests/SuperAdminMakeupClassRequests";
 import AdminCancelClassHistory from "./Components/AdminCancelClassHistory/AdminCancelClassHistory";
 import SuperAdminCancelClassRequests from "./Components/SuperAdminCancelClassRequests/SuperAdminCancelClassRequests";
+import AdminProfessorAttendancePage from "./Components/AdminProfessorAttendancePage/AdminProfessorAttendancePage";
+import AdminStudentAttendancePage from "./Components/AdminStudentAttendancePage/AdminStudentAttendancePage";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -121,6 +123,14 @@ function App() {
             <Route
               path="/admin/managements/cancel-classes"
               element={<AdminCancelClassHistory />}
+            />
+            <Route
+              path="/admin/managements/attendances/professor"
+              element={<AdminProfessorAttendancePage />}
+            />
+            <Route
+              path="/admin/managements/attendances/students"
+              element={<AdminStudentAttendancePage />}
             />
 
             <Route path="/" element={<LoginPage />} />

@@ -37,22 +37,59 @@ function SuperAdminClassScheduleManagement() {
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
-  const sortClassSchedule = classSchedules
-    .sort((classes1, classes2) =>
-      classes1.class.class_name.localeCompare(classes2.class.class_name)
-    )
-    .filter(
-      (item) =>
-        item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.class.class_name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        item.class_day.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  // const sortClassSchedule = [...classSchedules]
+  //   .sort((classes1, classes2) =>
+  //     classes1.class.class_name.localeCompare(classes2.class.class_name)
+  //   )
 
-  const currentItems = sortClassSchedule.slice(startIndex, endIndex);
+  const sortData = (classSchedules) => {
+    const dayOrder = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+
+    return classSchedules.sort((a, b) => {
+      // Sort by class_code
+      if (a.class.class_code < b.class.class_code) return -1;
+      if (a.class.class_code > b.class.class_code) return 1;
+
+      // If class_code is the same, sort by day
+      const dayA = dayOrder.indexOf(a.class_day);
+      const dayB = dayOrder.indexOf(b.class_day);
+
+      if (dayA < dayB) return -1;
+      if (dayA > dayB) return 1;
+
+      // If day is the same, sort by start_time
+      const timeA = parseTime(a.start_time);
+      const timeB = parseTime(b.start_time);
+
+      if (timeA < timeB) return -1;
+      if (timeA > timeB) return 1;
+
+      return 0;
+    });
+  };
+
+  const parseTime = (timeString) => {
+    const [hours, minutes] = timeString.split(":");
+    return Number(hours) * 60 + Number(minutes);
+  };
+  const items = sortData(classSchedules).filter(
+    (item) =>
+      item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.class.class_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.class_day.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentItems = items.slice(startIndex, endIndex);
 
   const classes = useSelector((state) => state.class.classes);
   const professors = useSelector((state) => state.professor.professors);
@@ -78,6 +115,7 @@ function SuperAdminClassScheduleManagement() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
+        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -346,8 +384,7 @@ function SuperAdminClassScheduleManagement() {
                   <th>CLASS CODE</th>
                   <th>CLASS NAME</th>
                   <th>CLASS DAY</th>
-                  <th>START TIME</th>
-                  <th>END TIME</th>
+                  <th>TIME RANGE</th>
                   <th>ACTIONS</th>
                 </tr>
               </thead>
@@ -358,8 +395,10 @@ function SuperAdminClassScheduleManagement() {
                       <td className="p-2">{classes.class_code}</td>
                       <td className="p-2">{classes.class.class_name}</td>
                       <td className="p-2">{classes.class_day}</td>
-                      <td className="p-2">{classes.start_time}</td>
-                      <td className="p-2">{classes.end_time}</td>
+                      <td className="p-2">
+                        {classes.start_time} - {classes.end_time}
+                      </td>
+
                       <td className="p-2">
                         <button
                           type="button"
@@ -498,7 +537,7 @@ function SuperAdminClassScheduleManagement() {
                       {/* Start of Class Select */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -534,6 +573,7 @@ function SuperAdminClassScheduleManagement() {
                                     ))
                                 : ""}
                             </select>
+                            <span>Class Name</span>
                           </div>
                         </div>
                       </div>
@@ -541,7 +581,7 @@ function SuperAdminClassScheduleManagement() {
                       {/* Start of Class day*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -563,6 +603,7 @@ function SuperAdminClassScheduleManagement() {
                               <option value="Friday">Friday</option>
                               <option value="Saturday">Saturday</option>
                             </select>
+                            <span>Class Day</span>
                           </div>
                         </div>
                       </div>
@@ -570,7 +611,7 @@ function SuperAdminClassScheduleManagement() {
                       {/* Start of Class Start time */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <input
                               type="time"
                               id="startTime"
@@ -583,6 +624,7 @@ function SuperAdminClassScheduleManagement() {
                               }}
                               required
                             />
+                            <span>Start Time</span>
                           </div>
                         </div>
                       </div>
@@ -590,7 +632,7 @@ function SuperAdminClassScheduleManagement() {
                       {/* Start of Class End time */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <input
                               type="time"
                               id="endTime"
@@ -603,6 +645,7 @@ function SuperAdminClassScheduleManagement() {
                               }}
                               required
                             />
+                            <span>End Time</span>
                           </div>
                         </div>
                       </div>
@@ -707,7 +750,7 @@ function SuperAdminClassScheduleManagement() {
                       {/* Start of Class day*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -729,6 +772,7 @@ function SuperAdminClassScheduleManagement() {
                               <option value="Friday">Friday</option>
                               <option value="Saturday">Saturday</option>
                             </select>
+                            <span>Class Day</span>
                           </div>
                         </div>
                       </div>
@@ -736,7 +780,7 @@ function SuperAdminClassScheduleManagement() {
                       {/* Start of Class Start time */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <input
                               type="time"
                               id="updateStartTime"
@@ -749,6 +793,7 @@ function SuperAdminClassScheduleManagement() {
                               }}
                               required
                             />
+                            <span>Start Time</span>
                           </div>
                         </div>
                       </div>
@@ -756,7 +801,7 @@ function SuperAdminClassScheduleManagement() {
                       {/* Start of Class End time */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <input
                               type="time"
                               id="updateEndTime"
@@ -769,6 +814,7 @@ function SuperAdminClassScheduleManagement() {
                               }}
                               required
                             />
+                            <span>End Time</span>
                           </div>
                         </div>
                       </div>

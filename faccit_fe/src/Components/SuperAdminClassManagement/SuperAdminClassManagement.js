@@ -846,7 +846,7 @@ function SuperAdminClassManagement() {
                       {/* Start of Course College */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -876,6 +876,7 @@ function SuperAdminClassManagement() {
                                     ))
                                 : ""}
                             </select>
+                            <span>Class College</span>
                           </div>
                         </div>
                       </div>
@@ -883,7 +884,7 @@ function SuperAdminClassManagement() {
                       {/* Start of Prof ID */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -915,6 +916,7 @@ function SuperAdminClassManagement() {
                                     ))
                                 : ""}
                             </select>
+                            <span>Professor</span>
                           </div>
                         </div>
                       </div>

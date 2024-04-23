@@ -678,11 +678,8 @@ function AdminClassManagement() {
                     <thead className="table-light">
                       <tr>
                         <th>FAITH ID</th>
-                        <th>LAST NAME</th>
-                        <th>FIRST NAME</th>
-                        <th>COURSE</th>
-                        <th>YEAR</th>
-                        <th>SECTION</th>
+                        <th>STUDENT NAME</th>
+                        <th>COURSE, YEAR & SECTION</th>
                       </tr>
                     </thead>
                     <tbody className="table-group-divider">
@@ -690,13 +687,13 @@ function AdminClassManagement() {
                         currentListStudents.map((student, index) => (
                           <tr key={student.id} className="table-primary">
                             <td className="p-2">{student.faith_id}</td>
-                            <td className="p-2">{student.student.std_lname}</td>
-                            <td className="p-2">{student.student.std_fname}</td>
                             <td className="p-2">
-                              {student.student.std_course}
+                              {student.student.std_lname},{" "}
+                              {student.student.std_fname}
                             </td>
-                            <td className="p-2">{student.student.std_level}</td>
                             <td className="p-2">
+                              {student.student.std_course}-
+                              {student.student.std_level}
                               {student.student.std_section}
                             </td>
                           </tr>
@@ -909,11 +906,8 @@ function AdminClassManagement() {
                           />
                         </th>
                         <th>FAITH ID</th>
-                        <th>LAST NAME</th>
-                        <th>FIRST NAME</th>
-                        <th>COURSE</th>
-                        <th>YEAR</th>
-                        <th>SECTION</th>
+                        <th>STUDENT NAME</th>
+                        <th>COURSE, YEAR & SECTION</th>
                       </tr>
                     </thead>
                     <tbody className="table-group-divider">
@@ -928,11 +922,14 @@ function AdminClassManagement() {
                               />
                             </td>
                             <td className="p-2">{student.faith_id}</td>
-                            <td className="p-2">{student.std_lname}</td>
-                            <td className="p-2">{student.std_fname}</td>
-                            <td className="p-2">{student.std_course}</td>
-                            <td className="p-2">{student.std_level}</td>
-                            <td className="p-2">{student.std_section}</td>
+                            <td className="p-2">
+                              {student.std_lname}, {student.std_fname}
+                            </td>
+
+                            <td className="p-2">
+                              {student.std_course}-{student.std_level}
+                              {student.std_section}
+                            </td>
                           </tr>
                         ))
                       ) : (
@@ -1078,11 +1075,8 @@ function AdminClassManagement() {
                           />
                         </th>
                         <th>FAITH ID</th>
-                        <th>LAST NAME</th>
-                        <th>FIRST NAME</th>
-                        <th>COURSE</th>
-                        <th>YEAR</th>
-                        <th>SECTION</th>
+                        <th>STUDENT NAME</th>
+                        <th>COURSE, LEVEL & SECTION</th>
                       </tr>
                     </thead>
                     <tbody className="table-group-divider">
@@ -1101,13 +1095,14 @@ function AdminClassManagement() {
                               />
                             </td>
                             <td className="p-2">{student.student.faith_id}</td>
-                            <td className="p-2">{student.student.std_lname}</td>
-                            <td className="p-2">{student.student.std_fname}</td>
                             <td className="p-2">
-                              {student.student.std_course}
+                              {student.student.std_lname},{" "}
+                              {student.student.std_fname}
                             </td>
-                            <td className="p-2">{student.student.std_level}</td>
+
                             <td className="p-2">
+                              {student.student.std_course}-
+                              {student.student.std_level}
                               {student.student.std_section}
                             </td>
                           </tr>

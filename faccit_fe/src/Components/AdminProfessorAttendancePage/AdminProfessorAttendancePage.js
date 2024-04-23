@@ -45,10 +45,7 @@ function AdminProfessorAttendancePage() {
           .includes(searchTerm.toLowerCase()) ||
         item.professor.user_lastname
           .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        item.created_date.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
+          .includes(searchTerm.toLowerCase())
     );
 
   const currentItems = sortClassSchedule.slice(startIndex, endIndex);
@@ -59,6 +56,15 @@ function AdminProfessorAttendancePage() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [text, setText] = useState("");
+
+  const [absentClassCode, setAbsentClassCode] = useState("");
+  const [absentClassDay, setAbsentClassDay] = useState("");
+  const [absentStartTime, setAbsentStartTime] = useState("");
+  const [absentEndTime, setAbsentEndTime] = useState("");
+  const [absentLaboratory, setAbsentLaboratory] = useState("");
+  const [selectedClass, setSelectedClass] = useState(null);
+
   const [classes, setClasses] = useState([]);
   // const classes = useSelector((state) => state.class.classes);
 
@@ -67,9 +73,9 @@ function AdminProfessorAttendancePage() {
   const tokenId = decoded.prof_id;
 
   //Function for fetching Class Schedules
-  const fetchProfAttendances = () => {
+  const fetchOpenClasses = () => {
     https
-      .get(`makeup_classes_prof/${tokenId}`, {
+      .get(`get_open_class/${tokenId}`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -93,9 +99,9 @@ function AdminProfessorAttendancePage() {
   };
 
   //Function for fetching Classes
-  const fetchProfClasses = () => {
+  const fetchClasses = () => {
     https
-      .get(`profClasses/${tokenId}`, {
+      .get("classes", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -117,8 +123,8 @@ function AdminProfessorAttendancePage() {
   };
 
   useEffect(() => {
-    fetchProfAttendances();
-    fetchProfClasses();
+    fetchOpenClasses();
+    fetchClasses();
   }, []);
 
   const [id, setId] = useState(0);
@@ -132,7 +138,7 @@ function AdminProfessorAttendancePage() {
     laboratory,
     start_time,
     end_time,
-    makeup_class_status
+    cancel_class_status
   ) => {
     setId(id);
 
@@ -143,101 +149,16 @@ function AdminProfessorAttendancePage() {
     setStartTime(start_time);
     setEndTime(end_time);
 
-    setStatus(makeup_class_status);
+    setStatus(cancel_class_status);
   };
 
   const clearClass = () => {
-    setAbsentClassCode("");
-    setAbsentClassDay("");
-    setAbsentStartTime("");
-    setAbsentEndTime("");
     setClassCode("");
     setClassDay("");
     setStartTime("");
     setEndTime("");
     setErrorMessage("");
     setStatus("");
-  };
-
-  const handleMakeUpClassRequest = (e) => {
-    e.preventDefault();
-
-    const forApproval = {
-      status: status,
-      class_code: classCode,
-      class_day: classDay,
-      start_time: startTime,
-      end_time: endTime,
-      laboratory: laboratory,
-    };
-
-    console.log(forApproval);
-
-    try {
-      https
-        .post(`approve_makeup_class/${id}`, forApproval, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-          },
-        })
-        .then((result) => {
-          fetchClassSchedules();
-          console.log(result.data);
-        })
-        .catch((error) => {
-          if (error.response.data.message != "Unauthenticated.") {
-            setError(true);
-            console.log(error.response.data.message);
-            setErrorMessage(error.response.data.message);
-            toast.error(error.response.data.message, { duration: 7000 });
-          } else {
-            console.log(error.response.data.message);
-            goBackToLogin();
-          }
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleAttendance = () => {
-    if (classCode === "") {
-      toast.error("Choose a Class first!", { duration: 7000 });
-    } else {
-      console.log(classCode);
-    }
-  };
-
-  const handleMakeUpClassReject = () => {
-    const data = {
-      id: id,
-    };
-
-    try {
-      https
-        .post(`reject_makeup_class`, data, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-          },
-        })
-        .then((result) => {
-          fetchClassSchedules();
-          console.log(result.data);
-        })
-        .catch((error) => {
-          if (error.response.data.message != "Unauthenticated.") {
-            setError(true);
-            console.log(error.response.data.message);
-            setErrorMessage(error.response.data.message);
-            toast.error(error.response.data.message, { duration: 7000 });
-          } else {
-            console.log(error.response.data.message);
-            goBackToLogin();
-          }
-        });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const goBackToLogin = () => {
@@ -280,59 +201,25 @@ function AdminProfessorAttendancePage() {
     return (
       <div className="base_bg w-100 p-4">
         <h1 className="my-1">
-          <b>{tokenFirstname}'S PROFESSOR ATTENDANCE PAGE</b>
+          <b>{tokenFirstname}'S OPEN CLASSES PAGE</b>
         </h1>
-        <h4 className="">LIST OF PROFESSOR ATTENDANCES</h4>
+        <h4 className="">LIST OF OPEN CLASSES</h4>
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center my-3">
               <div className="w-100 d-flex">
                 <div className="w-75">
                   <div className="input-group">
-                    <select
-                      className="form-select form-select-md mb-3"
-                      aria-label=".form-select-md example"
+                    <input
+                      className="form-control"
+                      type="search"
+                      placeholder="Search Cancel Class Requests..."
+                      aria-label="Search"
+                      value={searchTerm}
                       onChange={(e) => {
-                        setClassCode(e.target.value);
+                        setSearchTerm(e.target.value);
                       }}
-                      id="classCode"
-                      value={classCode || ""}
-                      required
-                    >
-                      <option value="" disabled>
-                        Select a Class
-                      </option>
-                      {classes.length > 0
-                        ? classes
-                            .filter(
-                              (classes) => classes.class_status === "Active"
-                            )
-                            .sort((classes1, classes2) =>
-                              classes1.class_name.localeCompare(
-                                classes2.class_name
-                              )
-                            )
-                            .map((classes) => (
-                              <option
-                                key={`${classes.id}-${classes.class_name}-${classes.class_description}`}
-                                value={classes.class_code}
-                              >
-                                {classes.class_name}
-                              </option>
-                            ))
-                        : ""}
-                    </select>
-                    <button
-                      className="btn btn-secondary btn-sm search_btn"
-                      onClick={() => handleAttendance()}
-                    >
-                      <img
-                        src={require("../../Assets/images/magnifier.png")}
-                        width="20"
-                        height="20"
-                        alt="update_user"
-                      />
-                    </button>
+                    />
                   </div>
                 </div>
               </div>
@@ -344,135 +231,24 @@ function AdminProfessorAttendancePage() {
               <thead className="table-light">
                 <tr>
                   <th>DATE</th>
-                  <th>MAKEUP CLASS REQUESTER</th>
-                  <th>CLASS</th>
+                  <th>CLASS NAME</th>
+                  <th>CLASS RANGE</th>
+                  <th>TIME IN</th>
                   <th>STATUS</th>
-                  <th>ACTIONS</th>
                 </tr>
               </thead>
               <tbody className="table-group-divider">
                 {currentItems.length > 0 ? (
-                  currentItems.map((makeup, index) => (
+                  currentItems.map((open, index) => (
                     <tr className="table-light" key={index}>
-                      <td className="p-2">{makeup.created_date}</td>
+                      <td className="p-2">{open.date}</td>
+                      <td className="p-2">{open.class_name}</td>
                       <td className="p-2">
-                        {makeup.professor.user_lastname},{" "}
-                        {makeup.professor.user_firstname}
+                        {open.start_time} - {open.end_time}
                       </td>
-                      <td className="p-2">{makeup.class.class_name}</td>
-                      {makeup.makeup_class_status === "Pending" ? (
-                        <td className="p-2 text-warning">
-                          {makeup.makeup_class_status}
-                        </td>
-                      ) : makeup.makeup_class_status === "Approved" ? (
-                        <td className="p-2 text-success">
-                          {makeup.makeup_class_status}
-                        </td>
-                      ) : (
-                        <td className="p-2 text-danger">
-                          {makeup.makeup_class_status}
-                        </td>
-                      )}
 
-                      {makeup.makeup_class_status === "Pending" ? (
-                        <td className="p-2">
-                          <button
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop1"
-                            className="btn btn-primary btn-sm"
-                            onClick={() => {
-                              handleClassUpdate(
-                                makeup.id,
-                                makeup.class.class_name,
-                                makeup.class_code,
-                                makeup.class_day,
-                                makeup.laboratory,
-                                makeup.start_time,
-                                makeup.end_time,
-                                makeup.makeup_class_status
-                              );
-                            }}
-                          >
-                            <img
-                              src={require("../../Assets/images/update_user.png")}
-                              width="25"
-                              height="25"
-                              style={{
-                                TopLeftRadius: ".3rem",
-                                TopRightRadius: ".3rem",
-                              }}
-                              alt="update_user"
-                            />
-                          </button>
-                        </td>
-                      ) : makeup.makeup_class_status === "Approved" ? (
-                        <td className="p-2">
-                          <button
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop1"
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => {
-                              handleClassUpdate(
-                                makeup.id,
-                                makeup.class.class_name,
-                                makeup.class_code,
-                                makeup.class_day,
-                                makeup.laboratory,
-                                makeup.start_time,
-                                makeup.end_time,
-                                makeup.makeup_class_status
-                              );
-                            }}
-                          >
-                            <img
-                              src={require("../../Assets/images/list.png")}
-                              width="25"
-                              height="25"
-                              style={{
-                                TopLeftRadius: ".3rem",
-                                TopRightRadius: ".3rem",
-                              }}
-                              alt="update_user"
-                            />
-                          </button>
-                        </td>
-                      ) : makeup.makeup_class_status === "Rejected" ? (
-                        <td className="p-2">
-                          <button
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop1"
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => {
-                              handleClassUpdate(
-                                makeup.id,
-                                makeup.class.class_name,
-                                makeup.class_code,
-                                makeup.class_day,
-                                makeup.laboratory,
-                                makeup.start_time,
-                                makeup.end_time,
-                                makeup.makeup_class_status
-                              );
-                            }}
-                          >
-                            <img
-                              src={require("../../Assets/images/list.png")}
-                              width="25"
-                              height="25"
-                              style={{
-                                TopLeftRadius: ".3rem",
-                                TopRightRadius: ".3rem",
-                              }}
-                              alt="update_user"
-                            />
-                          </button>
-                        </td>
-                      ) : (
-                        ""
-                      )}
+                      <td className="p-2">{open.time_in}</td>
+                      <td className="p-2 text-success">{open.status}</td>
                     </tr>
                   ))
                 ) : (

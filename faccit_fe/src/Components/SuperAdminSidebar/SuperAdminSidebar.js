@@ -205,13 +205,13 @@ function SuperAdminSidebar() {
                   </li>
                 </ul>
               </li>
-
+              {/* 
               <li className="sidebar-item">
                 <a href="#" className="sidebar-link">
                   <i className="lni lni-popup"></i>
                   <span>Notification</span>
                 </a>
-              </li>
+              </li> */}
             </ul>
             <div className="sidebar-footer">
               <a

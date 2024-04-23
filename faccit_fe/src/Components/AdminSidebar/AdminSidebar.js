@@ -70,19 +70,14 @@ function AdminSidebar() {
             </div>
             <ul className="sidebar-nav">
               <li className="sidebar-item">
-                <a href="#" className="sidebar-link ">
+                <a href="/admin/profile" className="sidebar-link ">
                   <i className="lni lni-user"></i>
                   <span>Profile</span>
                 </a>
               </li>
+
               <li className="sidebar-item">
-                <a href="#" className="sidebar-link">
-                  <i className="lni lni-cog"></i>
-                  <span>Settings</span>
-                </a>
-              </li>
-              <li className="sidebar-item">
-                <a href="/dashboard" className="sidebar-link">
+                <a href="/admin/dashboard" className="sidebar-link">
                   <i className="lni lni-license"></i>
                   <span>Dashboard</span>
                 </a>
@@ -149,18 +144,18 @@ function AdminSidebar() {
                   </li>
                   <li className="sidebar-item">
                     <a
-                      href="/admin/managements/attendances/students"
+                      href="/admin/managements/open-classes"
                       className="sidebar-link"
                     >
-                      Student Attendances
+                      Open Classes
                     </a>
                   </li>
                   <li className="sidebar-item">
                     <a
-                      href="/admin/managements/attendances/professor"
+                      href="/admin/managements/attendances/students"
                       className="sidebar-link"
                     >
-                      Professor Attendances
+                      Student Attendances
                     </a>
                   </li>
                 </ul>
@@ -200,13 +195,6 @@ function AdminSidebar() {
                     </a>
                   </li>
                 </ul>
-              </li>
-
-              <li className="sidebar-item">
-                <a href="#" className="sidebar-link">
-                  <i className="lni lni-popup"></i>
-                  <span>Notification</span>
-                </a>
               </li>
             </ul>
             <div className="sidebar-footer">

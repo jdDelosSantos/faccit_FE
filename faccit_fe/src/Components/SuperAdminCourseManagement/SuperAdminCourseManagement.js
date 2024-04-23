@@ -690,7 +690,7 @@ function SuperAdminCourseManagement() {
                       {/* Start of Course College */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -720,6 +720,7 @@ function SuperAdminCourseManagement() {
                                     ))
                                 : ""}
                             </select>
+                            <span>College</span>
                           </div>
                         </div>
                       </div>

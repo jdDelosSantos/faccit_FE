@@ -4,12 +4,17 @@ import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+
 import ReactPaginate from "react-paginate";
 import https from "../../https";
+import { PDFViewer } from "@react-pdf/renderer";
+import generatePDF from "../AttendancePDF/AttendancePDF";
+import generatePDFmonth from "../AttendancePDFmonth/AttendancePDFmonth";
 
 function AdminStudentAttendancePage() {
   //NEW SUBJECT USE STATES
   const [classCode, setClassCode] = useState("");
+  const [className, setClassName] = useState("");
 
   const [laboratory, setLaboratory] = useState("");
   const [classDay, setClassDay] = useState("");
@@ -22,6 +27,11 @@ function AdminStudentAttendancePage() {
   const [updateDate, setUpdateDate] = useState("");
   const [updateTimeIn, setUpdateTimeIn] = useState("");
 
+  const [monthClassCode, setMonthClassCode] = useState("");
+  const [monthClassName, setMonthClassName] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
   //SEARCHTERM FOR SEARCH BAR
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -30,7 +40,7 @@ function AdminStudentAttendancePage() {
   //REACT-PAGINATION
   const [studentAttendances, setStudentAttendances] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(7);
+  const [itemsPerPage, setItemsPerPage] = useState(9);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
@@ -39,6 +49,22 @@ function AdminStudentAttendancePage() {
   );
 
   const currentItems = sortClassSchedule.slice(startIndex, endIndex);
+
+  //REACT-PAGINATION
+  const [monthStudentAttendances, setMonthStudentAttendances] = useState([]);
+  const [currentPages, setCurrentPages] = useState(0);
+  const [itemsPerPages, setItemsPerPages] = useState(9);
+  const startIndexes = currentPages * itemsPerPages;
+  const endIndexes = startIndexes + itemsPerPages;
+
+  const sortAttendances = [...monthStudentAttendances].sort(
+    (classes1, classes2) => classes1.std_lname.localeCompare(classes2.std_lname)
+  );
+
+  const currentMonthStudentAttendances = sortAttendances.slice(
+    startIndex,
+    endIndex
+  );
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -157,47 +183,6 @@ function AdminStudentAttendancePage() {
     // setStatus("");
   };
 
-  const handleMakeUpClassRequest = (e) => {
-    e.preventDefault();
-
-    const forApproval = {
-      status: status,
-      class_code: classCode,
-      class_day: classDay,
-      start_time: startTime,
-      end_time: endTime,
-      laboratory: laboratory,
-    };
-
-    console.log(forApproval);
-
-    try {
-      https
-        .post(`approve_makeup_class/${id}`, forApproval, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-          },
-        })
-        .then((result) => {
-          fetchClassSchedules();
-          console.log(result.data);
-        })
-        .catch((error) => {
-          if (error.response.data.message != "Unauthenticated.") {
-            setError(true);
-            console.log(error.response.data.message);
-            setErrorMessage(error.response.data.message);
-            toast.error(error.response.data.message, { duration: 7000 });
-          } else {
-            console.log(error.response.data.message);
-            goBackToLogin();
-          }
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleAttendance = () => {
     if (classCode === "" || date === "" || startTime === "" || endTime === "") {
       toast.error("Choose a Class, Date, and Time Range first!", {
@@ -234,6 +219,71 @@ function AdminStudentAttendancePage() {
       } catch (error) {
         console.error(error);
       }
+    }
+  };
+
+  const handleMonthAttendance = () => {
+    if (
+      (classCode === "" && monthClassCode === "") ||
+      (startDate === "" && date === "") ||
+      endDate === ""
+    ) {
+      toast.error("Choose a class, start and end Date first!", {
+        duration: 7000,
+      });
+    } else {
+      const data = {
+        start_date: startDate || date,
+        end_date: endDate,
+      };
+
+      const month_class_code = classCode || monthClassCode;
+
+      console.log(month_class_code);
+      console.log(data);
+
+      try {
+        https
+          .post(`month_student_attendances/${month_class_code}`, data, {
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+            },
+          })
+          .then((result) => {
+            setMonthStudentAttendances(result.data);
+            console.log(result.data);
+          })
+          .catch((error) => {
+            if (error.response.data.message != "Unauthenticated.") {
+              setError(true);
+              console.log(error.response.data.message);
+              setErrorMessage(error.response.data.message);
+              toast.error(error.response.data.message, { duration: 7000 });
+            } else {
+              console.log(error.response.data.message);
+              goBackToLogin();
+            }
+          });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const handlePDF = () => {
+    if (studentAttendances.length > 0) {
+      generatePDF(studentAttendances, date, className, startTime, endTime);
+    }
+  };
+
+  const handlePDFmonth = () => {
+    if (monthStudentAttendances.length > 0) {
+      generatePDFmonth(
+        monthStudentAttendances,
+        monthClassName,
+        startDate || date,
+        endDate
+      );
     }
   };
 
@@ -279,16 +329,20 @@ function AdminStudentAttendancePage() {
         <h1 className="my-1">
           <b>{tokenFirstname}'S STUDENT ATTENDANCE PAGE</b>
         </h1>
+
         <h4 className="">LIST OF STUDENT ATTENDANCES</h4>
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center flex-row my-3">
-              <div className="inputBox1 w-100">
-                <label htmlFor="classCode">Select a Class:</label>
+              <div className="inputBox3 w-100">
                 <select
                   className="form-select form-select-md"
                   onChange={(e) => {
                     setClassCode(e.target.value);
+                    setClassName(
+                      classes.find((c) => c.class_code === e.target.value)
+                        ?.class_name
+                    );
                   }}
                   id="classCode"
                   value={classCode || ""}
@@ -313,10 +367,10 @@ function AdminStudentAttendancePage() {
                         ))
                     : ""}
                 </select>
+                <span>Class Name</span>
               </div>
 
-              <div className="inputBox1 w-100 mx-2">
-                <label htmlFor="date">Enter a Date:</label>
+              <div className="inputBox3 w-100 mx-2">
                 <input
                   type="date"
                   id="date"
@@ -326,10 +380,10 @@ function AdminStudentAttendancePage() {
                   }}
                   className="form-control"
                 />
+                <span>Date</span>
               </div>
 
-              <div className="inputBox1 w-100 mx-2">
-                <label htmlFor="start_time">Enter Start Time Range:</label>
+              <div className="inputBox3 w-100 mx-2">
                 <input
                   type="time"
                   id="startTime"
@@ -339,10 +393,10 @@ function AdminStudentAttendancePage() {
                   }}
                   className="form-control"
                 />
+                <span>Start Time</span>
               </div>
 
-              <div className="inputBox1 w-100 mx-2">
-                <label htmlFor="date">Enter End Time Range:</label>
+              <div className="inputBox3 w-100 mx-2">
                 <input
                   type="time"
                   id="endTime"
@@ -352,15 +406,41 @@ function AdminStudentAttendancePage() {
                   }}
                   className="form-control"
                 />
+                <span>End Time</span>
               </div>
 
-              <div className="w-50 mx-2">
+              <div className="w-50 mx-2 d-flex justify-content-between">
                 <button
                   className="btn btn-secondary btn-sm search_btn"
                   onClick={() => handleAttendance()}
                 >
                   <img
                     src={require("../../Assets/images/magnifier.png")}
+                    width="25"
+                    height="25"
+                    alt="update_user"
+                  />
+                </button>
+
+                <button
+                  className="btn btn-primary btn-sm search_btn"
+                  onClick={() => handlePDF()}
+                >
+                  <img
+                    src={require("../../Assets/images/print.png")}
+                    width="25"
+                    height="25"
+                    alt="update_user"
+                  />
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-info btn-sm search_btn "
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop"
+                >
+                  <img
+                    src={require("../../Assets/images/list.png")}
                     width="25"
                     height="25"
                     alt="update_user"
@@ -530,7 +610,7 @@ function AdminStudentAttendancePage() {
             <div className="modal-content">
               <div className="modal-header">
                 <h1 className="modal-title fs-5" id="staticBackdropLabel1">
-                  <b>MAKEUP CLASS SCHEDULE</b>
+                  <b>UPDATE ATTENDANCE</b>
                 </h1>
               </div>
 
@@ -718,6 +798,242 @@ function AdminStudentAttendancePage() {
             </div>
           </div>
         </div>
+        {/* END OF MODAL FOR ATTENDANCE */}
+
+        {/* START OF MODAL FOR MONTH ATTENDNACE */}
+        <div
+          className="modal fade"
+          id="staticBackdrop"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabIndex="-1"
+          aria-labelledby="staticBackdropLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-xl">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="staticBackdropLabel">
+                  <b>ATTENDANCE MONTH RANGE</b>
+                </h1>
+              </div>
+
+              <div className="modal-body">
+                <div className="row d-flex justify-content-center align-items-center h-100">
+                  <img
+                    src={require("../../Assets/images/faith-cover-1280x420.png")}
+                    className="w-100 rounded-top"
+                    style={{
+                      TopLeftRadius: ".3rem",
+                      TopRightRadius: ".3rem",
+                    }}
+                    alt="cover"
+                  />
+
+                  <div className="card-body p-4 p-md-5">
+                    <div className="container d-flex justify-content-center">
+                      <h1 className="fontfam fw-bolder mb-4 pb-2 pb-md-0 mb-md-5 px-md-2 text-justify">
+                        STUDENT ATTENDANCE
+                      </h1>
+                    </div>
+                    {error == true ? (
+                      <div className="d-flex justify-content-center">
+                        <p className="text-danger fs-4">{errorMessage}</p>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    <div className="w-100 d-flex flex-row align-items-center justify-content-between">
+                      <div className="inputBox3 w-100">
+                        <select
+                          className="form-select form-select-md"
+                          onChange={(e) => {
+                            setMonthClassCode(e.target.value);
+                            setMonthClassName(
+                              classes.find(
+                                (c) => c.class_code === e.target.value
+                              )?.class_name
+                            );
+                          }}
+                          id="monthClassCode"
+                          value={classCode || monthClassCode}
+                          required
+                        >
+                          <option value="" disabled>
+                            N/A
+                          </option>
+                          {classes.length > 0
+                            ? classes
+                                .filter(
+                                  (classes) => classes.class_status === "Active"
+                                )
+                                .sort((classes1, classes2) =>
+                                  classes1.class_name.localeCompare(
+                                    classes2.class_name
+                                  )
+                                )
+                                .map((classes) => (
+                                  <option
+                                    key={`${classes.id}-${classes.class_name}-${classes.class_description}`}
+                                    value={classes.class_code}
+                                  >
+                                    {classes.class_name}
+                                  </option>
+                                ))
+                            : ""}
+                        </select>
+                        <span>Class Name</span>
+                      </div>
+
+                      <div className="inputBox3 w-100 mx-2">
+                        <input
+                          type="date"
+                          id="startDate"
+                          value={startDate || date}
+                          onChange={(e) => {
+                            setStartDate(e.target.value);
+                          }}
+                          className="form-control"
+                        />
+                        <span>Start Date</span>
+                      </div>
+
+                      <div className="inputBox3 w-100 mx-2">
+                        <input
+                          type="date"
+                          id="endDate"
+                          value={endDate}
+                          onChange={(e) => {
+                            setEndDate(e.target.value);
+                          }}
+                          className="form-control"
+                        />
+                        <span>End Date</span>
+                      </div>
+
+                      <div className="w-50 mx-2 d-flex justify-content-between">
+                        <button
+                          className="btn btn-secondary btn-sm search_btn"
+                          onClick={() => handleMonthAttendance()}
+                        >
+                          <img
+                            src={require("../../Assets/images/magnifier.png")}
+                            width="25"
+                            height="25"
+                            alt="update_user"
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-primary btn-sm search_btn"
+                          onClick={() => handlePDFmonth()}
+                        >
+                          <img
+                            src={require("../../Assets/images/print.png")}
+                            width="25"
+                            height="25"
+                            alt="update_user"
+                          />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mt-2">
+                      <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
+                        <thead className="table-light">
+                          <tr>
+                            <th>CLASS NAME</th>
+                            <th>FAITH ID</th>
+                            <th>STUDENT NAME</th>
+                            <th>LEVEL & SECTION</th>
+                            <th>PRESENT COUNT</th>
+                          </tr>
+                        </thead>
+                        <tbody className="table-group-divider">
+                          {currentMonthStudentAttendances.length > 0 ? (
+                            currentMonthStudentAttendances.map(
+                              (attendance, index) => (
+                                <tr className="table-light" key={index}>
+                                  <td className="p-2">
+                                    {attendance.class_name}
+                                  </td>
+                                  <td className="p-2">{attendance.faith_id}</td>
+                                  <td className="p-2">
+                                    {attendance.std_lname},{" "}
+                                    {attendance.std_fname}
+                                  </td>
+                                  <td className="p-2">
+                                    {attendance.std_course} -{" "}
+                                    {attendance.std_level}
+                                    {attendance.std_section}
+                                  </td>
+                                  <td className="p-2">
+                                    {attendance.present_count}
+                                  </td>
+                                </tr>
+                              )
+                            )
+                          ) : (
+                            <tr className="table-light" key="loading-row">
+                              <td colSpan="8" className="text-center">
+                                <div className="loadcontainer">
+                                  <div className="loadingspinner">
+                                    <div id="square1"></div>
+                                    <div id="square2"></div>
+                                    <div id="square3"></div>
+                                    <div id="square4"></div>
+                                    <div id="square5"></div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                      <ReactPaginate
+                        nextLabel="Next >"
+                        onPageChange={(event) =>
+                          setCurrentPages(event.selected)
+                        }
+                        pageRangeDisplayed={3}
+                        marginPagesDisplayed={2}
+                        pageCount={Math.ceil(
+                          monthStudentAttendances.length / itemsPerPages
+                        )}
+                        previousLabel="< Previous"
+                        pageClassName="page-item"
+                        pageLinkClassName="page-link"
+                        previousClassName="page-item"
+                        previousLinkClassName="page-link"
+                        nextClassName="page-item"
+                        nextLinkClassName="page-link"
+                        breakLabel="..."
+                        breakClassName="page-item"
+                        breakLinkClassName="page-link"
+                        containerClassName="pagination"
+                        activeClassName="active"
+                        renderOnZeroPageCount={null}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  onClick={() => {
+                    clearClass();
+                  }}
+                >
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* END OF MODAL FOR REQUESTING CANCEL CLASS */}
       </div>
     );
   }

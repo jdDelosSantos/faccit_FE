@@ -1196,7 +1196,7 @@ function SuperAdminStudentManagement() {
                       {/* Start of Course */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -1226,6 +1226,7 @@ function SuperAdminStudentManagement() {
                                     ))
                                 : ""}
                             </select>
+                            <span>Course</span>
                           </div>
                         </div>
                       </div>
@@ -1234,7 +1235,7 @@ function SuperAdminStudentManagement() {
                       {/* Start of Level/Year */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -1254,6 +1255,7 @@ function SuperAdminStudentManagement() {
                               <option value="4">4</option>
                               <option value="5">5</option>
                             </select>
+                            <span>Level/Year</span>
                           </div>
                         </div>
                       </div>
@@ -1261,7 +1263,7 @@ function SuperAdminStudentManagement() {
                       {/* Start of Section */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -1280,6 +1282,7 @@ function SuperAdminStudentManagement() {
                               <option value="C">C</option>
                               <option value="D">D</option>
                             </select>
+                            <span>Section</span>
                           </div>
                         </div>
                       </div>

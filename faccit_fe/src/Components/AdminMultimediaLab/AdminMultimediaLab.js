@@ -19,12 +19,12 @@ function AdminMultimediaLab() {
 
   //NEW CLASS USE STATES
   const [classCode, setClassCode] = useState("");
-
   const [classDay, setClassDay] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [laboratory, setLaboratory] = useState("");
   const [text, setText] = useState("");
+  const [openDate, setOpenDate] = useState("");
 
   const [absentClassCode, setAbsentClassCode] = useState("");
   const [absentClassDay, setAbsentClassDay] = useState("");
@@ -203,6 +203,7 @@ function AdminMultimediaLab() {
     setAbsentClassDay("");
     setAbsentStartTime("");
     setAbsentEndTime("");
+    setOpenDate("");
     setClassCode("");
     setClassDay("");
     setStartTime("");
@@ -262,30 +263,71 @@ function AdminMultimediaLab() {
       end_time: absentEndTime,
     };
 
-    console.log(id);
-    console.log(cancelClassData);
+    try {
+      https
+        .post(`request_cancel_class/${id}`, cancelClassData, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+          },
+        })
+        .then((result) => {
+          toast.success(result.data.message, { duration: 7000 });
+          clearClass();
+        })
+        .catch((error) => {
+          if (error.response.data.message != "Unauthenticated.") {
+            setError(true);
+            console.log(error.response.data.message);
+            setErrorMessage(error.response.data.message);
+            toast.error(error.response.data.message, { duration: 7000 });
+          } else {
+            console.log(error.response.data.message);
+            goBackToLogin();
+          }
+        });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    https
-      .post(`request_cancel_class/${id}`, cancelClassData, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-        },
-      })
-      .then((result) => {
-        toast.success(result.data.message, { duration: 7000 });
-        clearClass();
-      })
-      .catch((error) => {
-        if (error.response.data.message != "Unauthenticated.") {
-          setError(true);
-          console.log(error.response.data.message);
-          setErrorMessage(error.response.data.message);
-          toast.error(error.response.data.message, { duration: 7000 });
-        } else {
-          console.log(error.response.data.message);
-          goBackToLogin();
-        }
-      });
+  const handleOpenClass = (e) => {
+    e.preventDefault();
+
+    const openClassData = {
+      id: id,
+      day: absentClassDay,
+      time: absentStartTime,
+      date: openDate,
+      laboratory: "lab_multimedia",
+    };
+
+    console.log(openClassData);
+
+    try {
+      https
+        .post("open_attendance", openClassData, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+          },
+        })
+        .then((result) => {
+          toast.success(result.data.message, { duration: 7000 });
+          clearClass();
+        })
+        .catch((error) => {
+          if (error.response.data.message != "Unauthenticated.") {
+            setError(true);
+            console.log(error.response.data.message);
+            setErrorMessage(error.response.data.message);
+            toast.error(error.response.data.message, { duration: 7000 });
+          } else {
+            console.log(error.response.data.message);
+            goBackToLogin();
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleClassChange = (e) => {
@@ -322,11 +364,13 @@ function AdminMultimediaLab() {
         setAbsentStartTime("");
         setAbsentEndTime("");
         setAbsentLaboratory("");
+        setOpenDate("");
       }
     } else {
       setAbsentStartTime("");
       setAbsentEndTime("");
       setAbsentLaboratory("");
+      setOpenDate("");
     }
   }, [selectedClass, absentClassDay]);
 
@@ -394,6 +438,24 @@ function AdminMultimediaLab() {
               </div>
 
               <div className="w-25 d-flex justify-content-end">
+                <button
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop6"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => fetchClasses()}
+                >
+                  <img
+                    src={require("../../Assets/images/unlock.png")}
+                    width="25"
+                    height="25"
+                    style={{
+                      TopLeftRadius: ".3rem",
+                      TopRightRadius: ".3rem",
+                    }}
+                    alt="add"
+                  />
+                </button>
                 <button
                   type="button"
                   data-bs-toggle="modal"
@@ -538,12 +600,14 @@ function AdminMultimediaLab() {
                       ) : (
                         ""
                       )}
-                      <h3>Request a Makeup Class Schedule</h3>
+                      <h3 className="text-center">
+                        Request a Makeup Class Schedule
+                      </h3>
 
                       {/* Start of Class Select */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -578,6 +642,7 @@ function AdminMultimediaLab() {
                                     ))
                                 : ""}
                             </select>
+                            <span>Class Name</span>
                           </div>
                         </div>
                       </div>
@@ -585,7 +650,7 @@ function AdminMultimediaLab() {
                       {/* Start of Class day*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -607,6 +672,7 @@ function AdminMultimediaLab() {
                               <option value="Friday">Friday</option>
                               <option value="Saturday">Saturday</option>
                             </select>
+                            <span>Class Day</span>
                           </div>
                         </div>
                       </div>
@@ -614,7 +680,7 @@ function AdminMultimediaLab() {
                       {/* Start of Class Start time */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <input
                               type="time"
                               id="startTime"
@@ -635,7 +701,7 @@ function AdminMultimediaLab() {
                       {/* Start of Class End time */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <input
                               type="time"
                               id="endTime"
@@ -656,7 +722,7 @@ function AdminMultimediaLab() {
                       {/* Start of Class day*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -678,6 +744,7 @@ function AdminMultimediaLab() {
                                 Programming Lab
                               </option>
                             </select>
+                            <span>Laboratory</span>
                           </div>
                         </div>
                       </div>
@@ -757,11 +824,13 @@ function AdminMultimediaLab() {
                         ""
                       )}
 
-                      <h3>Request Cancelation of a Class</h3>
+                      <h3 className="text-center">
+                        Request Cancelation of a Class
+                      </h3>
                       {/* Start of Class Select */}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -790,6 +859,7 @@ function AdminMultimediaLab() {
                                     ))
                                 : ""}
                             </select>
+                            <span>Class Name</span>
                           </div>
                         </div>
                       </div>
@@ -797,7 +867,7 @@ function AdminMultimediaLab() {
                       {/* Start of Class day*/}
                       <div className="">
                         <div className="md-6 mb-4">
-                          <div className="inputBox1 w-100">
+                          <div className="inputBox3 w-100">
                             <select
                               className="form-select form-select-md mb-3"
                               aria-label=".form-select-md example"
@@ -824,6 +894,7 @@ function AdminMultimediaLab() {
                                   </option>
                                 ))}
                             </select>
+                            <span>Class Day</span>
                           </div>
                         </div>
                       </div>
@@ -901,22 +972,23 @@ function AdminMultimediaLab() {
                                       key={`${facility.id}-${facility.laboratory}`}
                                       value={facility.laboratory}
                                     >
-                                      {facility.laboratory === "lab_multimedia"
-                                        ? "Multimedia Lab"
-                                        : facility.laboratory ===
-                                          "lab_programming"
+                                      {facility.laboratory === "lab_programming"
                                         ? "Programming Lab"
+                                        : facility.laboratory ===
+                                          "lab_multimedia"
+                                        ? "Multimedia Lab"
                                         : facility.laboratory}
                                     </option>
                                   ))}
                             </select>
+                            <span>Laboratory</span>
                           </div>
                         </div>
                       </div>
                       <p>
                         <i>
                           Note: Class Schedules displayed are only for within
-                          Multimedia lab.
+                          Multimedia Lab.
                         </i>
                       </p>
                     </div>
@@ -946,7 +1018,263 @@ function AdminMultimediaLab() {
             </div>
           </div>
         </div>
-        {/* END OF MODAL FOR ADDING CLASS */}
+        {/* END OF MODAL FOR REQUESTING CANCEL CLASS */}
+
+        {/* END OF MODAL FOR OPENING CLASS */}
+        <div
+          className="modal fade"
+          id="staticBackdrop6"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabIndex="-1"
+          aria-labelledby="staticBackdropLabel6"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="staticBackdropLabel6">
+                  <b>OPEN CLASS</b>
+                </h1>
+              </div>
+
+              <form onSubmit={(e) => handleOpenClass(e)}>
+                <div className="modal-body">
+                  <div className="row d-flex justify-content-center align-items-center h-100">
+                    <img
+                      src={require("../../Assets/images/faith-cover-1280x420.png")}
+                      className="w-100 rounded-top"
+                      style={{
+                        TopLeftRadius: ".3rem",
+                        TopRightRadius: ".3rem",
+                      }}
+                      alt="cover"
+                    />
+
+                    <div className="card-body p-4 p-md-5">
+                      <div className="container d-flex justify-content-center"></div>
+                      {error == true ? (
+                        <div className="d-flex justify-content-center">
+                          <p className="text-danger fs-4">{errorMessage}</p>
+                        </div>
+                      ) : (
+                        ""
+                      )}
+
+                      <h3 className="text-center">
+                        Open a Class for Attendance
+                      </h3>
+                      {/* Start of Class Select */}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox3 w-100">
+                            <select
+                              className="form-select form-select-md mb-3"
+                              aria-label=".form-select-md example"
+                              onChange={handleClassChange}
+                              id="absentClassCode"
+                              value={absentClassCode || ""}
+                              required
+                            >
+                              <option value="" disabled>
+                                Select a Class
+                              </option>
+                              {classes.length > 0
+                                ? classes
+                                    .sort((classes1, classes2) =>
+                                      classes1.class_name.localeCompare(
+                                        classes2.class_name
+                                      )
+                                    )
+                                    .map((classes) => (
+                                      <option
+                                        key={`${classes.id}-${classes.class_name}`}
+                                        value={classes.class_code}
+                                      >
+                                        {classes.class_name}
+                                      </option>
+                                    ))
+                                : ""}
+                            </select>
+                            <span>Class Name</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class day*/}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox3 w-100">
+                            <select
+                              className="form-select form-select-md mb-3"
+                              aria-label=".form-select-md example"
+                              onChange={(e) => {
+                                const [day, startTime] =
+                                  e.target.value.split("|");
+                                setAbsentClassDay(day);
+                                setAbsentStartTime(startTime);
+                              }}
+                              id="absentClassDay"
+                              value={`${absentClassDay || ""}|${
+                                absentStartTime || ""
+                              }`}
+                              required
+                            >
+                              <option value="">Select a Day and Time</option>
+                              {selectedClass &&
+                                selectedClass.facilities.map((facility) => (
+                                  <option
+                                    key={`${facility.class_day}|${facility.start_time}`}
+                                    value={`${facility.class_day}|${facility.start_time}`}
+                                  >
+                                    {`${facility.class_day} (${facility.start_time} - ${facility.end_time})`}
+                                  </option>
+                                ))}
+                            </select>
+                            <span>Class Day</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class Start time */}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox2 w-100">
+                            <input
+                              type="time"
+                              id="absentStartTime"
+                              value={absentStartTime}
+                              min="07:30"
+                              max="21:00"
+                              onChange={(e) => {
+                                setAbsentStartTime(e.target.value);
+                                setErrorMessage("");
+                              }}
+                              required
+                              disabled={!selectedClass || !absentClassDay}
+                            />
+                            <span>Start Time</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class End time */}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox2 w-100">
+                            <input
+                              type="time"
+                              id="endTime"
+                              value={absentEndTime}
+                              min="07:30"
+                              max="21:00"
+                              onChange={(e) => {
+                                setAbsentEndTime(e.target.value);
+                                setErrorMessage("");
+                              }}
+                              required
+                              disabled={!selectedClass || !absentClassDay}
+                            />
+                            <span>End Time</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class Date */}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox3 w-100">
+                            <input
+                              type="date"
+                              id="openDate"
+                              value={openDate}
+                              onChange={(e) => {
+                                setOpenDate(e.target.value);
+                                setErrorMessage("");
+                              }}
+                              required
+                            />
+                            <span>Date</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start of Class Laboratory*/}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox2 w-100">
+                            <select
+                              className="form-select form-select-md mb-3"
+                              aria-label=".form-select-md example"
+                              onChange={(e) =>
+                                setAbsentLaboratory(e.target.value)
+                              }
+                              id="absentLaboratory"
+                              value={absentLaboratory || ""}
+                              disabled={!selectedClass || !absentClassDay}
+                              required
+                            >
+                              <option value="" disabled>
+                                Select a Laboratory
+                              </option>
+                              {selectedClass &&
+                                selectedClass.facilities
+                                  .filter(
+                                    (facility) =>
+                                      facility.class_day === absentClassDay
+                                  )
+                                  .map((facility) => (
+                                    <option
+                                      key={`${facility.id}-${facility.laboratory}`}
+                                      value={facility.laboratory}
+                                    >
+                                      {facility.laboratory === "lab_programming"
+                                        ? "Programming Lab"
+                                        : facility.laboratory ===
+                                          "lab_multimedia"
+                                        ? "Multimedia Lab"
+                                        : facility.laboratory}
+                                    </option>
+                                  ))}
+                            </select>
+                            <span>Laboratory</span>
+                          </div>
+                        </div>
+                      </div>
+                      <p>
+                        <i>
+                          Note: Class Schedules displayed are only for within
+                          Multimedia Lab.
+                        </i>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                    onClick={() => {
+                      clearClass();
+                    }}
+                  >
+                    CANCEL
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-success mb-1"
+                    data-bs-dismiss="modal"
+                    // onClick={() => requestMakeupClass()}
+                  >
+                    OPEN CLASS
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        {/* END OF MODAL FOR OPENING CLASS */}
       </div>
     );
   }

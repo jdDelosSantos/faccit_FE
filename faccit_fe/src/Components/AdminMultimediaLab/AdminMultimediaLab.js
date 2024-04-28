@@ -34,10 +34,22 @@ function AdminMultimediaLab() {
   const [selectedClass, setSelectedClass] = useState(null);
 
   const [classes, setClasses] = useState([]);
-  // const classes = useSelector((state) => state.class.classes);
+
+  const goBackToLogin = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
+
   const sessionToken = sessionStorage.getItem("Token");
-  const decoded = jwtDecode(sessionToken);
-  const id = decoded.prof_id;
+  let decoded;
+  let id;
+
+  if (sessionToken) {
+    decoded = jwtDecode(sessionToken);
+    id = decoded.prof_id;
+  } else {
+    goBackToLogin();
+  }
 
   //Function for fetching Classes
   const fetchClasses = () => {
@@ -52,16 +64,14 @@ function AdminMultimediaLab() {
       })
       .then((result) => {
         setClasses(result.data);
-        console.log(classes);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -182,16 +192,14 @@ function AdminMultimediaLab() {
       })
       .then((result) => {
         setLabClassSchedules(result.data);
-        console.log(labClassSchedules);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -226,9 +234,6 @@ function AdminMultimediaLab() {
       end_time: endTime,
     };
 
-    console.log(id);
-    console.log(makeupClassData);
-
     https
       .post(`request_makeup_class/${id}`, makeupClassData, {
         headers: {
@@ -242,11 +247,10 @@ function AdminMultimediaLab() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -277,11 +281,10 @@ function AdminMultimediaLab() {
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
+
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
@@ -301,8 +304,6 @@ function AdminMultimediaLab() {
       laboratory: "lab_multimedia",
     };
 
-    console.log(openClassData);
-
     try {
       https
         .post("open_attendance", openClassData, {
@@ -317,16 +318,15 @@ function AdminMultimediaLab() {
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
+
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -373,11 +373,6 @@ function AdminMultimediaLab() {
       setOpenDate("");
     }
   }, [selectedClass, absentClassDay]);
-
-  const goBackToLogin = () => {
-    sessionStorage.clear();
-    navigate("/");
-  };
 
   const [tokenFirstname, setTokenFirstname] = useState("");
   const [component, setComponent] = useState(false);

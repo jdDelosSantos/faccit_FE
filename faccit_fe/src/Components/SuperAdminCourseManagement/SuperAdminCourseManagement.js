@@ -74,11 +74,9 @@ function SuperAdminCourseManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         }
-        console.log(error.response.data.message);
         goBackToLogin();
       });
   };
@@ -92,16 +90,13 @@ function SuperAdminCourseManagement() {
       })
       .then((result) => {
         dispatch(setColleges(result.data));
-        console.log(colleges);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         }
-        console.log(error.response.data.message);
         goBackToLogin();
       });
   };
@@ -126,7 +121,6 @@ function SuperAdminCourseManagement() {
       college_name: courseCollege,
     };
 
-    console.log(courseData);
     https
       .post("courses", courseData, {
         headers: {
@@ -144,11 +138,9 @@ function SuperAdminCourseManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -175,7 +167,6 @@ function SuperAdminCourseManagement() {
       college_name: updateCourseCollege,
     };
 
-    console.log(updateCourseData);
     https
       .put(`update_course/${id}`, updateCourseData, {
         headers: {
@@ -189,11 +180,9 @@ function SuperAdminCourseManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });

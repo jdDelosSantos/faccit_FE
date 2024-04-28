@@ -126,3 +126,8 @@ border-radius: 5px;
 border: 1px solid rgb(67, 33, 60);
 border-radius: 7px;
 }
+
+
+.txt_login:hover{
+    color: black !important;
+}

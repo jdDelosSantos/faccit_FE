@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./AdminSidebar.css";
 
 function AdminSidebar() {
@@ -65,26 +66,26 @@ function AdminSidebar() {
                 <i className="lni lni-grid-alt"></i>
               </button>
               <div className="sidebar-logo">
-                <a href="#">FACCIT</a>
+                <Link to="/admin/dashboard">FACCIT</Link>
               </div>
             </div>
             <ul className="sidebar-nav">
               <li className="sidebar-item">
-                <a href="/admin/profile" className="sidebar-link ">
+                <Link to="/admin/profile" className="sidebar-link ">
                   <i className="lni lni-user"></i>
                   <span>Profile</span>
-                </a>
+                </Link>
               </li>
 
               <li className="sidebar-item">
-                <a href="/admin/dashboard" className="sidebar-link">
+                <Link to="/admin/dashboard" className="sidebar-link">
                   <i className="lni lni-license"></i>
                   <span>Dashboard</span>
-                </a>
+                </Link>
               </li>
               <li className="sidebar-item">
-                <a
-                  href="#"
+                <Link
+                  to="#"
                   className="sidebar-link has-dropdown collapsed"
                   data-bs-toggle="collapse"
                   data-bs-target="#auth"
@@ -93,33 +94,33 @@ function AdminSidebar() {
                 >
                   <i className="lni lni-graph"></i>
                   <span>Laboratories</span>
-                </a>
+                </Link>
                 <ul
                   id="auth"
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <a
-                      href="/admin/labs/programming-lab"
+                    <Link
+                      to="/admin/labs/programming-lab"
                       className="sidebar-link"
                     >
                       Programming Lab
-                    </a>
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a
-                      href="/admin/labs/multimedia-lab"
+                    <Link
+                      to="/admin/labs/multimedia-lab"
                       className="sidebar-link"
                     >
                       Multimedia Lab
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
               <li className="sidebar-item">
-                <a
-                  href="#"
+                <Link
+                  to="#"
                   className="sidebar-link has-dropdown collapsed"
                   data-bs-toggle="collapse"
                   data-bs-target="#multi"
@@ -128,42 +129,42 @@ function AdminSidebar() {
                 >
                   <i className="lni lni-layout"></i>
                   <span>Managements</span>
-                </a>
+                </Link>
                 <ul
                   id="multi"
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <a
-                      href="/admin/managements/classes"
+                    <Link
+                      to="/admin/managements/classes"
                       className="sidebar-link"
                     >
                       Classes
-                    </a>
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a
-                      href="/admin/managements/open-classes"
+                    <Link
+                      to="/admin/managements/open-classes"
                       className="sidebar-link"
                     >
                       Open Classes
-                    </a>
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a
-                      href="/admin/managements/attendances/students"
+                    <Link
+                      to="/admin/managements/attendances/students"
                       className="sidebar-link"
                     >
                       Student Attendances
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
 
               <li className="sidebar-item">
-                <a
-                  href="#"
+                <Link
+                  to="#"
                   className="sidebar-link has-dropdown collapsed"
                   data-bs-toggle="collapse"
                   data-bs-target="#request"
@@ -171,41 +172,41 @@ function AdminSidebar() {
                   aria-controls="request"
                 >
                   <i className="lni lni-keyboard"></i>
-                  <span>Requests Handling</span>
-                </a>
+                  <span>Request Handling</span>
+                </Link>
                 <ul
                   id="request"
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <a
-                      href="/admin/managements/makeup-classes"
+                    <Link
+                      to="/admin/managements/makeup-classes"
                       className="sidebar-link"
                     >
-                      <span>Makeup Requests</span>
-                    </a>
+                      Makeup Requests
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a
-                      href="/admin/managements/cancel-classes"
+                    <Link
+                      to="/admin/managements/cancel-classes"
                       className="sidebar-link"
                     >
-                      <span>Cancel Requests</span>
-                    </a>
+                      Cancel Requests
+                    </Link>
                   </li>
                 </ul>
               </li>
             </ul>
             <div className="sidebar-footer">
-              <a
-                href="/"
+              <Link
+                to="/"
                 className="sidebar-link"
                 onClick={() => handleLogout()}
               >
                 <i className="lni lni-exit"></i>
                 <span>Logout</span>
-              </a>
+              </Link>
             </div>
           </aside>
           <div className="main"></div>

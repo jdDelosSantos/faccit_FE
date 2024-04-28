@@ -89,16 +89,13 @@ function SuperAdminClassManagement() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClasses(result.data);
-        console.log(currentItems);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -118,11 +115,9 @@ function SuperAdminClassManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -142,11 +137,9 @@ function SuperAdminClassManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -175,7 +168,6 @@ function SuperAdminClassManagement() {
       prof_id: professorID,
     };
 
-    console.log(classData);
     https
       .post("classes", classData, {
         headers: {
@@ -193,7 +185,6 @@ function SuperAdminClassManagement() {
         setProfessorID("");
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.message != "Unauthenticated.") {
           setError(true);
           setErrorMessage(error.response.data.message);
@@ -229,8 +220,7 @@ function SuperAdminClassManagement() {
       college_name: updateClassCollege,
       prof_id: updateProfessorID,
     };
-    console.log(updateClassData);
-    console.log(id);
+
     https
       .put(`update_classes/${id}`, updateClassData, {
         headers: {

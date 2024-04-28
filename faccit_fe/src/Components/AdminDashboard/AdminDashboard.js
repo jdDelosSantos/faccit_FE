@@ -35,11 +35,10 @@ function AdminDashboard() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -58,11 +57,10 @@ function AdminDashboard() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -81,11 +79,10 @@ function AdminDashboard() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -137,22 +134,78 @@ function AdminDashboard() {
           <b>{tokenFirstname}'S DASHBOARD</b>
         </h1>
 
-        <div className="shadow upper_bg rounded container-fluid w-100 p-4 d-flex flex-column">
-          <div className="border container-fluid w-100 d-flex justify-content-md-between mb-2">
-            <div className="bg-primary rounded w-25 p-3">
-              <h3 className="text-white">CURRENT # OF CLASSES</h3>
-              <span className="text-white fs-4">{classCount}</span>
+        <div className="shadow upper_bg rounded container-fluid w-100 p-5 d-flex flex-column">
+          <div className="container-fluid w-100 d-flex justify-content-md-between mb-2 mt-3">
+            <div className="bg-light rounded w-25 p-4 shadow">
+              <h3 className="text-dark">
+                <b>CURRENT # OF CLASSES</b>
+              </h3>
+              <span className="text-dark fs-4">{classCount}</span>
             </div>
-            <div className="bg-secondary rounded w-25 p-3">
-              <h3 className="text-white">CURRENT # OF CLASSES LOADED IN PL</h3>
-              <span className="text-white fs-4">{classCountPL}</span>
+            <div className="bg-light rounded w-25 p-4 shadow">
+              <h3 className="text-dark">
+                <b>CURRENT # OF CLASSES LOADED IN PL</b>
+              </h3>
+              <span className="text-dark fs-4">{classCountPL}</span>
             </div>
-            <div className="bg-success rounded w-25 p-3">
-              <h3 className="text-white">CURRENT # OF CLASSES LOADED IN ML</h3>
-              <span className="text-white fs-4">{classCountML}</span>
+            <div className="bg-light rounded w-25 p-4 shadow">
+              <h3 className="text-dark">
+                <b>CURRENT # OF CLASSES LOADED IN ML</b>
+              </h3>
+              <span className="text-dark fs-4">{classCountML}</span>
             </div>
           </div>
-          <div className="container-fluid w-100 mt-5 d-flex"></div>
+          <div className="container-fluid w-100 mt-5 d-flex">
+            <div className="border container-fluid d-flex justify-content-between mb-3">
+              <a
+                href="/admin/labs/programming-lab"
+                className="bg-primary rounded w-25 p-4 mx-2"
+              >
+                <img
+                  src={require("../../Assets/images/pl.png")}
+                  className="dashboard_img mx-1"
+                  alt="list"
+                />
+                <span className="text-white mx-1">Programming Lab</span>
+              </a>
+
+              <a
+                href="/admin/labs/multimedia-lab"
+                className="bg-secondary rounded w-25 p-4 mx-2"
+              >
+                <img
+                  src={require("../../Assets/images/ml.png")}
+                  className="dashboard_img mx-1"
+                  alt="list"
+                />
+                <span className="text-white mx-1">Multimedia Lab</span>
+              </a>
+
+              <a
+                href="/admin/managements/attendances/students"
+                className="bg-success rounded w-25 p-4 mx-2"
+              >
+                <img
+                  src={require("../../Assets/images/dashboard_attendance.png")}
+                  className="dashboard_img mx-1"
+                  alt="list"
+                />
+                <span className="text-white mx-1">Student Attendances</span>
+              </a>
+
+              <a
+                href="/admin/managements/classes"
+                className="bg-info rounded w-25 p-4 mx-2"
+              >
+                <img
+                  src={require("../../Assets/images/classes.png")}
+                  className="dashboard_img mx-1"
+                  alt="list"
+                />
+                <span className="text-white mx-1">Your Classes</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     );

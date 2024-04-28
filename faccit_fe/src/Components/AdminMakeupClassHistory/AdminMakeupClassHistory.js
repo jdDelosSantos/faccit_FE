@@ -47,8 +47,9 @@ function AdminMakeupClassHistory() {
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
         item.created_date.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
+        item.makeup_class_status
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
 
   const currentItems = sortClassSchedule.slice(startIndex, endIndex);
@@ -61,19 +62,24 @@ function AdminMakeupClassHistory() {
 
   const [text, setText] = useState("");
 
-  const [absentClassCode, setAbsentClassCode] = useState("");
-  const [absentClassDay, setAbsentClassDay] = useState("");
-  const [absentStartTime, setAbsentStartTime] = useState("");
-  const [absentEndTime, setAbsentEndTime] = useState("");
-  const [absentLaboratory, setAbsentLaboratory] = useState("");
-  const [selectedClass, setSelectedClass] = useState(null);
-
   const [classes, setClasses] = useState([]);
   // const classes = useSelector((state) => state.class.classes);
 
+  const goBackToLogin = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
+
   const sessionToken = sessionStorage.getItem("Token");
-  const decoded = jwtDecode(sessionToken);
-  const tokenId = decoded.prof_id;
+  let decoded;
+  let tokenId;
+
+  if (sessionToken) {
+    decoded = jwtDecode(sessionToken);
+    tokenId = decoded.prof_id;
+  } else {
+    goBackToLogin();
+  }
 
   //Function for fetching Class Schedules
   const fetchClassSchedules = () => {
@@ -86,16 +92,14 @@ function AdminMakeupClassHistory() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
-        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -115,11 +119,10 @@ function AdminMakeupClassHistory() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -156,94 +159,12 @@ function AdminMakeupClassHistory() {
   };
 
   const clearClass = () => {
-    setAbsentClassCode("");
-    setAbsentClassDay("");
-    setAbsentStartTime("");
-    setAbsentEndTime("");
     setClassCode("");
     setClassDay("");
     setStartTime("");
     setEndTime("");
     setErrorMessage("");
     setStatus("");
-  };
-
-  const handleMakeUpClassRequest = (e) => {
-    e.preventDefault();
-
-    const forApproval = {
-      status: status,
-      class_code: classCode,
-      class_day: classDay,
-      start_time: startTime,
-      end_time: endTime,
-      laboratory: laboratory,
-    };
-
-    console.log(forApproval);
-
-    try {
-      https
-        .post(`approve_makeup_class/${id}`, forApproval, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-          },
-        })
-        .then((result) => {
-          fetchClassSchedules();
-          console.log(result.data);
-        })
-        .catch((error) => {
-          if (error.response.data.message != "Unauthenticated.") {
-            setError(true);
-            console.log(error.response.data.message);
-            setErrorMessage(error.response.data.message);
-            toast.error(error.response.data.message, { duration: 7000 });
-          } else {
-            console.log(error.response.data.message);
-            goBackToLogin();
-          }
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleMakeUpClassReject = () => {
-    const data = {
-      id: id,
-    };
-
-    try {
-      https
-        .post(`reject_makeup_class`, data, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
-          },
-        })
-        .then((result) => {
-          fetchClassSchedules();
-          console.log(result.data);
-        })
-        .catch((error) => {
-          if (error.response.data.message != "Unauthenticated.") {
-            setError(true);
-            console.log(error.response.data.message);
-            setErrorMessage(error.response.data.message);
-            toast.error(error.response.data.message, { duration: 7000 });
-          } else {
-            console.log(error.response.data.message);
-            goBackToLogin();
-          }
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const goBackToLogin = () => {
-    sessionStorage.clear();
-    navigate("/");
   };
 
   const [tokenFirstname, setTokenFirstname] = useState("");
@@ -501,197 +422,197 @@ function AdminMakeupClassHistory() {
                 </h1>
               </div>
 
-              <form onSubmit={(e) => handleMakeUpClassRequest(e)}>
-                <div className="modal-body">
-                  <div className="row d-flex justify-content-center align-items-center h-100">
-                    <img
-                      src={require("../../Assets/images/faith-cover-1280x420.png")}
-                      className="w-100 rounded-top"
-                      style={{
-                        TopLeftRadius: ".3rem",
-                        TopRightRadius: ".3rem",
-                      }}
-                      alt="cover"
-                    />
+              <div className="modal-body">
+                <div className="row d-flex justify-content-center align-items-center h-100">
+                  <img
+                    src={require("../../Assets/images/faith-cover-1280x420.png")}
+                    className="w-100 rounded-top"
+                    style={{
+                      TopLeftRadius: ".3rem",
+                      TopRightRadius: ".3rem",
+                    }}
+                    alt="cover"
+                  />
 
-                    <div className="card-body p-4 p-md-5">
-                      <div className="container d-flex justify-content-center"></div>
-                      {error == true ? (
-                        <div className="d-flex justify-content-center">
-                          <p className="text-danger fs-4">{errorMessage}</p>
-                        </div>
-                      ) : (
-                        ""
-                      )}
+                  <div className="card-body p-4 p-md-5">
+                    <div className="container d-flex justify-content-center"></div>
+                    {error == true ? (
+                      <div className="d-flex justify-content-center">
+                        <p className="text-danger fs-4">{errorMessage}</p>
+                      </div>
+                    ) : (
+                      ""
+                    )}
 
-                      <h3 className="text-center">Makeup Class Schedule</h3>
+                    <h3 className="text-center">
+                      Requested Makeup Class Schedule
+                    </h3>
 
-                      {/* Start of Class Select */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={(e) => {
-                                setClassCode(e.target.value);
-                              }}
-                              id="classCode"
-                              value={classCode || ""}
-                              required
-                              disabled
-                            >
-                              <option value="" disabled>
-                                Select a Class
-                              </option>
-                              {classes.length > 0
-                                ? classes
-                                    .filter(
-                                      (classes) =>
-                                        classes.class_status === "Active"
+                    {/* Start of Class Select */}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox2 w-100">
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
+                            onChange={(e) => {
+                              setClassCode(e.target.value);
+                            }}
+                            id="classCode"
+                            value={classCode || ""}
+                            required
+                            disabled
+                          >
+                            <option value="" disabled>
+                              Select a Class
+                            </option>
+                            {classes.length > 0
+                              ? classes
+                                  .filter(
+                                    (classes) =>
+                                      classes.class_status === "Active"
+                                  )
+                                  .sort((classes1, classes2) =>
+                                    classes1.class_name.localeCompare(
+                                      classes2.class_name
                                     )
-                                    .sort((classes1, classes2) =>
-                                      classes1.class_name.localeCompare(
-                                        classes2.class_name
-                                      )
-                                    )
-                                    .map((classes) => (
-                                      <option
-                                        key={`${classes.id}-${classes.class_name}-${classes.class_description}`}
-                                        value={classes.class_code}
-                                      >
-                                        {classes.class_name}
-                                      </option>
-                                    ))
-                                : ""}
-                            </select>
-                          </div>
+                                  )
+                                  .map((classes) => (
+                                    <option
+                                      key={`${classes.id}-${classes.class_name}-${classes.class_description}`}
+                                      value={classes.class_code}
+                                    >
+                                      {classes.class_name}
+                                    </option>
+                                  ))
+                              : ""}
+                          </select>
                         </div>
                       </div>
-
-                      {/* Start of Class day*/}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={(e) => {
-                                setClassDay(e.target.value);
-                                setErrorMessage("");
-                              }}
-                              id="classDay"
-                              value={classDay || ""}
-                              required
-                              disabled
-                            >
-                              <option value="" disabled>
-                                Select a Day
-                              </option>
-                              <option value="Monday">Monday</option>
-                              <option value="Tuesday">Tuesday</option>
-                              <option value="Wednesday">Wednesday</option>
-                              <option value="Thursday">Thursday</option>
-                              <option value="Friday">Friday</option>
-                              <option value="Saturday">Saturday</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class Start time */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <input
-                              type="time"
-                              id="startTime"
-                              value={startTime}
-                              min="07:30"
-                              max="21:00"
-                              onChange={(e) => {
-                                setStartTime(e.target.value);
-                                setErrorMessage("");
-                              }}
-                              required
-                              disabled
-                            />
-                            <span>Start Time</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class End time */}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <input
-                              type="time"
-                              id="endTime"
-                              value={endTime}
-                              min="07:30"
-                              max="21:00"
-                              onChange={(e) => {
-                                setEndTime(e.target.value);
-                                setErrorMessage("");
-                              }}
-                              required
-                              disabled
-                            />
-                            <span>End Time</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Start of Class Laboratory*/}
-                      <div className="">
-                        <div className="md-6 mb-4">
-                          <div className="inputBox2 w-100">
-                            <select
-                              className="form-select form-select-md mb-3"
-                              aria-label=".form-select-md example"
-                              onChange={(e) => setLaboratory(e.target.value)}
-                              id="laboratory"
-                              value={laboratory || ""}
-                              disabled
-                              required
-                            >
-                              <option value="" disabled>
-                                Select a Laboratory
-                              </option>
-                              <option key={laboratory} value={laboratory}>
-                                {laboratory === "lab_multimedia"
-                                  ? "Multimedia Lab"
-                                  : laboratory === "lab_programming"
-                                  ? "Programming Lab"
-                                  : laboratory}
-                              </option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <p>
-                        <i>
-                          Note: Minimum time is 07:30 am and Maximum time is
-                          09:00pm
-                        </i>
-                      </p>
                     </div>
+
+                    {/* Start of Class day*/}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox2 w-100">
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
+                            onChange={(e) => {
+                              setClassDay(e.target.value);
+                              setErrorMessage("");
+                            }}
+                            id="classDay"
+                            value={classDay || ""}
+                            required
+                            disabled
+                          >
+                            <option value="" disabled>
+                              Select a Day
+                            </option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Start of Class Start time */}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox2 w-100">
+                          <input
+                            type="time"
+                            id="startTime"
+                            value={startTime}
+                            min="07:30"
+                            max="21:00"
+                            onChange={(e) => {
+                              setStartTime(e.target.value);
+                              setErrorMessage("");
+                            }}
+                            required
+                            disabled
+                          />
+                          <span>Start Time</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Start of Class End time */}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox2 w-100">
+                          <input
+                            type="time"
+                            id="endTime"
+                            value={endTime}
+                            min="07:30"
+                            max="21:00"
+                            onChange={(e) => {
+                              setEndTime(e.target.value);
+                              setErrorMessage("");
+                            }}
+                            required
+                            disabled
+                          />
+                          <span>End Time</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Start of Class Laboratory*/}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox2 w-100">
+                          <select
+                            className="form-select form-select-md mb-3"
+                            aria-label=".form-select-md example"
+                            onChange={(e) => setLaboratory(e.target.value)}
+                            id="laboratory"
+                            value={laboratory || ""}
+                            disabled
+                            required
+                          >
+                            <option value="" disabled>
+                              Select a Laboratory
+                            </option>
+                            <option key={laboratory} value={laboratory}>
+                              {laboratory === "lab_multimedia"
+                                ? "Multimedia Lab"
+                                : laboratory === "lab_programming"
+                                ? "Programming Lab"
+                                : laboratory}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <p>
+                      <i>
+                        Note: Minimum time is 07:30 am and Maximum time is
+                        09:00pm
+                      </i>
+                    </p>
                   </div>
                 </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                    onClick={() => {
-                      clearClass();
-                    }}
-                  >
-                    CANCEL
-                  </button>
-                </div>
-              </form>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                  onClick={() => {
+                    clearClass();
+                  }}
+                >
+                  CANCEL
+                </button>
+              </div>
             </div>
           </div>
         </div>

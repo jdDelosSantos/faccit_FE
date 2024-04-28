@@ -70,10 +70,6 @@ function SuperAdminCancelClassRequests() {
   const [absentLaboratory, setAbsentLaboratory] = useState("");
 
   const [classes, setClasses] = useState([]);
-  // const classes = useSelector((state) => state.class.classes);
-  const sessionToken = sessionStorage.getItem("Token");
-  const decoded = jwtDecode(sessionToken);
-  const tokenId = decoded.prof_id;
 
   //Function for fetching Class Schedules
   const fetchClassSchedules = () => {
@@ -85,16 +81,14 @@ function SuperAdminCancelClassRequests() {
       })
       .then((result) => {
         setClassSchedules(result.data);
-        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -114,11 +108,9 @@ function SuperAdminCancelClassRequests() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -126,7 +118,6 @@ function SuperAdminCancelClassRequests() {
 
   useEffect(() => {
     fetchClassSchedules();
-    // fetchProfessors();
     fetchClasses();
   }, []);
 
@@ -179,8 +170,6 @@ function SuperAdminCancelClassRequests() {
       laboratory: laboratory,
     };
 
-    console.log(forApproval);
-
     try {
       https
         .post(`approve_cancel_class/${id}`, forApproval, {
@@ -190,22 +179,20 @@ function SuperAdminCancelClassRequests() {
         })
         .then((result) => {
           fetchClassSchedules();
-          console.log(result.data);
+
           toast.success(result.data.message, { duration: 7000 });
         })
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -223,22 +210,20 @@ function SuperAdminCancelClassRequests() {
         })
         .then((result) => {
           fetchClassSchedules();
-          console.log(result.data);
+
           toast.success(result.data.message, { duration: 7000 });
         })
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

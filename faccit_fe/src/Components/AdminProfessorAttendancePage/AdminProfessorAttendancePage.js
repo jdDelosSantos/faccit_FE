@@ -36,16 +36,10 @@ function AdminProfessorAttendancePage() {
     .filter(
       (item) =>
         item.class_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.class.class_name
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        item.class_day.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.professor.user_firstname
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        item.professor.user_lastname
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
+        item.class_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.date.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.start_time.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.end_time.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
   const currentItems = sortClassSchedule.slice(startIndex, endIndex);
@@ -68,9 +62,21 @@ function AdminProfessorAttendancePage() {
   const [classes, setClasses] = useState([]);
   // const classes = useSelector((state) => state.class.classes);
 
+  const goBackToLogin = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
+
   const sessionToken = sessionStorage.getItem("Token");
-  const decoded = jwtDecode(sessionToken);
-  const tokenId = decoded.prof_id;
+  let decoded;
+  let tokenId;
+
+  if (sessionToken) {
+    decoded = jwtDecode(sessionToken);
+    tokenId = decoded.prof_id;
+  } else {
+    goBackToLogin();
+  }
 
   //Function for fetching Class Schedules
   const fetchOpenClasses = () => {
@@ -83,16 +89,14 @@ function AdminProfessorAttendancePage() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
-        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -112,11 +116,10 @@ function AdminProfessorAttendancePage() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -159,11 +162,6 @@ function AdminProfessorAttendancePage() {
     setEndTime("");
     setErrorMessage("");
     setStatus("");
-  };
-
-  const goBackToLogin = () => {
-    sessionStorage.clear();
-    navigate("/");
   };
 
   const [tokenFirstname, setTokenFirstname] = useState("");

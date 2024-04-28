@@ -115,16 +115,13 @@ function SuperAdminClassScheduleManagement() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
-        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -144,11 +141,9 @@ function SuperAdminClassScheduleManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -176,7 +171,6 @@ function SuperAdminClassScheduleManagement() {
       end_time: endTime,
     };
 
-    console.log(classScheduleData);
     https
       .post("class_schedule", classScheduleData, {
         headers: {
@@ -194,7 +188,6 @@ function SuperAdminClassScheduleManagement() {
         setEndTime("");
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.message != "Unauthenticated.") {
           setError(true);
           setErrorMessage(error.response.data.message);
@@ -226,7 +219,6 @@ function SuperAdminClassScheduleManagement() {
         toast.success(result.data.message, { duration: 7000 });
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.message != "Unauthenticated.") {
           setError(true);
           setErrorMessage(error.response.data.message);
@@ -248,7 +240,6 @@ function SuperAdminClassScheduleManagement() {
       start_time: updateStartTime,
       end_time: updateEndTime,
     };
-    console.log(updateClassData);
 
     https
       .put(`update_class_schedule/${updateClassID}`, updateClassData, {
@@ -263,7 +254,6 @@ function SuperAdminClassScheduleManagement() {
         clearUpdateClass();
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.message != "Unauthenticated.") {
           setError(true);
           setErrorMessage(error.response.data.message);

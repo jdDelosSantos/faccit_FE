@@ -32,6 +32,7 @@ import AdminProfessorAttendancePage from "./Components/AdminProfessorAttendanceP
 import AdminStudentAttendancePage from "./Components/AdminStudentAttendancePage/AdminStudentAttendancePage";
 import AdminDashboard from "./Components/AdminDashboard/AdminDashboard";
 import AdminProfile from "./Components/AdminProfile/AdminProfile";
+import SuperAdminProfile from "./Components/SuperAdminProfile/SuperAdminProfile";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -58,6 +59,8 @@ function App() {
           <Route path="/" element={<LoginPage />} />
 
           <Route element={<SuperAdminSidebarFunction />}>
+            <Route path="/testing" element={<TESTING />} />
+            <Route path="/profile" element={<SuperAdminProfile />} />
             <Route path="/dashboard" element={<SuperAdminDashboard />} />
             <Route
               path="/labs/programming-lab"
@@ -136,6 +139,7 @@ function App() {
               path="/admin/managements/attendances/students"
               element={<AdminStudentAttendancePage />}
             />
+            <Route path="/admin/testing" element={<TESTING />} />
 
             <Route path="/" element={<LoginPage />} />
           </Route>

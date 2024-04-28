@@ -61,7 +61,7 @@ function SuperAdminProfessorManagement() {
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
-  const filteredSortedData = professors.filter((item) => {
+  const filteredSortedData = [...professors].filter((item) => {
     const searchTerms = searchTerm.toLowerCase().split(" ");
     const matchingColumns = [
       "prof_id",
@@ -95,18 +95,14 @@ function SuperAdminProfessorManagement() {
         },
       })
       .then((result) => {
-        // dispatch(setProfessors(result.data));
-        // console.log(result.data);
         setProfessors(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -141,7 +137,6 @@ function SuperAdminProfessorManagement() {
     if (screenshots.length < 3) {
       const newScreenshot = webcamRef.current.getScreenshot();
       setScreenshots([...screenshots, newScreenshot]);
-      console.log(screenshots);
     }
   };
 
@@ -193,7 +188,7 @@ function SuperAdminProfessorManagement() {
           std_folder_url: `${profID}/`,
           std_folder_img_url: `${index + 1}.jpg`,
         };
-        console.log(profImageUrl);
+
         https
           .post("prof_images", profImageUrl, {
             headers: {
@@ -201,25 +196,17 @@ function SuperAdminProfessorManagement() {
             },
           })
           .then((result) => {
-            //console.log(result.data.message);
             fetchProfessors();
           })
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
               setError(true);
-              console.log(error.response.data.message);
               setErrorMessage(error.response.data.message);
               toast.error(error.response.data.message, { duration: 7000 });
             } else {
-              console.log(error.response.data.message);
               goBackToLogin();
             }
           });
-
-        console.log(
-          `Screenshot ${index + 1} uploaded successfully:`,
-          data.Location
-        );
       }
     });
   };
@@ -254,21 +241,17 @@ function SuperAdminProfessorManagement() {
             },
           })
           .then((result) => {
-            //console.log(result.data.message);
             fetchProfessors();
           })
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
               setError(true);
-              console.log(error.response.data.message);
               setErrorMessage(error.response.data.message);
               toast.error(error.response.data.message, { duration: 7000 });
             } else {
-              console.log(error.response.data.message);
               goBackToLogin();
             }
           });
-        console.log(`Screenshot ${index + 1} uploaded successfully:`);
       }
     });
   };
@@ -278,7 +261,6 @@ function SuperAdminProfessorManagement() {
       faith_id: prof_id,
     };
     // Implement your logic to fetch image URLs from the S3 bucket
-    console.log(prof_id);
     https
       .post("prof_img_url", professorImages, {
         headers: {
@@ -286,7 +268,6 @@ function SuperAdminProfessorManagement() {
         },
       })
       .then((result) => {
-        console.log(result.data);
         result.data.forEach((imageData) => {
           const params = {
             Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
@@ -306,11 +287,9 @@ function SuperAdminProfessorManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -350,11 +329,9 @@ function SuperAdminProfessorManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -384,8 +361,6 @@ function SuperAdminProfessorManagement() {
       user_firstname: updateFirstname,
     };
 
-    console.log(updateProfessorData);
-
     https
       .put(`update_professors/${updateProfID}`, updateProfessorData, {
         headers: {
@@ -410,14 +385,11 @@ function SuperAdminProfessorManagement() {
         setUpdateImageUrls([]);
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -437,6 +409,15 @@ function SuperAdminProfessorManagement() {
       .then((result) => {
         toast.error(result.data.message, { duration: 7000 });
         fetchProfessors();
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          goBackToLogin();
+        }
       });
   };
 
@@ -454,7 +435,51 @@ function SuperAdminProfessorManagement() {
       .then((result) => {
         toast.success(result.data.message, { duration: 7000 });
         fetchProfessors();
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          goBackToLogin();
+        }
       });
+  };
+
+  const [profId, setProfId] = useState("");
+  const handleResetPass = (prof_id) => {
+    setProfId(prof_id);
+  };
+
+  const handleResetProfessorPass = (e) => {
+    e.preventDefault();
+
+    const data = {
+      data: "hello",
+    };
+    try {
+      https
+        .put(`reset_prof_pass/${profId}`, data, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+          },
+        })
+        .then((result) => {
+          toast.success(result.data.message, { duration: 7000 });
+        })
+        .catch((error) => {
+          if (error.response.data.message != "Unauthenticated.") {
+            setError(true);
+            setErrorMessage(error.response.data.message);
+            toast.error(error.response.data.message, { duration: 7000 });
+          } else {
+            goBackToLogin();
+          }
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const clearProfessorUpdate = () => {
@@ -468,6 +493,52 @@ function SuperAdminProfessorManagement() {
   const goBackToLogin = () => {
     sessionStorage.clear();
     navigate("/");
+  };
+
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!file) {
+      setMessage("Please select a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("csv_file", file);
+
+    try {
+      https
+        .post("bulk_insert_prof", formData, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((result) => {
+          toast.success(result.data.message, { duration: 7000 });
+          fetchProfessors();
+        })
+        .catch((error) => {
+          if (error.response.data.message != "Unauthenticated.") {
+            setError(true);
+            setErrorMessage(error.response.data.message);
+            toast.error(error.response.data.message, { duration: 7000 });
+          } else {
+            goBackToLogin();
+          }
+        });
+    } catch (error) {
+      setMessage("Error occurred during bulk insert.");
+      toast.error(error, { duration: 7000 });
+      console.error(error);
+    }
   };
 
   const [tokenFirstname, setTokenFirstname] = useState("");
@@ -532,6 +603,23 @@ function SuperAdminProfessorManagement() {
                 <button
                   type="button"
                   data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop2"
+                  className="btn btn-secondary btn-sm mx-2"
+                >
+                  <img
+                    src={require("../../Assets/images/bulk.png")}
+                    width="25"
+                    height="25"
+                    style={{
+                      TopLeftRadius: ".3rem",
+                      TopRightRadius: ".3rem",
+                    }}
+                    alt="add_user"
+                  />
+                </button>
+                <button
+                  type="button"
+                  data-bs-toggle="modal"
                   data-bs-target="#staticBackdrop"
                   className="btn btn-primary btn-sm"
                   onClick={() => {
@@ -557,8 +645,7 @@ function SuperAdminProfessorManagement() {
                 <tr>
                   <th>PROFESSOR ID</th>
                   <th>EMAIL</th>
-                  <th>LAST NAME</th>
-                  <th>FIRST NAME</th>
+                  <th>PROFESSOR NAME</th>
                   <th>IMAGE STATUS</th>
                   <th>STATUS</th>
                   <th>ACTIONS</th>
@@ -570,8 +657,10 @@ function SuperAdminProfessorManagement() {
                     <tr className="table-light" key={index}>
                       <td className="p-2">{professor.prof_id}</td>
                       <td className="p-2">{professor.email}</td>
-                      <td className="p-2">{professor.user_lastname}</td>
-                      <td className="p-2">{professor.user_firstname}</td>
+                      <td className="p-2">
+                        {professor.user_lastname}, {professor.user_firstname}
+                      </td>
+
                       <td className="p-3">
                         {(() => {
                           switch (true) {
@@ -670,8 +759,6 @@ function SuperAdminProfessorManagement() {
                         {professor.user_status == "Active" ? (
                           <button
                             type="button"
-                            // data-bs-toggle="modal"
-                            // data-bs-target="#staticBackdrop2"
                             className="btn btn-danger btn-sm mx-2"
                             onClick={() =>
                               handleProfessorDeactivate(professor.prof_id)
@@ -715,6 +802,7 @@ function SuperAdminProfessorManagement() {
                           data-bs-toggle="modal"
                           data-bs-target="#staticBackdrop4"
                           className="btn btn-sm btn-warning"
+                          onClick={() => handleResetPass(professor.prof_id)}
                         >
                           <img
                             src={require("../../Assets/images/reset_user.png")}
@@ -1088,6 +1176,7 @@ function SuperAdminProfessorManagement() {
                               value={updateLastname}
                               onChange={(e) => {
                                 setUpdateLastname(e.target.value);
+                                setError(false);
                               }}
                               required
                             />
@@ -1106,6 +1195,7 @@ function SuperAdminProfessorManagement() {
                               value={updateFirstname}
                               onChange={(e) => {
                                 setUpdateFirstname(e.target.value);
+                                setError(false);
                               }}
                               required
                             />
@@ -1233,6 +1323,107 @@ function SuperAdminProfessorManagement() {
             </div>
           </div>
         </div>
+
+        {/* START OF RESET PROFESSOR PASS MODAL */}
+        <div
+          className="modal fade"
+          id="staticBackdrop4"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabIndex="-1"
+          aria-labelledby="staticBackdropLabel4"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-md">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="staticBackdropLabel4">
+                  <b>RESET PROFESSOR PASSWORD</b>
+                </h1>
+              </div>
+
+              <form onSubmit={(e) => handleResetProfessorPass(e)}>
+                <div className="modal-body">
+                  <h4>Are you sure you want to reset password to default?</h4>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                    // onClick={() => {
+                    //   setUpdateImageUrls([]);
+                    //   clearProfessorUpdate();
+                    //   setIsWebcamActive(false);
+                    // }}
+                  >
+                    CANCEL
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-success mb-1"
+                    data-bs-dismiss="modal"
+                  >
+                    PROCEED
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {/* MODAL FOR BULK INSERT */}
+        <div
+          className="modal fade"
+          id="staticBackdrop2"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabIndex="-1"
+          aria-labelledby="staticBackdropLabel2"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="staticBackdropLabel2">
+                  BULK INSERT PROFESSORS
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={handleSubmit}>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                  />
+                  <button type="submit" data-bs-dismiss="modal">
+                    Upload CSV
+                  </button>
+                </form>
+                {message && <p className="mt-2 text-center">{message}</p>}
+                <p>
+                  <i>Note: CSV File needed</i>
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* MODAL FOR BULK INSERT END */}
       </div>
     );
   }

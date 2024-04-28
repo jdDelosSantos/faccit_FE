@@ -35,7 +35,7 @@ function AdminClassManagement() {
   //REACT-PAGINATION PROFESSOR CLASSES
   const [profClasses, setProfClasses] = useState([]);
   const [currentPageCS, setCurrentPageCS] = useState(0);
-  const [itemsPerPageCS, setItemsPerPageCS] = useState(10);
+  const [itemsPerPageCS, setItemsPerPageCS] = useState(7);
   const startIndexCS = currentPageCS * itemsPerPageCS;
   const endIndexCS = startIndexCS + itemsPerPageCS;
 
@@ -56,7 +56,7 @@ function AdminClassManagement() {
   //REACT-PAGINATION CLASS STUDENTS
   const [classStudents, setClassStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(7);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
@@ -80,7 +80,7 @@ function AdminClassManagement() {
   //REACT-PAGINATION LIST CLASS STUDENTS
   const [listClassStudents, setListClassStudents] = useState([]);
   const [currentPages, setCurrentPages] = useState(0);
-  const [itemsPerPages, setItemsPerPages] = useState(10);
+  const [itemsPerPages, setItemsPerPages] = useState(7);
   const startIndexes = currentPages * itemsPerPages;
   const endIndexes = startIndexes + itemsPerPages;
 
@@ -96,7 +96,7 @@ function AdminClassManagement() {
   //REACT-PAGINATION DELETE CLASS STUDENTS
   const [delClassStudents, setDelClassStudents] = useState([]);
   const [currentPag, setCurrentPag] = useState(0);
-  const [itemsPerPag, setItemsPerPag] = useState(10);
+  const [itemsPerPag, setItemsPerPag] = useState(7);
   const startInde = currentPag * itemsPerPag;
   const endInde = startInde + itemsPerPag;
 
@@ -124,17 +124,14 @@ function AdminClassManagement() {
         .then((result) => {
           // dispatch(setClasses(result.data));
           setProfClasses(result.data);
-          console.log(result.data);
         })
         .catch((error) => {
-          console.log(error);
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
+
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
@@ -156,11 +153,10 @@ function AdminClassManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -180,11 +176,10 @@ function AdminClassManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -211,23 +206,20 @@ function AdminClassManagement() {
           },
         })
         .then((result) => {
-          console.log(result.data);
-
           setListClassStudents(result.data);
         })
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
+
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -254,16 +246,15 @@ function AdminClassManagement() {
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
+
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -330,15 +321,12 @@ function AdminClassManagement() {
           }
         })
         .catch((error) => {
-          console.log(error);
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
 
-            console.log(error.response.data.message);
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
@@ -363,15 +351,12 @@ function AdminClassManagement() {
             fetchClasses();
           })
           .catch((error) => {
-            console.log(error);
             if (error.response.data.message != "Unauthenticated.") {
               setError(true);
 
-              console.log(error.response.data.message);
               setErrorMessage(error.response.data.message);
               toast.error(error.response.data.message, { duration: 7000 });
             } else {
-              console.log(error.response.data.message);
               goBackToLogin();
             }
           });

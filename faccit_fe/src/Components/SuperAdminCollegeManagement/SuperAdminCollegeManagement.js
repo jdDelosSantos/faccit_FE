@@ -68,11 +68,9 @@ function SuperAdminCollegeManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -112,11 +110,9 @@ function SuperAdminCollegeManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -131,8 +127,6 @@ function SuperAdminCollegeManagement() {
   //FUNCTION FOR ADDING UPDATING A COLLEGE
   const handleUpdateCollegeSubmit = (e) => {
     e.preventDefault();
-
-    console.log(id);
 
     const updateCollegeData = {
       college_name: updateCollegeName,
@@ -152,11 +146,9 @@ function SuperAdminCollegeManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -589,6 +581,7 @@ function SuperAdminCollegeManagement() {
                               type="text"
                               id="updateCollegeName"
                               value={updateCollegeName}
+                              maxLength="4"
                               onChange={(e) => {
                                 setUpdateCollegeName(e.target.value);
                               }}

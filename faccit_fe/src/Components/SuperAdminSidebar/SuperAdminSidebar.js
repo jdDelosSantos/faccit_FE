@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./SuperAdminSidebar.css";
 import { jwtDecode } from "jwt-decode";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 function SuperAdminSidebar() {
@@ -65,31 +66,26 @@ function SuperAdminSidebar() {
                 <i className="lni lni-grid-alt"></i>
               </button>
               <div className="sidebar-logo">
-                <a href="#">FACCIT</a>
+                <Link to="/dashboard">FACCIT</Link>
               </div>
             </div>
             <ul className="sidebar-nav">
               <li className="sidebar-item">
-                <a href="#" className="sidebar-link ">
+                <Link to="/profile" className="sidebar-link ">
                   <i className="lni lni-user"></i>
                   <span>Profile</span>
-                </a>
+                </Link>
               </li>
+
               <li className="sidebar-item">
-                <a href="#" className="sidebar-link">
-                  <i className="lni lni-cog"></i>
-                  <span>Settings</span>
-                </a>
-              </li>
-              <li className="sidebar-item">
-                <a href="/dashboard" className="sidebar-link">
+                <Link to="/dashboard" className="sidebar-link">
                   <i className="lni lni-license"></i>
                   <span>Dashboard</span>
-                </a>
+                </Link>
               </li>
               <li className="sidebar-item">
-                <a
-                  href="#"
+                <Link
+                  to="#"
                   className="sidebar-link has-dropdown collapsed"
                   data-bs-toggle="collapse"
                   data-bs-target="#auth"
@@ -98,27 +94,27 @@ function SuperAdminSidebar() {
                 >
                   <i className="lni lni-graph"></i>
                   <span>Laboratories</span>
-                </a>
+                </Link>
                 <ul
                   id="auth"
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <a href="/labs/programming-lab" className="sidebar-link">
+                    <Link to="/labs/programming-lab" className="sidebar-link">
                       Programming Lab
-                    </a>
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a href="/labs/multimedia-lab" className="sidebar-link">
+                    <Link to="/labs/multimedia-lab" className="sidebar-link">
                       Multimedia Lab
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
               <li className="sidebar-item">
-                <a
-                  href="#"
+                <Link
+                  to="#"
                   className="sidebar-link has-dropdown collapsed"
                   data-bs-toggle="collapse"
                   data-bs-target="#multi"
@@ -127,52 +123,52 @@ function SuperAdminSidebar() {
                 >
                   <i className="lni lni-layout"></i>
                   <span>Managements</span>
-                </a>
+                </Link>
                 <ul
                   id="multi"
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <a href="/managements/students" className="sidebar-link">
+                    <Link to="/managements/students" className="sidebar-link">
                       Students
-                    </a>
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a href="/managements/professors" className="sidebar-link">
+                    <Link to="/managements/professors" className="sidebar-link">
                       Professors
-                    </a>
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a href="/managements/colleges" className="sidebar-link">
+                    <Link to="/managements/colleges" className="sidebar-link">
                       Colleges
-                    </a>
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a href="/managements/courses" className="sidebar-link">
+                    <Link to="/managements/courses" className="sidebar-link">
                       Courses
-                    </a>
+                    </Link>
                   </li>
 
                   <li className="sidebar-item">
-                    <a href="/managements/classes" className="sidebar-link">
+                    <Link to="/managements/classes" className="sidebar-link">
                       Classes
-                    </a>
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a
-                      href="/managements/classes/schedules"
+                    <Link
+                      to="/managements/classes/schedules"
                       className="sidebar-link"
                     >
                       Schedules
-                    </a>
+                    </Link>
                   </li>
                 </ul>
               </li>
 
               <li className="sidebar-item">
-                <a
-                  href="#"
+                <Link
+                  to="#"
                   className="sidebar-link has-dropdown collapsed"
                   data-bs-toggle="collapse"
                   data-bs-target="#request"
@@ -180,48 +176,41 @@ function SuperAdminSidebar() {
                   aria-controls="request"
                 >
                   <i className="lni lni-keyboard"></i>
-                  <span>Requests Handling</span>
-                </a>
+                  <span>Request Handling</span>
+                </Link>
                 <ul
                   id="request"
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <a
-                      href="/managements/makeup-classes/requests"
+                    <Link
+                      to="/managements/makeup-classes/requests"
                       className="sidebar-link"
                     >
-                      <span>Makeup Requests</span>
-                    </a>
+                      Makeup Requests
+                    </Link>
                   </li>
                   <li className="sidebar-item">
-                    <a
-                      href="/managements/cancel-classes/requests"
+                    <Link
+                      to="/managements/cancel-classes/requests"
                       className="sidebar-link"
                     >
-                      <span>Cancel Requests</span>
-                    </a>
+                      Cancel Requests
+                    </Link>
                   </li>
                 </ul>
               </li>
-              {/* 
-              <li className="sidebar-item">
-                <a href="#" className="sidebar-link">
-                  <i className="lni lni-popup"></i>
-                  <span>Notification</span>
-                </a>
-              </li> */}
             </ul>
             <div className="sidebar-footer">
-              <a
-                href="/"
+              <Link
+                to="/"
                 className="sidebar-link"
                 onClick={() => handleLogout()}
               >
                 <i className="lni lni-exit"></i>
                 <span>Logout</span>
-              </a>
+              </Link>
             </div>
           </aside>
           <div className="main"></div>

@@ -134,16 +134,13 @@ function SuperAdminMultimediaLab() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
-        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -160,16 +157,13 @@ function SuperAdminMultimediaLab() {
       })
       .then((result) => {
         setLabClassSchedules(result.data);
-        console.log(labClassSchedules);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -198,7 +192,6 @@ function SuperAdminMultimediaLab() {
     if (selectedClasses && selectedClasses.length === 0) {
       toast.error("No Selected Classes!", { duration: 7000 });
     } else if (selectedClasses != null) {
-      console.log(selectedClasses);
       const laboratory = "lab_multimedia";
       https
         .post(`create_laboratory_classes/${laboratory}`, selectedClasses, {
@@ -225,16 +218,13 @@ function SuperAdminMultimediaLab() {
           }
         })
         .catch((error) => {
-          console.log(error);
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
             setSelectedClasses([]);
-            console.log(error.response.data.message);
             fetchLaboratoryClassSchedules();
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
@@ -250,8 +240,6 @@ function SuperAdminMultimediaLab() {
   };
 
   const handleClassScheduleRemove = (id) => {
-    console.log(id);
-
     https
       .delete(`delete_laboratory_classes/${id}`, {
         headers: {
@@ -263,15 +251,12 @@ function SuperAdminMultimediaLab() {
         fetchLaboratoryClassSchedules();
       })
       .catch((error) => {
-        console.log(error);
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
           setSelectedClasses([]);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });

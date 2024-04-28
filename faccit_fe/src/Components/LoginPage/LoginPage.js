@@ -55,7 +55,7 @@ function LoginPage() {
     if (role === "super_admin") {
       navigate("dashboard");
     } else {
-      navigate("admin/managements/classes");
+      navigate("admin/dashboard");
     }
   };
 
@@ -106,10 +106,10 @@ function LoginPage() {
               </div>
               <button
                 type="button"
-                className="border btn-submit btn btn-outline-light text-dark px-5 py-3 w-100"
+                className="border btn-submit btn btn-outline-light text-white txt_login px-5 py-3 w-100"
                 onClick={() => handleLogin()}
               >
-                SIGN IN
+                <b>SIGN IN</b>
               </button>
             </form>
           </div>

@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import FaithLogo from "../../Assets/images/FAITH LOGO.png";
+import "jspdf-autotable";
 
 const generatePDF = (
   studentAttendances,
@@ -22,7 +23,7 @@ const generatePDF = (
 
   // Add the heading text
   doc.setFontSize(18); // Set the font size for the heading
-  doc.text(`Attendance Report for`, 74, 43); // Add the heading text (x, y)
+  doc.text(`Attendance Report for`, 71, 43); // Add the heading text (x, y)
   doc.text(`${className} ${date}`, 73, 53); // Add the heading text (x, y)
 
   doc.setFont("helvetica"); // Change "helvetica" to your desired font name

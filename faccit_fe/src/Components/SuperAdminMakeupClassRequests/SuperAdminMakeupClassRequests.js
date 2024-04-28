@@ -73,10 +73,6 @@ function SuperAdminMakeupClassRequests() {
   const [selectedClass, setSelectedClass] = useState(null);
 
   const [classes, setClasses] = useState([]);
-  // const classes = useSelector((state) => state.class.classes);
-  const sessionToken = sessionStorage.getItem("Token");
-  const decoded = jwtDecode(sessionToken);
-  const tokenId = decoded.prof_id;
 
   //Function for fetching Class Schedules
   const fetchClassSchedules = () => {
@@ -89,16 +85,13 @@ function SuperAdminMakeupClassRequests() {
       .then((result) => {
         // dispatch(setSubjects(result.data));
         setClassSchedules(result.data);
-        console.log(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -118,11 +111,9 @@ function SuperAdminMakeupClassRequests() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -130,7 +121,6 @@ function SuperAdminMakeupClassRequests() {
 
   useEffect(() => {
     fetchClassSchedules();
-    // fetchProfessors();
     fetchClasses();
   }, []);
 
@@ -183,8 +173,6 @@ function SuperAdminMakeupClassRequests() {
       laboratory: laboratory,
     };
 
-    console.log(forApproval);
-
     try {
       https
         .post(`approve_makeup_class/${id}`, forApproval, {
@@ -199,16 +187,14 @@ function SuperAdminMakeupClassRequests() {
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data);
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -231,16 +217,14 @@ function SuperAdminMakeupClassRequests() {
         .catch((error) => {
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

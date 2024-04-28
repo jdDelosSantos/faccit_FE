@@ -74,10 +74,21 @@ function AdminStudentAttendancePage() {
 
   const [classes, setClasses] = useState([]);
   // const classes = useSelector((state) => state.class.classes);
+  const goBackToLogin = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
 
   const sessionToken = sessionStorage.getItem("Token");
-  const decoded = jwtDecode(sessionToken);
-  const tokenId = decoded.prof_id;
+  let decoded;
+  let tokenId;
+
+  if (sessionToken) {
+    decoded = jwtDecode(sessionToken);
+    tokenId = decoded.prof_id;
+  } else {
+    goBackToLogin();
+  }
 
   //Function for fetching Classes
   const fetchProfClasses = () => {
@@ -93,11 +104,10 @@ function AdminStudentAttendancePage() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
+
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -140,6 +150,7 @@ function AdminStudentAttendancePage() {
       time_in: updateTimeIn,
       status: "Present",
     };
+
     console.log(data);
 
     try {
@@ -152,21 +163,21 @@ function AdminStudentAttendancePage() {
         .then((result) => {
           handleAttendance();
           toast.success(result.data.message, { duration: 7000 });
-          console.log(result.data);
+          console.log(result);
         })
         .catch((error) => {
+          console.log(error);
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
-            console.log(error.response.data.message);
+
             setErrorMessage(error.response.data.message);
             toast.error(error.response.data.message, { duration: 7000 });
           } else {
-            console.log(error.response.data.message);
             goBackToLogin();
           }
         });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -203,16 +214,14 @@ function AdminStudentAttendancePage() {
           })
           .then((result) => {
             setStudentAttendances(result.data);
-            console.log(result.data);
           })
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
               setError(true);
-              console.log(error.response.data.message);
+
               setErrorMessage(error.response.data.message);
               toast.error(error.response.data.message, { duration: 7000 });
             } else {
-              console.log(error.response.data.message);
               goBackToLogin();
             }
           });
@@ -239,9 +248,6 @@ function AdminStudentAttendancePage() {
 
       const month_class_code = classCode || monthClassCode;
 
-      console.log(month_class_code);
-      console.log(data);
-
       try {
         https
           .post(`month_student_attendances/${month_class_code}`, data, {
@@ -251,16 +257,14 @@ function AdminStudentAttendancePage() {
           })
           .then((result) => {
             setMonthStudentAttendances(result.data);
-            console.log(result.data);
           })
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
               setError(true);
-              console.log(error.response.data.message);
+
               setErrorMessage(error.response.data.message);
               toast.error(error.response.data.message, { duration: 7000 });
             } else {
-              console.log(error.response.data.message);
               goBackToLogin();
             }
           });
@@ -273,6 +277,8 @@ function AdminStudentAttendancePage() {
   const handlePDF = () => {
     if (studentAttendances.length > 0) {
       generatePDF(studentAttendances, date, className, startTime, endTime);
+    } else {
+      toast.error("Table data should be displayed first!", { duration: 7000 });
     }
   };
 
@@ -280,16 +286,13 @@ function AdminStudentAttendancePage() {
     if (monthStudentAttendances.length > 0) {
       generatePDFmonth(
         monthStudentAttendances,
-        monthClassName,
+        monthClassName || className,
         startDate || date,
         endDate
       );
+    } else {
+      toast.error("Table data should be displayed first!", { duration: 7000 });
     }
-  };
-
-  const goBackToLogin = () => {
-    sessionStorage.clear();
-    navigate("/");
   };
 
   const [tokenFirstname, setTokenFirstname] = useState("");

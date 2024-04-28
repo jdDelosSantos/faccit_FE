@@ -59,32 +59,53 @@ function SuperAdminStudentManagement() {
   //REACT-PAGINATION
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(7);
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
-  const filteredSortedData = students.filter((item) => {
-    const searchTerms = searchTerm.toLowerCase().split(" ");
-    const matchingColumns = [
-      "faith_id",
-      "std_lname",
-      "std_fname",
-      "std_course",
-      "std_level",
-      "std_section",
-      "std_status",
-    ];
-
-    return searchTerms.every((term) => {
-      return matchingColumns.some((column) => {
-        const regex = new RegExp(term, "i");
-        return regex.test(item[column].toLowerCase());
+  const filteredSortedData = [...students]
+    .filter((item) => {
+      const searchTerms = searchTerm.toLowerCase().split(" ");
+      const matchingColumns = [
+        "faith_id",
+        "std_lname",
+        "std_fname",
+        "std_course",
+        "std_level",
+        "std_section",
+        "std_status",
+      ];
+      return searchTerms.every((term) => {
+        return matchingColumns.some((column) => {
+          const regex = new RegExp(term, "i");
+          return regex.test(item[column].toLowerCase());
+        });
       });
+    })
+    .sort((a, b) => {
+      // Sort by course
+      const courseComparison = a.std_course.localeCompare(b.std_course);
+      if (courseComparison !== 0) {
+        return courseComparison;
+      }
+
+      // Sort by level
+      const levelComparison = parseInt(a.std_level) - parseInt(b.std_level);
+      if (levelComparison !== 0) {
+        return levelComparison;
+      }
+
+      // Sort by section
+      const sectionComparison = a.std_section.localeCompare(b.std_section);
+      if (sectionComparison !== 0) {
+        return sectionComparison;
+      }
+
+      // Sort by last name
+      return a.std_lname.localeCompare(b.std_lname);
     });
-  });
 
   const currentItems = filteredSortedData.slice(startIndex, endIndex);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // const reduxStudents = useSelector((state) => state.student.students);
@@ -108,11 +129,9 @@ function SuperAdminStudentManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -131,11 +150,9 @@ function SuperAdminStudentManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -171,7 +188,6 @@ function SuperAdminStudentManagement() {
     if (screenshots.length < 3) {
       const newScreenshot = webcamRef.current.getScreenshot();
       setScreenshots([...screenshots, newScreenshot]);
-      console.log(screenshots);
     }
   };
 
@@ -223,7 +239,6 @@ function SuperAdminStudentManagement() {
           std_folder_url: `${faithID}/`,
           std_folder_img_url: `${index + 1}.jpg`,
         };
-        console.log(studentImageUrl);
         https
           .post("student_images", studentImageUrl, {
             headers: {
@@ -236,19 +251,12 @@ function SuperAdminStudentManagement() {
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
               setError(true);
-              console.log(error.response.data.message);
               setErrorMessage(error.response.data.message);
               toast.error(error.response.data.message, { duration: 7000 });
             } else {
-              console.log(error.response.data.message);
               goBackToLogin();
             }
           });
-
-        console.log(
-          `Screenshot ${index + 1} uploaded successfully:`,
-          data.Location
-        );
       }
     });
   };
@@ -288,15 +296,12 @@ function SuperAdminStudentManagement() {
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
               setError(true);
-              console.log(error.response.data.message);
               setErrorMessage(error.response.data.message);
               toast.error(error.response.data.message, { duration: 7000 });
             } else {
-              console.log(error.response.data.message);
               goBackToLogin();
             }
           });
-        console.log(`Screenshot ${index + 1} uploaded successfully:`);
       }
     });
   };
@@ -313,7 +318,6 @@ function SuperAdminStudentManagement() {
         },
       })
       .then((result) => {
-        console.log(result.data);
         result.data.forEach((imageData) => {
           const params = {
             Bucket: process.env.REACT_APP_AWS_BUCKET_NAME,
@@ -333,11 +337,9 @@ function SuperAdminStudentManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -381,11 +383,9 @@ function SuperAdminStudentManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -450,11 +450,9 @@ function SuperAdminStudentManagement() {
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
           setError(true);
-          console.log(error.response.data.message);
           setErrorMessage(error.response.data.message);
           toast.error(error.response.data.message, { duration: 7000 });
         } else {
-          console.log(error.response.data.message);
           goBackToLogin();
         }
       });
@@ -474,6 +472,15 @@ function SuperAdminStudentManagement() {
       .then((result) => {
         toast.error(result.data.message, { duration: 7000 });
         fetchStudents();
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          goBackToLogin();
+        }
       });
   };
 
@@ -491,6 +498,15 @@ function SuperAdminStudentManagement() {
       .then((result) => {
         toast.success(result.data.message, { duration: 7000 });
         fetchStudents();
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          goBackToLogin();
+        }
       });
   };
 
@@ -507,6 +523,52 @@ function SuperAdminStudentManagement() {
   const goBackToLogin = () => {
     sessionStorage.clear();
     navigate("/");
+  };
+
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!file) {
+      setMessage("Please select a CSV file.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("csv_file", file);
+
+    try {
+      https
+        .post("bulk_insert", formData, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((result) => {
+          toast.success(result.data.message, { duration: 7000 });
+          fetchStudents();
+        })
+        .catch((error) => {
+          if (error.response.data.message != "Unauthenticated.") {
+            setError(true);
+            setErrorMessage(error.response.data.message);
+            toast.error(error.response.data.message, { duration: 7000 });
+          } else {
+            goBackToLogin();
+          }
+        });
+    } catch (error) {
+      setMessage("Error occurred during bulk insert.");
+      toast.error(error, { duration: 7000 });
+      console.error(error);
+    }
   };
 
   const [tokenFirstname, setTokenFirstname] = useState("");
@@ -572,6 +634,23 @@ function SuperAdminStudentManagement() {
                 <button
                   type="button"
                   data-bs-toggle="modal"
+                  data-bs-target="#staticBackdrop2"
+                  className="btn btn-secondary btn-sm mx-2"
+                >
+                  <img
+                    src={require("../../Assets/images/bulk.png")}
+                    width="25"
+                    height="25"
+                    style={{
+                      TopLeftRadius: ".3rem",
+                      TopRightRadius: ".3rem",
+                    }}
+                    alt="add_user"
+                  />
+                </button>
+                <button
+                  type="button"
+                  data-bs-toggle="modal"
                   data-bs-target="#staticBackdrop"
                   className="btn btn-primary btn-sm"
                   onClick={() => {
@@ -596,11 +675,8 @@ function SuperAdminStudentManagement() {
               <thead className="table-light">
                 <tr>
                   <th>FAITH ID</th>
-                  <th>LAST NAME</th>
-                  <th>FIRST NAME</th>
-                  <th>COURSE</th>
-                  <th>LEVEL/YEAR</th>
-                  <th>SECTION</th>
+                  <th>STUDENT NAME</th>
+                  <th>COURSE, YEAR & SECTION</th>
                   <th>IMAGE STATUS</th>
                   <th>STUDENT STATUS</th>
                   <th>ACTIONS</th>
@@ -611,11 +687,13 @@ function SuperAdminStudentManagement() {
                   currentItems.map((student, index) => (
                     <tr className="table-light" key={index}>
                       <td className="p-2">{student.faith_id}</td>
-                      <td className="p-2">{student.std_lname}</td>
-                      <td className="p-2">{student.std_fname}</td>
-                      <td className="p-2">{student.std_course}</td>
-                      <td className="p-2">{student.std_level}</td>
-                      <td className="p-2">{student.std_section}</td>
+                      <td className="p-2">
+                        {student.std_lname}, {student.std_fname}
+                      </td>
+                      <td className="p-2">
+                        {student.std_course}-{student.std_level}
+                        {student.std_section}
+                      </td>
 
                       <td className="p-3">
                         {(() => {
@@ -1404,6 +1482,57 @@ function SuperAdminStudentManagement() {
             </div>
           </div>
         </div>
+
+        {/* MODAL FOR BULK INSERT */}
+        <div
+          className="modal fade"
+          id="staticBackdrop2"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabIndex="-1"
+          aria-labelledby="staticBackdropLabel2"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="staticBackdropLabel2">
+                  BULK INSERT STUDENTS
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form onSubmit={handleSubmit}>
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileChange}
+                  />
+                  <button type="submit">Upload CSV</button>
+                </form>
+                {message && <p className="mt-2 text-center">{message}</p>}
+                <p>
+                  <i>Note: CSV File needed</i>
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* MODAL FOR BULK INSERT END */}
       </div>
     );
   }

@@ -3,7 +3,7 @@ import autoTable from "jspdf-autotable";
 import FaithLogo from "../../Assets/images/FAITH LOGO.png";
 import "jspdf-autotable";
 
-const generatePDF = (
+const generatePDFsuperAdmin = (
   studentAttendances,
   date,
   className,
@@ -46,19 +46,19 @@ const generatePDF = (
     status: record.status,
   }));
 
-  const absentStudents = formattedData.filter(
-    (record) => record.status === "Absent"
+  const presentStudents = formattedData.filter(
+    (record) => record.status === "Present"
   ).length;
-  const absentStudentsRow = {
+  const presentStudentsRow = {
     faithId: "",
     name: "",
     courseDetails: "",
-    status: `TOTAL ABSENT: ${absentStudents}`,
+    status: `TOTAL PRESENT: ${presentStudents}`,
   };
 
   const formattedDataWithPresentStudentsRow = [
     ...formattedData,
-    absentStudentsRow,
+    presentStudentsRow,
   ];
 
   // Define the table settings
@@ -84,4 +84,4 @@ const generatePDF = (
   doc.save(`${date} - ${className}_${formatStartTime}${formatEndTime}.pdf`);
 };
 
-export default generatePDF;
+export default generatePDFsuperAdmin;

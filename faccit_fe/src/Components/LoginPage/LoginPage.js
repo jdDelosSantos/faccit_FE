@@ -38,11 +38,14 @@ function LoginPage() {
           sessionStorage.setItem("Lastname", decodedToken.user_lastname);
           sessionStorage.setItem("Firstname", decodedToken.user_firstname);
           sessionStorage.setItem("Token", result.data);
+          sessionStorage.setItem("showPreloader", true);
+
           redirectToDashboard(decodedToken.role);
         } else {
           sessionStorage.setItem("Lastname", decodedToken.user_lastname);
           sessionStorage.setItem("Firstname", decodedToken.user_firstname);
           sessionStorage.setItem("Token", result.data);
+          sessionStorage.setItem("showPreloader", true);
           redirectToDashboard(decodedToken.role);
         }
       })

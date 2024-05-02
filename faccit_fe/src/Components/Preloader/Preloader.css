@@ -1,0 +1,27 @@
+.preloader{
+    height: 100vh;
+    width: 100%;
+    background: #0e223e;
+    color: white;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 55;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.h1_size{
+    font-size: 100px;
+    opacity: 0;
+}
+
+.image{
+    opacity: 0;
+    margin-top: -155px;
+    display: none;
+}

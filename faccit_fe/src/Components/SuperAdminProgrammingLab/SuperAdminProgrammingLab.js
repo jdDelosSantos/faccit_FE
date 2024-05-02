@@ -354,8 +354,7 @@ function SuperAdminProgrammingLab() {
                   <th>CLASS NAME</th>
                   <th>PROFESSOR ID</th>
                   <th>CLASS DAY</th>
-                  <th>START TIME</th>
-                  <th>END TIME</th>
+                  <th>TIME RANGE</th>
                   <th>ACTIONS</th>
                 </tr>
               </thead>
@@ -367,8 +366,10 @@ function SuperAdminProgrammingLab() {
                       <td className="p-2">{classes.class.class_name}</td>
                       <td className="p-2">{classes.class.prof_id}</td>
                       <td className="p-2">{classes.class_day}</td>
-                      <td className="p-2">{classes.start_time}</td>
-                      <td className="p-2">{classes.end_time}</td>
+                      <td className="p-2">
+                        {classes.start_time} - {classes.end_time}
+                      </td>
+
                       <td className="p-2">
                         <button
                           type="button"
@@ -506,8 +507,7 @@ function SuperAdminProgrammingLab() {
                             <th>CLASS NAME</th>
                             <th>PROFESSOR ID</th>
                             <th>CLASS DAY</th>
-                            <th>START TIME</th>
-                            <th>END TIME</th>
+                            <th>TIME RANGE</th>
                           </tr>
                         </thead>
                         <tbody className="table-group-divider">
@@ -529,8 +529,9 @@ function SuperAdminProgrammingLab() {
                                 </td>
                                 <td className="p-2">{classes.class.prof_id}</td>
                                 <td className="p-2">{classes.class_day}</td>
-                                <td className="p-2">{classes.start_time}</td>
-                                <td className="p-2">{classes.end_time}</td>
+                                <td className="p-2">
+                                  {classes.start_time} - {classes.end_time}
+                                </td>
                               </tr>
                             ))
                           ) : (

@@ -11,7 +11,7 @@ function TESTING() {
       setImageData(screenshot);
 
       // Send image data to NodeJS server using WebSocket
-      const ws = new WebSocket("ws://localhost:8090"); // Replace with your server URL
+      const ws = new WebSocket("ws://localhost:3015"); // Replace with your server URL
       ws.onopen = () => {
         ws.send(screenshot);
       };

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import "../AdminStudentAttendancePage/AdminStudentAttendancePage.css";
+import React, { useState, useEffect } from "react";
+import "../SuperAdminStudentAttendancePage/SuperAdminStudentAttendancePage.css";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -11,10 +11,13 @@ import { PDFViewer } from "@react-pdf/renderer";
 import generatePDF from "../AttendancePDF/AttendancePDF";
 import generatePDFmonth from "../AttendancePDFmonth/AttendancePDFmonth";
 
-function AdminStudentAttendancePage() {
+function SuperAdminStudentAttendancePage() {
   //NEW SUBJECT USE STATES
   const [classCode, setClassCode] = useState("");
   const [className, setClassName] = useState("");
+
+  const [profId, setProfId] = useState("");
+  const [profName, setProfName] = useState("");
 
   const [laboratory, setLaboratory] = useState("");
   const [classDay, setClassDay] = useState("");
@@ -93,13 +96,14 @@ function AdminStudentAttendancePage() {
   //Function for fetching Classes
   const fetchProfClasses = () => {
     https
-      .get(`profClasses/${tokenId}`, {
+      .get(`all_prof_classes`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
         setClasses(result.data);
+        console.log(classes);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -151,6 +155,8 @@ function AdminStudentAttendancePage() {
       status: "Present",
     };
 
+    console.log(data);
+
     try {
       https
         .post("add_manual_attendance", data, {
@@ -161,8 +167,10 @@ function AdminStudentAttendancePage() {
         .then((result) => {
           handleAttendance();
           toast.success(result.data.message, { duration: 7000 });
+          console.log(result);
         })
         .catch((error) => {
+          console.log(error);
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
 
@@ -301,7 +309,7 @@ function AdminStudentAttendancePage() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "admin") {
+        if (decodedToken.role !== "super_admin") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -333,7 +341,7 @@ function AdminStudentAttendancePage() {
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center flex-row my-3">
-              <div className="inputBox3 w-100">
+              <div className="inputBox3 w-100 mx-2">
                 <select
                   className="form-select form-select-md"
                   onChange={(e) => {
@@ -1037,5 +1045,4 @@ function AdminStudentAttendancePage() {
     );
   }
 }
-
-export default AdminStudentAttendancePage;
+export default SuperAdminStudentAttendancePage;

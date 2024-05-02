@@ -33,6 +33,7 @@ import AdminStudentAttendancePage from "./Components/AdminStudentAttendancePage/
 import AdminDashboard from "./Components/AdminDashboard/AdminDashboard";
 import AdminProfile from "./Components/AdminProfile/AdminProfile";
 import SuperAdminProfile from "./Components/SuperAdminProfile/SuperAdminProfile";
+import SuperAdminStudentAttendancePage from "./Components/SuperAdminStudentAttendancePage/SuperAdminStudentAttendancePage";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -57,7 +58,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LoginPage />} />
-
+          //SUPER ADMIN SIDE ROUTES
           <Route element={<SuperAdminSidebarFunction />}>
             <Route path="/testing" element={<TESTING />} />
             <Route path="/profile" element={<SuperAdminProfile />} />
@@ -65,6 +66,10 @@ function App() {
             <Route
               path="/labs/programming-lab"
               element={<SuperAdminProgrammingLab />}
+            />
+            <Route
+              path="/attendances/students"
+              element={<SuperAdminStudentAttendancePage />}
             />
             <Route
               path="/labs/multimedia-lab"
@@ -107,7 +112,7 @@ function App() {
 
             <Route path="/" element={<LoginPage />} />
           </Route>
-
+          //ADMIN SIDE ROUTES //USER SIDE ROUTES
           <Route element={<AdminSidebarFunction />}>
             <Route path="/admin/profile" element={<AdminProfile />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />

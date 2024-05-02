@@ -5,13 +5,17 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import https from "../../https";
 import { Link } from "react-router-dom";
+import PreloaderSuperAdmin from "../PreloaderSuperAdmin/PreloaderSuperAdmin";
 
 function SuperAdminDashboard() {
+  const [isFirstRender, setIsFirstRender] = useState(false);
   const [tokenFirstname, setTokenFirstname] = useState("");
+  const [tokenRole, setTokenRole] = useState("");
   const [component, setComponent] = useState(false);
   const navigate = useNavigate();
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPreloader, setShowPreloader] = useState(false);
   const sessionToken = sessionStorage.getItem("Token");
 
   const goBackToLogin = () => {
@@ -129,6 +133,9 @@ function SuperAdminDashboard() {
 
   useEffect(() => {
     const sessionToken = sessionStorage.getItem("Token");
+    setShowPreloader(sessionStorage.getItem("showPreloader"));
+
+    console.log(showPreloader);
     // Check if token exists and is not empty
     if (sessionToken && sessionToken.length > 0) {
       try {
@@ -139,6 +146,8 @@ function SuperAdminDashboard() {
           navigate("/");
         } else {
           setTokenFirstname(decodedToken.user_firstname.toUpperCase());
+
+          setTokenRole("SUPER ADMIN");
           setComponent(true);
         }
       } catch (error) {
@@ -157,91 +166,185 @@ function SuperAdminDashboard() {
     return;
   } else {
     return (
-      <div className="base_bg w-100 p-4">
-        <h1 className="my-1">
-          <b>{tokenFirstname}'S DASHBOARD</b>
-        </h1>
+      <>
+        {showPreloader ? (
+          <>
+            <PreloaderSuperAdmin value1={tokenRole} />
+            <div className="base_bg w-100 p-4">
+              <h1 className="my-1">
+                <b>{tokenFirstname}'S DASHBOARD</b>
+              </h1>
 
-        <div className="shadow upper_bg rounded container-fluid w-100 p-5 d-flex flex-column">
-          <div className="container-fluid w-100 d-flex justify-content-md-between mb-2 mt-3">
-            <div className="bg-light rounded w-25 p-4 shadow mx-3">
-              <h3 className="text-dark">
-                <b>CURRENT # OF CLASSES</b>
-              </h3>
-              <span className="text-dark fs-4">{classCount}</span>
+              <div className="shadow upper_bg rounded container-fluid w-100 p-5 d-flex flex-column">
+                <div className="container-fluid w-100 d-flex justify-content-md-between mb-2 mt-3">
+                  <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                    <h4 className="text-dark">
+                      <b>CURRENT NUMBER OF CLASSES</b>
+                    </h4>
+                    <span className="text-dark fs-4">{classCount}</span>
+                  </div>
+                  <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                    <h4 className="text-dark">
+                      <b>CURRENT NUMBER OF STUDENTS</b>
+                    </h4>
+                    <span className="text-dark fs-4">{studentsCount}</span>
+                  </div>
+                  <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                    <h4 className="text-dark">
+                      <b>CURRENT NUMBER OF PENDING MAKEUP CLASS REQUESTS</b>
+                    </h4>
+                    <span className="text-dark fs-4">{makeupCount}</span>
+                  </div>
+                  <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                    <h4 className="text-dark">
+                      <b>CURRENT NUMBER OF PENDING CANCEL CLASS REQUESTS</b>
+                    </h4>
+                    <span className="text-dark fs-4">{cancelCount}</span>
+                  </div>
+                </div>
+                <div className="container-fluid w-100 mt-5 d-flex">
+                  <div className="border container-fluid d-flex justify-content-between mb-3">
+                    <Link
+                      to="/labs/programming-lab"
+                      className="bg-primary rounded w-25 p-4 mx-2"
+                    >
+                      <img
+                        src={require("../../Assets/images/pl.png")}
+                        className="dashboard_img mx-1"
+                        alt="list"
+                      />
+                      <span className="text-white mx-1">Programming Lab</span>
+                    </Link>
+
+                    <Link
+                      to="/labs/multimedia-lab"
+                      className="bg-secondary rounded w-25 p-4 mx-2"
+                    >
+                      <img
+                        src={require("../../Assets/images/ml.png")}
+                        className="dashboard_img mx-1"
+                        alt="list"
+                      />
+                      <span className="text-white mx-1">Multimedia Lab</span>
+                    </Link>
+
+                    <Link
+                      to="/managements/students"
+                      className="bg-success rounded w-25 p-4 mx-2"
+                    >
+                      <img
+                        src={require("../../Assets/images/dashboard_attendance.png")}
+                        className="dashboard_img mx-1"
+                        alt="list"
+                      />
+                      <span className="text-white mx-1">Students</span>
+                    </Link>
+
+                    <Link
+                      to="/managements/classes"
+                      className="bg-info rounded w-25 p-4 mx-2"
+                    >
+                      <img
+                        src={require("../../Assets/images/classes.png")}
+                        className="dashboard_img mx-1"
+                        alt="list"
+                      />
+                      <span className="text-white mx-1">Classes</span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="bg-light rounded w-25 p-4 shadow mx-3">
-              <h3 className="text-dark">
-                <b>CURRENT # OF STUDENTS</b>
-              </h3>
-              <span className="text-dark fs-4">{studentsCount}</span>
-            </div>
-            <div className="bg-light rounded w-25 p-4 shadow mx-3">
-              <h3 className="text-dark">
-                <b>CURRENT # OF PENDING MAKEUP CLASS REQUESTS</b>
-              </h3>
-              <span className="text-dark fs-4">{makeupCount}</span>
-            </div>
-            <div className="bg-light rounded w-25 p-4 shadow mx-3">
-              <h3 className="text-dark">
-                <b>CURRENT # OF PENDING CANCEL CLASS REQUESTS</b>
-              </h3>
-              <span className="text-dark fs-4">{cancelCount}</span>
+            {sessionStorage.removeItem("showPreloader", false)}
+          </>
+        ) : (
+          <div className="base_bg w-100 p-4">
+            <h1 className="my-1">
+              <b>{tokenFirstname}'S DASHBOARD</b>
+            </h1>
+
+            <div className="shadow upper_bg rounded container-fluid w-100 p-5 d-flex flex-column">
+              <div className="container-fluid w-100 d-flex justify-content-md-between mb-2 mt-3">
+                <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                  <h4 className="text-dark">
+                    <b>CURRENT NUMBER OF CLASSES</b>
+                  </h4>
+                  <span className="text-dark fs-4">{classCount}</span>
+                </div>
+                <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                  <h4 className="text-dark">
+                    <b>CURRENT NUMBER OF STUDENTS</b>
+                  </h4>
+                  <span className="text-dark fs-4">{studentsCount}</span>
+                </div>
+                <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                  <h4 className="text-dark">
+                    <b>CURRENT NUMBER OF PENDING MAKEUP CLASS REQUESTS</b>
+                  </h4>
+                  <span className="text-dark fs-4">{makeupCount}</span>
+                </div>
+                <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                  <h4 className="text-dark">
+                    <b>CURRENT NUMBER OF PENDING CANCEL CLASS REQUESTS</b>
+                  </h4>
+                  <span className="text-dark fs-4">{cancelCount}</span>
+                </div>
+              </div>
+              <div className="container-fluid w-100 mt-5 d-flex">
+                <div className="border container-fluid d-flex justify-content-between mb-3">
+                  <Link
+                    to="/labs/programming-lab"
+                    className="bg-primary rounded w-25 p-4 mx-2"
+                  >
+                    <img
+                      src={require("../../Assets/images/pl.png")}
+                      className="dashboard_img mx-1"
+                      alt="list"
+                    />
+                    <span className="text-white mx-1">Programming Lab</span>
+                  </Link>
+
+                  <Link
+                    to="/labs/multimedia-lab"
+                    className="bg-secondary rounded w-25 p-4 mx-2"
+                  >
+                    <img
+                      src={require("../../Assets/images/ml.png")}
+                      className="dashboard_img mx-1"
+                      alt="list"
+                    />
+                    <span className="text-white mx-1">Multimedia Lab</span>
+                  </Link>
+
+                  <Link
+                    to="/managements/students"
+                    className="bg-success rounded w-25 p-4 mx-2"
+                  >
+                    <img
+                      src={require("../../Assets/images/dashboard_attendance.png")}
+                      className="dashboard_img mx-1"
+                      alt="list"
+                    />
+                    <span className="text-white mx-1">Students</span>
+                  </Link>
+
+                  <Link
+                    to="/managements/classes"
+                    className="bg-info rounded w-25 p-4 mx-2"
+                  >
+                    <img
+                      src={require("../../Assets/images/classes.png")}
+                      className="dashboard_img mx-1"
+                      alt="list"
+                    />
+                    <span className="text-white mx-1">Classes</span>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="container-fluid w-100 mt-5 d-flex">
-            <div className="border container-fluid d-flex justify-content-between mb-3">
-              <Link
-                to="/labs/programming-lab"
-                className="bg-primary rounded w-25 p-4 mx-2"
-              >
-                <img
-                  src={require("../../Assets/images/pl.png")}
-                  className="dashboard_img mx-1"
-                  alt="list"
-                />
-                <span className="text-white mx-1">Programming Lab</span>
-              </Link>
-
-              <Link
-                to="/labs/multimedia-lab"
-                className="bg-secondary rounded w-25 p-4 mx-2"
-              >
-                <img
-                  src={require("../../Assets/images/ml.png")}
-                  className="dashboard_img mx-1"
-                  alt="list"
-                />
-                <span className="text-white mx-1">Multimedia Lab</span>
-              </Link>
-
-              <Link
-                to="/managements/students"
-                className="bg-success rounded w-25 p-4 mx-2"
-              >
-                <img
-                  src={require("../../Assets/images/dashboard_attendance.png")}
-                  className="dashboard_img mx-1"
-                  alt="list"
-                />
-                <span className="text-white mx-1">Students</span>
-              </Link>
-
-              <Link
-                to="/managements/classes"
-                className="bg-info rounded w-25 p-4 mx-2"
-              >
-                <img
-                  src={require("../../Assets/images/classes.png")}
-                  className="dashboard_img mx-1"
-                  alt="list"
-                />
-                <span className="text-white mx-1">Classes</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+        )}
+      </>
     );
   }
 }

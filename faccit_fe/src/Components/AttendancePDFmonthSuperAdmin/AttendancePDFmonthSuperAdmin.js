@@ -1,9 +1,8 @@
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import FaithLogo from "../../Assets/images/FAITH LOGO.png";
 import "jspdf-autotable";
+import FaithLogo from "../../Assets/images/FAITH LOGO.png";
 
-const generatePDF = (
+const generatePDFmonthSuperAdmin = (
   studentAttendances,
   date,
   className,
@@ -84,4 +83,4 @@ const generatePDF = (
   doc.save(`${date} - ${className}_${formatStartTime}${formatEndTime}.pdf`);
 };
 
-export default generatePDF;
+export default generatePDFmonthSuperAdmin;

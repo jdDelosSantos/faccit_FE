@@ -3,6 +3,7 @@ import "./SuperAdminSidebar.css";
 import { jwtDecode } from "jwt-decode";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import Preloader from "../PreloaderSuperAdmin/PreloaderSuperAdmin";
 
 function SuperAdminSidebar() {
   const [isExpanded, setIsExpanded] = useState(
@@ -81,6 +82,13 @@ function SuperAdminSidebar() {
                 <Link to="/dashboard" className="sidebar-link">
                   <i className="lni lni-license"></i>
                   <span>Dashboard</span>
+                </Link>
+              </li>
+
+              <li className="sidebar-item">
+                <Link to="/attendances/students" className="sidebar-link ">
+                  <i className="lni lni-users"></i>
+                  <span>Student Attendances</span>
                 </Link>
               </li>
               <li className="sidebar-item">
@@ -197,6 +205,11 @@ function SuperAdminSidebar() {
                       className="sidebar-link"
                     >
                       Cancel Requests
+                    </Link>
+                  </li>
+                  <li className="sidebar-item">
+                    <Link to="/testing" className="sidebar-link">
+                      Testing
                     </Link>
                   </li>
                 </ul>

@@ -116,7 +116,7 @@ function AdminClassManagement() {
   const fetchClasses = () => {
     if (sessionStorage.getItem("Prof ID") != null || "") {
       https
-        .get(`profClasses/${sessionStorage.getItem("Prof ID")}`, {
+        .get(`prof_classes/${sessionStorage.getItem("Prof ID")}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },

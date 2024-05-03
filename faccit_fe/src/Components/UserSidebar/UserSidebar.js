@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import "./SuperAdminSidebar.css";
 import { jwtDecode } from "jwt-decode";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import "./UserSidebar.css";
 
-function SuperAdminSidebar() {
+function UserSidebar() {
   const [isExpanded, setIsExpanded] = useState(
     localStorage.getItem("isSidebarExpanded") === "true" ? true : false
   );
@@ -34,7 +34,7 @@ function SuperAdminSidebar() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "super_admin") {
+        if (decodedToken.role !== "user") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -66,19 +66,19 @@ function SuperAdminSidebar() {
                 <i className="lni lni-grid-alt"></i>
               </button>
               <div className="sidebar-logo">
-                <Link to="/dashboard">FACCIT</Link>
+                <Link to="/user/dashboard">FACCIT</Link>
               </div>
             </div>
             <ul className="sidebar-nav">
               <li className="sidebar-item">
-                <Link to="/profile" className="sidebar-link ">
+                <Link to="/user/profile" className="sidebar-link ">
                   <i className="lni lni-user"></i>
                   <span>Profile</span>
                 </Link>
               </li>
 
               <li className="sidebar-item">
-                <Link to="/dashboard" className="sidebar-link">
+                <Link to="/user/dashboard" className="sidebar-link">
                   <i className="lni lni-license"></i>
                   <span>Dashboard</span>
                 </Link>
@@ -101,53 +101,23 @@ function SuperAdminSidebar() {
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <Link to="/labs/programming-lab" className="sidebar-link">
+                    <Link
+                      to="/user/labs/programming-lab"
+                      className="sidebar-link"
+                    >
                       Programming Lab
                     </Link>
                   </li>
                   <li className="sidebar-item">
-                    <Link to="/labs/multimedia-lab" className="sidebar-link">
+                    <Link
+                      to="/user/labs/multimedia-lab"
+                      className="sidebar-link"
+                    >
                       Multimedia Lab
                     </Link>
                   </li>
                 </ul>
               </li>
-
-              <li className="sidebar-item">
-                <Link
-                  to="#"
-                  className="sidebar-link has-dropdown collapsed"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#user"
-                  aria-expanded="true"
-                  aria-controls="user"
-                >
-                  <i className="lni lni-users"></i>
-                  <span>User Management</span>
-                </Link>
-                <ul
-                  id="user"
-                  className="sidebar-dropdown list-unstyle collapse"
-                  data-bs-parent="#sidebar"
-                >
-                  <li className="sidebar-item">
-                    <Link to="/managements/admins" className="sidebar-link">
-                      Admins
-                    </Link>
-                  </li>
-                  <li className="sidebar-item">
-                    <Link to="/managements/students" className="sidebar-link">
-                      Students
-                    </Link>
-                  </li>
-                  <li className="sidebar-item">
-                    <Link to="/managements/professors" className="sidebar-link">
-                      Professors
-                    </Link>
-                  </li>
-                </ul>
-              </li>
-
               <li className="sidebar-item">
                 <Link
                   to="#"
@@ -158,7 +128,7 @@ function SuperAdminSidebar() {
                   aria-controls="multi"
                 >
                   <i className="lni lni-layout"></i>
-                  <span>General Management</span>
+                  <span>General Managements</span>
                 </Link>
                 <ul
                   id="multi"
@@ -166,36 +136,26 @@ function SuperAdminSidebar() {
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
-                    <Link to="/managements/colleges" className="sidebar-link">
-                      Colleges
-                    </Link>
-                  </li>
-                  <li className="sidebar-item">
-                    <Link to="/managements/courses" className="sidebar-link">
-                      Courses
-                    </Link>
-                  </li>
-
-                  <li className="sidebar-item">
-                    <Link to="/managements/classes" className="sidebar-link">
-                      Classes
-                    </Link>
-                  </li>
-                  <li className="sidebar-item">
-                    <Link to="/managements/class-list" className="sidebar-link">
+                    <Link
+                      to="/user/managements/classes"
+                      className="sidebar-link"
+                    >
                       Class Students
                     </Link>
                   </li>
                   <li className="sidebar-item">
                     <Link
-                      to="/managements/classes/schedules"
+                      to="/user/managements/open-classes"
                       className="sidebar-link"
                     >
-                      Schedules
+                      Open Classes
                     </Link>
                   </li>
                   <li className="sidebar-item">
-                    <Link to="/attendances/students" className="sidebar-link ">
+                    <Link
+                      to="/user/managements/attendances/students"
+                      className="sidebar-link"
+                    >
                       Student Attendances
                     </Link>
                   </li>
@@ -212,7 +172,7 @@ function SuperAdminSidebar() {
                   aria-controls="request"
                 >
                   <i className="lni lni-keyboard"></i>
-                  <span>Request Management</span>
+                  <span>Request Handling</span>
                 </Link>
                 <ul
                   id="request"
@@ -221,7 +181,7 @@ function SuperAdminSidebar() {
                 >
                   <li className="sidebar-item">
                     <Link
-                      to="/managements/makeup-classes/requests"
+                      to="/user/managements/makeup-classes"
                       className="sidebar-link"
                     >
                       Makeup Requests
@@ -229,15 +189,10 @@ function SuperAdminSidebar() {
                   </li>
                   <li className="sidebar-item">
                     <Link
-                      to="/managements/cancel-classes/requests"
+                      to="/user/managements/cancel-classes"
                       className="sidebar-link"
                     >
                       Cancel Requests
-                    </Link>
-                  </li>
-                  <li className="sidebar-item">
-                    <Link to="/testing" className="sidebar-link">
-                      Testing
                     </Link>
                   </li>
                 </ul>
@@ -260,4 +215,5 @@ function SuperAdminSidebar() {
     );
   }
 }
-export default SuperAdminSidebar;
+
+export default UserSidebar;

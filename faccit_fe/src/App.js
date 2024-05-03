@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import SuperAdminSidebar from "./Components/SuperAdminSidebar/SuperAdminSidebar";
 import { Toaster } from "react-hot-toast";
@@ -9,8 +8,6 @@ import {
   Outlet,
 } from "react-router-dom";
 import LoginPage from "./Components/LoginPage/LoginPage";
-import AdminClassManagement from "./Components/AdminClassManagement/AdminClassManagement";
-import AdminSidebar from "./Components/AdminSidebar/AdminSidebar";
 import TESTING from "./Components/TESTING/TESTING";
 import SuperAdminDashboard from "./Components/SuperAdminDashboard/SuperAdminDashboard";
 import SuperAdminStudentManagement from "./Components/SuperAdminStudentManagement/SuperAdminStudentManagement";
@@ -20,20 +17,36 @@ import SuperAdminCollegeManagement from "./Components/SuperAdminCollegeManagemen
 import SuperAdminProfessorManagement from "./Components/SuperAdminProfessorManagement/SuperAdminProfessorManagement";
 import SuperAdminProgrammingLab from "./Components/SuperAdminProgrammingLab/SuperAdminProgrammingLab";
 import SuperAdminClassScheduleManagement from "./Components/SuperAdminClassScheduleManagement/SuperAdminClassScheduleManagement";
-import TestingEsp from "./Components/TestingEsp/TestingEsp";
 import SuperAdminMultimediaLab from "./Components/SuperAdminMultimediaLab/SuperAdminMultimediaLab";
-import AdminProgrammingLab from "./Components/AdminProgrammingLab/AdminProgrammingLab";
-import AdminMultimediaLab from "./Components/AdminMultimediaLab/AdminMultimediaLab";
-import AdminMakeupClassHistory from "./Components/AdminMakeupClassHistory/AdminMakeupClassHistory";
 import SuperAdminMakeupClassRequests from "./Components/SuperAdminMakeupClassRequests/SuperAdminMakeupClassRequests";
-import AdminCancelClassHistory from "./Components/AdminCancelClassHistory/AdminCancelClassHistory";
 import SuperAdminCancelClassRequests from "./Components/SuperAdminCancelClassRequests/SuperAdminCancelClassRequests";
-import AdminProfessorAttendancePage from "./Components/AdminProfessorAttendancePage/AdminProfessorAttendancePage";
-import AdminStudentAttendancePage from "./Components/AdminStudentAttendancePage/AdminStudentAttendancePage";
-import AdminDashboard from "./Components/AdminDashboard/AdminDashboard";
-import AdminProfile from "./Components/AdminProfile/AdminProfile";
 import SuperAdminProfile from "./Components/SuperAdminProfile/SuperAdminProfile";
 import SuperAdminStudentAttendancePage from "./Components/SuperAdminStudentAttendancePage/SuperAdminStudentAttendancePage";
+import UserDashboard from "./Components/UserDashboard/UserDashboard";
+import UserSidebar from "./Components/UserSidebar/UserSidebar";
+import UserCancelClassHistory from "./Components/UserCancelClassHistory/UserCancelClassHistory";
+import UserClassManagement from "./Components/UserClassManagement/UserClassManagement";
+import UserMakeupClassHistory from "./Components/UserMakeupClassHistory/UserMakeupClassHistory";
+import UserMultimediaLab from "./Components/UserMultimediaLab/UserMultimediaLab";
+import UserProgrammingLab from "./Components/UserProgrammingLab/UserProgrammingLab";
+import UserProfessorAttendancePage from "./Components/UserProfessorAttendancePage/UserProfessorAttendancePage";
+import UserProfile from "./Components/UserProfile/UserProfile";
+import UserStudentAttendancePage from "./Components/UserStudentAttendancePage/UserStudentAttendancePage";
+import SuperAdminAdminManagementPage from "./Components/SuperAdminAdminManagementPage/SuperAdminAdminManagementPage";
+import AdminSidebar from "./Components/AdminSidebar/AdminSidebar";
+import AdminDashboard from "./Components/AdminDashboard/AdminDashboard";
+import AdminProfile from "./Components/AdminProfile/AdminProfile";
+import AdminProgrammingLab from "./Components/AdminProgrammingLab/AdminProgrammingLab";
+import AdminMultimediaLab from "./Components/AdminMultimediaLab/AdminMultimediaLab";
+import AdminStudentManagement from "./Components/AdminStudentManagement/AdminStudentManagement";
+import AdminProfessorManagement from "./Components/AdminProfessorManagement/AdminProfessorManagement";
+import AdminCollegeManagement from "./Components/AdminCollegeManagement/AdminCollegeManagement";
+import AdminCourseManagement from "./Components/AdminCourseManagement/AdminCourseManagement";
+import AdminClassManagement from "./Components/AdminClassManagement/AdminClassManagement";
+import AdminStudentAttendancePage from "./Components/AdminStudentAttendancePage/AdminStudentAttendancePage";
+import AdminClassScheduleManagement from "./Components/AdminClassScheduleManagement/AdminClassScheduleManagement";
+import SuperAdminClassesManagement from "./Components/SuperAdminClassesManagement/SuperAdminClassesManagement";
+import AdminClassesManagement from "./Components/AdminClassesManagement/AdminClassesManagement";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -46,6 +59,13 @@ function App() {
   const AdminSidebarFunction = () => (
     <div className="flex-container">
       <AdminSidebar />
+      <Outlet />
+    </div>
+  );
+
+  const UserSidebarFunction = () => (
+    <div className="flex-container">
+      <UserSidebar />
       <Outlet />
     </div>
   );
@@ -74,6 +94,10 @@ function App() {
             <Route
               path="/labs/multimedia-lab"
               element={<SuperAdminMultimediaLab />}
+            />
+            <Route
+              path="/managements/admins"
+              element={<SuperAdminAdminManagementPage />}
             />
             <Route
               path="/managements/students"
@@ -109,42 +133,96 @@ function App() {
               path="/managements/cancel-classes/requests"
               element={<SuperAdminCancelClassRequests />}
             />
+            <Route
+              path="/managements/class-list"
+              element={<SuperAdminClassesManagement />}
+            />
 
             <Route path="/" element={<LoginPage />} />
           </Route>
-          //ADMIN SIDE ROUTES //USER SIDE ROUTES
+          {/* ADMIN SIDE ROUTES */}
           <Route element={<AdminSidebarFunction />}>
-            <Route path="/admin/profile" element={<AdminProfile />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/profile" element={<AdminProfile />} />
             <Route
-              path="/admin/managements/classes"
-              element={<AdminClassManagement />}
+              path="/admin/attendances/students"
+              element={<AdminStudentAttendancePage />}
             />
             <Route
               path="/admin/labs/programming-lab"
               element={<AdminProgrammingLab />}
             />
+
             <Route
               path="/admin/labs/multimedia-lab"
               element={<AdminMultimediaLab />}
             />
             <Route
-              path="/admin/managements/makeup-classes"
-              element={<AdminMakeupClassHistory />}
+              path="/admin/managements/students"
+              element={<AdminStudentManagement />}
             />
             <Route
-              path="/admin/managements/cancel-classes"
-              element={<AdminCancelClassHistory />}
+              path="/admin/managements/professors"
+              element={<AdminProfessorManagement />}
             />
             <Route
-              path="/admin/managements/open-classes"
-              element={<AdminProfessorAttendancePage />}
+              path="/admin/managements/colleges"
+              element={<AdminCollegeManagement />}
+            />
+
+            <Route
+              path="/admin/managements/courses"
+              element={<AdminCourseManagement />}
+            />
+
+            <Route
+              path="/admin/managements/classes"
+              element={<AdminClassManagement />}
             />
             <Route
-              path="/admin/managements/attendances/students"
-              element={<AdminStudentAttendancePage />}
+              path="/admin/managements/classes/schedules"
+              element={<AdminClassScheduleManagement />}
             />
-            <Route path="/admin/testing" element={<TESTING />} />
+            <Route
+              path="/admin/managements/class-list"
+              element={<AdminClassesManagement />}
+            />
+
+            <Route path="/" element={<LoginPage />} />
+          </Route>
+          {/* USER SIDE ROUTES */}
+          <Route element={<UserSidebarFunction />}>
+            <Route path="/user/profile" element={<UserProfile />} />
+            <Route path="/user/dashboard" element={<UserDashboard />} />
+            <Route
+              path="/user/managements/classes"
+              element={<UserClassManagement />}
+            />
+            <Route
+              path="/user/labs/programming-lab"
+              element={<UserProgrammingLab />}
+            />
+            <Route
+              path="/user/labs/multimedia-lab"
+              element={<UserMultimediaLab />}
+            />
+            <Route
+              path="/user/managements/makeup-classes"
+              element={<UserMakeupClassHistory />}
+            />
+            <Route
+              path="/user/managements/cancel-classes"
+              element={<UserCancelClassHistory />}
+            />
+            <Route
+              path="/user/managements/open-classes"
+              element={<UserProfessorAttendancePage />}
+            />
+            <Route
+              path="/user/managements/attendances/students"
+              element={<UserStudentAttendancePage />}
+            />
+            <Route path="/user/testing" element={<TESTING />} />
 
             <Route path="/" element={<LoginPage />} />
           </Route>

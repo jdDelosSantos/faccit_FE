@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./SuperAdminClassScheduleManagement.css";
+import "./AdminClassScheduleManagement.css";
 import { jwtDecode } from "jwt-decode";
 import { setProfessors } from "../../Redux/professors";
 import { setColleges } from "../../Redux/colleges";
@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import https from "../../https";
 
-function SuperAdminClassScheduleManagement() {
+function AdminClassScheduleManagement() {
   //NEW SUBJECT USE STATES
   const [classCode, setClassCode] = useState("");
   const [className, setClassName] = useState("");
@@ -299,7 +299,7 @@ function SuperAdminClassScheduleManagement() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "super_admin") {
+        if (decodedToken.role !== "admin") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -847,4 +847,4 @@ function SuperAdminClassScheduleManagement() {
   }
 }
 
-export default SuperAdminClassScheduleManagement;
+export default AdminClassScheduleManagement;

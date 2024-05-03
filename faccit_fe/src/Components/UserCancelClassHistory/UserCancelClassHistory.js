@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../AdminMakeupClassHistory/AdminMakeupClassHistory.css";
+import "./UserCancelClassHistory.css";
 import { jwtDecode } from "jwt-decode";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import https from "../../https";
 
-function AdminMakeupClassHistory() {
+function UserCancelClassHistory() {
   //NEW SUBJECT USE STATES
   const [classCode, setClassCode] = useState("");
   const [className, setClassName] = useState("");
@@ -18,6 +18,7 @@ function AdminMakeupClassHistory() {
   const [classDay, setClassDay] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [remarks, setRemarks] = useState("");
 
   //SEARCHTERM FOR SEARCH BAR
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,14 +41,8 @@ function AdminMakeupClassHistory() {
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
         item.class_day.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.professor.user_firstname
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        item.professor.user_lastname
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
         item.created_date.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.makeup_class_status
+        item.cancel_class_status
           .toLowerCase()
           .includes(searchTerm.toLowerCase())
     );
@@ -60,10 +55,7 @@ function AdminMakeupClassHistory() {
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const [text, setText] = useState("");
-
   const [classes, setClasses] = useState([]);
-  // const classes = useSelector((state) => state.class.classes);
 
   const goBackToLogin = () => {
     sessionStorage.clear();
@@ -84,7 +76,7 @@ function AdminMakeupClassHistory() {
   //Function for fetching Class Schedules
   const fetchClassSchedules = () => {
     https
-      .get(`makeup_classes_prof/${tokenId}`, {
+      .get(`cancel_classes_prof/${tokenId}`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -144,7 +136,8 @@ function AdminMakeupClassHistory() {
     laboratory,
     start_time,
     end_time,
-    makeup_class_status
+    remarks,
+    cancel_class_status
   ) => {
     setId(id);
 
@@ -154,8 +147,8 @@ function AdminMakeupClassHistory() {
     setClassDay(class_day);
     setStartTime(start_time);
     setEndTime(end_time);
-
-    setStatus(makeup_class_status);
+    setRemarks(remarks);
+    setStatus(cancel_class_status);
   };
 
   const clearClass = () => {
@@ -163,6 +156,7 @@ function AdminMakeupClassHistory() {
     setClassDay("");
     setStartTime("");
     setEndTime("");
+    setRemarks("");
     setErrorMessage("");
     setStatus("");
   };
@@ -177,7 +171,7 @@ function AdminMakeupClassHistory() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "admin") {
+        if (decodedToken.role !== "user") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -202,9 +196,9 @@ function AdminMakeupClassHistory() {
     return (
       <div className="base_bg w-100 p-4">
         <h1 className="my-1">
-          <b>{tokenFirstname}'S MAKEUP CLASS REQUESTS PAGE</b>
+          <b>{tokenFirstname}'S CANCEL CLASS REQUESTS PAGE</b>
         </h1>
-        <h4 className="">LIST OF MAKEUP CLASS REQUESTS</h4>
+        <h4 className="">LIST OF CANCEL CLASS REQUESTS</h4>
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center my-3">
@@ -214,7 +208,7 @@ function AdminMakeupClassHistory() {
                     <input
                       className="form-control"
                       type="search"
-                      placeholder="Search Makeup Classes..."
+                      placeholder="Search Cancel Class Requests..."
                       aria-label="Search"
                       value={searchTerm}
                       onChange={(e) => {
@@ -232,7 +226,7 @@ function AdminMakeupClassHistory() {
               <thead className="table-light">
                 <tr>
                   <th>DATE</th>
-                  <th>MAKEUP CLASS REQUESTER</th>
+                  <th>CANCEL CLASS REQUESTER</th>
                   <th>CLASS</th>
                   <th>STATUS</th>
                   <th>ACTIONS</th>
@@ -248,21 +242,21 @@ function AdminMakeupClassHistory() {
                         {makeup.professor.user_firstname}
                       </td>
                       <td className="p-2">{makeup.class.class_name}</td>
-                      {makeup.makeup_class_status === "Pending" ? (
+                      {makeup.cancel_class_status === "Pending" ? (
                         <td className="p-2 text-warning">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
-                      ) : makeup.makeup_class_status === "Approved" ? (
+                      ) : makeup.cancel_class_status === "Approved" ? (
                         <td className="p-2 text-success">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
                       ) : (
                         <td className="p-2 text-danger">
-                          {makeup.makeup_class_status}
+                          {makeup.cancel_class_status}
                         </td>
                       )}
 
-                      {makeup.makeup_class_status === "Pending" ? (
+                      {makeup.cancel_class_status === "Pending" ? (
                         <td className="p-2">
                           <button
                             type="button"
@@ -278,6 +272,7 @@ function AdminMakeupClassHistory() {
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
+                                makeup.remarks,
                                 makeup.makeup_class_status
                               );
                             }}
@@ -294,7 +289,7 @@ function AdminMakeupClassHistory() {
                             />
                           </button>
                         </td>
-                      ) : makeup.makeup_class_status === "Approved" ? (
+                      ) : makeup.cancel_class_status === "Approved" ? (
                         <td className="p-2">
                           <button
                             type="button"
@@ -310,38 +305,7 @@ function AdminMakeupClassHistory() {
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
-                                makeup.makeup_class_status
-                              );
-                            }}
-                          >
-                            <img
-                              src={require("../../Assets/images/list.png")}
-                              width="25"
-                              height="25"
-                              style={{
-                                TopLeftRadius: ".3rem",
-                                TopRightRadius: ".3rem",
-                              }}
-                              alt="update_user"
-                            />
-                          </button>
-                        </td>
-                      ) : makeup.makeup_class_status === "Rejected" ? (
-                        <td className="p-2">
-                          <button
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#staticBackdrop1"
-                            className="btn btn-secondary btn-sm"
-                            onClick={() => {
-                              handleClassUpdate(
-                                makeup.id,
-                                makeup.class.class_name,
-                                makeup.class_code,
-                                makeup.class_day,
-                                makeup.laboratory,
-                                makeup.start_time,
-                                makeup.end_time,
+                                makeup.remarks,
                                 makeup.makeup_class_status
                               );
                             }}
@@ -359,7 +323,38 @@ function AdminMakeupClassHistory() {
                           </button>
                         </td>
                       ) : (
-                        ""
+                        <td className="p-2">
+                          <button
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop1"
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => {
+                              handleClassUpdate(
+                                makeup.id,
+                                makeup.class.class_name,
+                                makeup.class_code,
+                                makeup.class_day,
+                                makeup.laboratory,
+                                makeup.start_time,
+                                makeup.end_time,
+                                makeup.remarks,
+                                makeup.cancel_class_status
+                              );
+                            }}
+                          >
+                            <img
+                              src={require("../../Assets/images/list.png")}
+                              width="25"
+                              height="25"
+                              style={{
+                                TopLeftRadius: ".3rem",
+                                TopRightRadius: ".3rem",
+                              }}
+                              alt="update_user"
+                            />
+                          </button>
+                        </td>
                       )}
                     </tr>
                   ))
@@ -418,7 +413,7 @@ function AdminMakeupClassHistory() {
             <div className="modal-content">
               <div className="modal-header">
                 <h1 className="modal-title fs-5" id="staticBackdropLabel1">
-                  <b>MAKEUP CLASS SCHEDULE</b>
+                  <b>CANCEL CLASS SCHEDULE</b>
                 </h1>
               </div>
 
@@ -444,9 +439,7 @@ function AdminMakeupClassHistory() {
                       ""
                     )}
 
-                    <h3 className="text-center">
-                      Requested Makeup Class Schedule
-                    </h3>
+                    <h3 className="text-center">Cancel Class Schedule</h3>
 
                     {/* Start of Class Select */}
                     <div className="">
@@ -592,6 +585,23 @@ function AdminMakeupClassHistory() {
                         </div>
                       </div>
                     </div>
+                    {/* Start of Class Remarks*/}
+                    <div className="">
+                      <div className="md-6 mb-4">
+                        <div className="inputBox2 w-100">
+                          <textarea
+                            className="w-100 p-2"
+                            required
+                            disabled
+                            rows="4"
+                            maxLength={150}
+                            value={remarks || ""}
+                            onChange={(e) => setRemarks(e.target.value)}
+                          ></textarea>
+                          <span>Remarks</span>
+                        </div>
+                      </div>
+                    </div>
                     <p>
                       <i>
                         Note: Minimum time is 07:30 am and Maximum time is
@@ -621,5 +631,4 @@ function AdminMakeupClassHistory() {
     );
   }
 }
-
-export default AdminMakeupClassHistory;
+export default UserCancelClassHistory;

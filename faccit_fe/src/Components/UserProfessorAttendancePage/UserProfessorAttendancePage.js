@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../AdminProfessorAttendancePage/AdminProfessorAttendancePage.css";
+import "./UserProfessorAttendancePage.css";
 import { jwtDecode } from "jwt-decode";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import ReactPaginate from "react-paginate";
 import https from "../../https";
 
-function AdminProfessorAttendancePage() {
+function UserProfessorAttendancePage() {
   //NEW SUBJECT USE STATES
   const [classCode, setClassCode] = useState("");
   const [className, setClassName] = useState("");
@@ -174,7 +174,7 @@ function AdminProfessorAttendancePage() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "admin") {
+        if (decodedToken.role !== "user") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -295,4 +295,4 @@ function AdminProfessorAttendancePage() {
   }
 }
 
-export default AdminProfessorAttendancePage;
+export default UserProfessorAttendancePage;

@@ -16,6 +16,7 @@ function SuperAdminCancelClassRequests() {
   const [classDay, setClassDay] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [remarks, setRemarks] = useState("");
 
   //SEARCHTERM FOR SEARCH BAR
   const [searchTerm, setSearchTerm] = useState("");
@@ -132,6 +133,7 @@ function SuperAdminCancelClassRequests() {
     laboratory,
     start_time,
     end_time,
+    remarks,
     cancel_class_status
   ) => {
     setId(id);
@@ -142,7 +144,7 @@ function SuperAdminCancelClassRequests() {
     setClassDay(class_day);
     setStartTime(start_time);
     setEndTime(end_time);
-
+    setRemarks(remarks);
     setStatus(cancel_class_status);
   };
 
@@ -290,25 +292,7 @@ function SuperAdminCancelClassRequests() {
                 </div>
               </div>
 
-              <div className="w-25 d-flex justify-content-end">
-                {/* <button
-                  type="button"
-                  data-bs-toggle="modal"
-                  data-bs-target="#staticBackdrop"
-                  className="btn btn-primary btn-sm"
-                >
-                  <img
-                    src={require("../../Assets/images/add.png")}
-                    width="25"
-                    height="25"
-                    style={{
-                      TopLeftRadius: ".3rem",
-                      TopRightRadius: ".3rem",
-                    }}
-                    alt="add"
-                  />
-                </button> */}
-              </div>
+              <div className="w-25 d-flex justify-content-end"></div>
             </div>
 
             <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
@@ -361,6 +345,7 @@ function SuperAdminCancelClassRequests() {
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
+                                makeup.remarks,
                                 makeup.cancel_class_status
                               );
                             }}
@@ -393,6 +378,7 @@ function SuperAdminCancelClassRequests() {
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
+                                makeup.remarks,
                                 makeup.cancel_class_status
                               );
                             }}
@@ -425,6 +411,7 @@ function SuperAdminCancelClassRequests() {
                                 makeup.laboratory,
                                 makeup.start_time,
                                 makeup.end_time,
+                                makeup.remarks,
                                 makeup.cancel_class_status
                               );
                             }}
@@ -671,6 +658,23 @@ function SuperAdminCancelClassRequests() {
                                   : laboratory}
                               </option>
                             </select>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Start of Class Remarks*/}
+                      <div className="">
+                        <div className="md-6 mb-4">
+                          <div className="inputBox2 w-100">
+                            <textarea
+                              className="w-100 p-2"
+                              required
+                              disabled
+                              rows="4"
+                              maxLength={150}
+                              value={remarks || ""}
+                              onChange={(e) => setRemarks(e.target.value)}
+                            ></textarea>
+                            <span>Remarks</span>
                           </div>
                         </div>
                       </div>

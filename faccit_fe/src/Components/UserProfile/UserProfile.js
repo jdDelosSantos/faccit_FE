@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../SuperAdminProfile/SuperAdminProfile.css";
+import "./UserProfile.css";
 import { jwtDecode } from "jwt-decode";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import https from "../../https";
 
-function SuperAdminProfile() {
+function UserProfile() {
   const [tokenFirstname, setTokenFirstname] = useState("");
   const [component, setComponent] = useState(false);
   const navigate = useNavigate();
@@ -48,24 +49,25 @@ function SuperAdminProfile() {
 
   const sessionToken = sessionStorage.getItem("Token");
   let decoded;
-  let tokenEmail;
+  let tokenId;
 
   if (sessionToken) {
     decoded = jwtDecode(sessionToken);
-    tokenEmail = decoded.email;
+    tokenId = decoded.prof_id;
   } else {
     goBackToLogin();
   }
 
-  const fetchUserInfo = () => {
+  const fetchProfInfo = () => {
     try {
       https
-        .get(`super_admin_info/${tokenEmail}`, {
+        .get(`prof_info/${tokenId}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
         })
         .then((result) => {
+          setProfId(result.data.prof_id);
           setLastName(result.data.user_lastname);
           setFirstName(result.data.user_firstname);
           setEmail(result.data.email);
@@ -85,10 +87,11 @@ function SuperAdminProfile() {
   };
 
   useEffect(() => {
-    fetchUserInfo();
+    fetchProfInfo();
   }, []);
 
   const handleProfUpdate = () => {
+    setUpdateProfId(profId);
     setUpdateLastName(lastName);
     setUpdateFirstName(firstName);
     setUpdateEmail(email);
@@ -105,7 +108,7 @@ function SuperAdminProfile() {
 
     try {
       https
-        .post(`update_pass_super_admin/${tokenEmail}`, data, {
+        .post(`update_pass_prof/${tokenId}`, data, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
           },
@@ -129,6 +132,7 @@ function SuperAdminProfile() {
   };
 
   const clearModal = () => {
+    setUpdateProfId("");
     setUpdateLastName("");
     setUpdateFirstName("");
     setUpdateEmail("");
@@ -156,14 +160,14 @@ function SuperAdminProfile() {
         };
 
         https
-          .put(`super_admin_info_update/${tokenEmail}`, data, {
+          .put(`prof_info_update/${tokenId}`, data, {
             headers: {
               Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
             },
           })
           .then((result) => {
             toast.success(result.data.message, { duration: 7000 });
-            fetchUserInfo();
+            fetchProfInfo();
           })
           .catch((error) => {
             if (error.response.data.message != "Unauthenticated.") {
@@ -187,12 +191,11 @@ function SuperAdminProfile() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "super_admin") {
+        if (decodedToken.role !== "user") {
           sessionStorage.clear();
           navigate("/");
         } else {
           setTokenFirstname(decodedToken.user_firstname.toUpperCase());
-
           setComponent(true);
         }
       } catch (error) {
@@ -250,6 +253,20 @@ function SuperAdminProfile() {
             </button>
           </div>
           <div className="container-fluid w-100 d-flex flex-column justify-content-md-center align-items-center mb-5 mt-3">
+            <div className="inputBox2 w-50 mx-2">
+              <input
+                type="text"
+                id="profId"
+                value={profId}
+                onChange={(e) => {
+                  setProfId(e.target.value);
+                }}
+                className="form-control"
+                disabled
+              />
+              <span>Professor ID</span>
+            </div>
+
             <div className="inputBox2 w-50 mx-2">
               <input
                 type="text"
@@ -338,6 +355,19 @@ function SuperAdminProfile() {
                       ) : (
                         ""
                       )}
+                      <div className="inputBox2 w-100 ">
+                        <input
+                          type="text"
+                          id="updateProfId"
+                          value={updateProfId || ""}
+                          onChange={(e) => {
+                            setUpdateProfId(e.target.value);
+                          }}
+                          className="form-control"
+                          disabled
+                        />
+                        <span>Professor ID</span>
+                      </div>
 
                       <div className="inputBox2 w-100">
                         <input
@@ -549,4 +579,5 @@ function SuperAdminProfile() {
     );
   }
 }
-export default SuperAdminProfile;
+
+export default UserProfile;

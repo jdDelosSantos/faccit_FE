@@ -18,11 +18,11 @@ const PreloaderSuperAdmin = ({ value1 }) => {
           className="image"
         />
       </div>
-      <div className="texts-container ">
-        <h1 className="h1_size">WELCOME TO FACCIT</h1>
+      <div className="texts-container">
+        <h1 className="h1_size size_down">WELCOME TO FACCIT</h1>
       </div>
-      <div className="texts-container my-3">
-        <h1 className="h1_size">{value1}</h1>
+      <div className="texts-container">
+        <h1 className="h1_size colored">{value1}</h1>
       </div>
     </div>
   );

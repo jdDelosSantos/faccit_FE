@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../SuperAdminCollegeManagement/SuperAdminCollegeManagement.css";
+import "../AdminCollegeManagement/AdminCollegeManagement.css";
 // import { setColleges } from "../../Redux/colleges";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
@@ -8,7 +8,7 @@ import ReactPaginate from "react-paginate";
 import https from "../../https";
 import { jwtDecode } from "jwt-decode";
 
-function SuperAdminCollegeManagement() {
+function AdminCollegeManagement() {
   //NEW COLLEGE USE STATES
   const [collegeName, setCollegeName] = useState("");
   const [collegeDescription, setCollegeDescription] = useState("");
@@ -213,7 +213,7 @@ function SuperAdminCollegeManagement() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "super_admin") {
+        if (decodedToken.role !== "admin") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -641,4 +641,4 @@ function SuperAdminCollegeManagement() {
   }
 }
 
-export default SuperAdminCollegeManagement;
+export default AdminCollegeManagement;

@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from "react";
-import "../AdminStudentAttendancePage/AdminStudentAttendancePage.css";
+import React, { useState, useRef, useEffect } from "react";
+import "./UserStudentAttendancePage.css";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+
 import ReactPaginate from "react-paginate";
 import https from "../../https";
 import { PDFViewer } from "@react-pdf/renderer";
 import generatePDF from "../AttendancePDF/AttendancePDF";
 import generatePDFmonth from "../AttendancePDFmonth/AttendancePDFmonth";
 
-function AdminStudentAttendancePage() {
+function UserStudentAttendancePage() {
   //NEW SUBJECT USE STATES
   const [classCode, setClassCode] = useState("");
   const [className, setClassName] = useState("");
-
-  const [profId, setProfId] = useState("");
-  const [profName, setProfName] = useState("");
 
   const [laboratory, setLaboratory] = useState("");
   const [classDay, setClassDay] = useState("");
@@ -95,7 +93,7 @@ function AdminStudentAttendancePage() {
   //Function for fetching Classes
   const fetchProfClasses = () => {
     https
-      .get(`all_prof_classes`, {
+      .get(`profClasses/${tokenId}`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -303,7 +301,7 @@ function AdminStudentAttendancePage() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "admin") {
+        if (decodedToken.role !== "user") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -335,7 +333,7 @@ function AdminStudentAttendancePage() {
         <div className="shadow upper_bg rounded container-fluid w-100 p-3 px-5">
           <div className="table-responsive">
             <div className="w-100 d-flex justify-content-between align-items-center flex-row my-3">
-              <div className="inputBox3 w-100 mx-2">
+              <div className="inputBox3 w-100">
                 <select
                   className="form-select form-select-md"
                   onChange={(e) => {
@@ -1040,4 +1038,4 @@ function AdminStudentAttendancePage() {
   }
 }
 
-export default AdminStudentAttendancePage;
+export default UserStudentAttendancePage;

@@ -3,13 +3,26 @@ import autoTable from "jspdf-autotable";
 import FaithLogo from "../../Assets/images/FAITH LOGO.png";
 import "jspdf-autotable";
 
+const getAcademicYear = (date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+
+  if (month >= 6) {
+    return `A.Y ${year} - ${year + 1}`;
+  } else {
+    return `A.Y ${year - 1} - ${year}`;
+  }
+};
+
 const generatePDF = (
   studentAttendances,
-  date,
+  dateString,
   className,
   startTime,
   endTime
 ) => {
+  const date = new Date(dateString); // Convert the date string to a Date object
+  const academicYear = getAcademicYear(date);
   const doc = new jsPDF();
 
   const formattedStudents = [...studentAttendances].sort((classes1, classes2) =>
@@ -24,11 +37,15 @@ const generatePDF = (
   // Add the heading text
   doc.setFontSize(18); // Set the font size for the heading
   doc.text(`Attendance Report for`, 71, 43); // Add the heading text (x, y)
-  doc.text(`${className} ${date}`, 73, 53); // Add the heading text (x, y)
+  doc.text(`${className} (${academicYear})`, 60, 53); // Add the heading text (x, y)
 
   doc.setFont("helvetica"); // Change "helvetica" to your desired font name
   doc.setFontSize(10);
-  doc.text(`Attendance Report from: ${startTime}- ${endTime}`, 14, 68); // Add the heading text (x, y)
+  doc.text(
+    `Date: ${dateString}    Time Range: ${startTime}- ${endTime}`,
+    14,
+    68
+  ); // Add the heading text (x, y)
 
   // Define the columns for the table
   const columns = [

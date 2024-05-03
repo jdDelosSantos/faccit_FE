@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import "./AdminSidebar.css";
+import { jwtDecode } from "jwt-decode";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function AdminSidebar() {
   const [isExpanded, setIsExpanded] = useState(
@@ -118,45 +118,38 @@ function AdminSidebar() {
                   </li>
                 </ul>
               </li>
+
               <li className="sidebar-item">
                 <Link
                   to="#"
                   className="sidebar-link has-dropdown collapsed"
                   data-bs-toggle="collapse"
-                  data-bs-target="#multi"
+                  data-bs-target="#user"
                   aria-expanded="true"
-                  aria-controls="multi"
+                  aria-controls="user"
                 >
-                  <i className="lni lni-layout"></i>
-                  <span>Managements</span>
+                  <i className="lni lni-users"></i>
+                  <span>User Management</span>
                 </Link>
                 <ul
-                  id="multi"
+                  id="user"
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
                     <Link
-                      to="/admin/managements/classes"
+                      to="/admin/managements/students"
                       className="sidebar-link"
                     >
-                      Classes
+                      Students
                     </Link>
                   </li>
                   <li className="sidebar-item">
                     <Link
-                      to="/admin/managements/open-classes"
+                      to="/admin/managements/professors"
                       className="sidebar-link"
                     >
-                      Open Classes
-                    </Link>
-                  </li>
-                  <li className="sidebar-item">
-                    <Link
-                      to="/admin/managements/attendances/students"
-                      className="sidebar-link"
-                    >
-                      Student Attendances
+                      Professors
                     </Link>
                   </li>
                 </ul>
@@ -167,32 +160,65 @@ function AdminSidebar() {
                   to="#"
                   className="sidebar-link has-dropdown collapsed"
                   data-bs-toggle="collapse"
-                  data-bs-target="#request"
+                  data-bs-target="#multi"
                   aria-expanded="true"
-                  aria-controls="request"
+                  aria-controls="multi"
                 >
-                  <i className="lni lni-keyboard"></i>
-                  <span>Request Handling</span>
+                  <i className="lni lni-layout"></i>
+                  <span>General Management</span>
                 </Link>
                 <ul
-                  id="request"
+                  id="multi"
                   className="sidebar-dropdown list-unstyle collapse"
                   data-bs-parent="#sidebar"
                 >
                   <li className="sidebar-item">
                     <Link
-                      to="/admin/managements/makeup-classes"
+                      to="/admin/managements/colleges"
                       className="sidebar-link"
                     >
-                      Makeup Requests
+                      Colleges
                     </Link>
                   </li>
                   <li className="sidebar-item">
                     <Link
-                      to="/admin/managements/cancel-classes"
+                      to="/admin/managements/courses"
                       className="sidebar-link"
                     >
-                      Cancel Requests
+                      Courses
+                    </Link>
+                  </li>
+
+                  <li className="sidebar-item">
+                    <Link
+                      to="/admin/managements/classes"
+                      className="sidebar-link"
+                    >
+                      Classes
+                    </Link>
+                  </li>
+                  <li className="sidebar-item">
+                    <Link
+                      to="/admin/managements/class-list"
+                      className="sidebar-link"
+                    >
+                      Class Students
+                    </Link>
+                  </li>
+                  <li className="sidebar-item">
+                    <Link
+                      to="/admin/managements/classes/schedules"
+                      className="sidebar-link"
+                    >
+                      Schedules
+                    </Link>
+                  </li>
+                  <li className="sidebar-item">
+                    <Link
+                      to="/admin/attendances/students"
+                      className="sidebar-link "
+                    >
+                      Student Attendances
                     </Link>
                   </li>
                 </ul>

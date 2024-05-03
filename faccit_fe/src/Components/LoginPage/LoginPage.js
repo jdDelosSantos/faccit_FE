@@ -39,7 +39,6 @@ function LoginPage() {
           sessionStorage.setItem("Firstname", decodedToken.user_firstname);
           sessionStorage.setItem("Token", result.data);
           sessionStorage.setItem("showPreloader", true);
-
           redirectToDashboard(decodedToken.role);
         } else {
           sessionStorage.setItem("Lastname", decodedToken.user_lastname);
@@ -57,8 +56,10 @@ function LoginPage() {
   const redirectToDashboard = (role) => {
     if (role === "super_admin") {
       navigate("dashboard");
-    } else {
+    } else if (role === "admin") {
       navigate("admin/dashboard");
+    } else if (role === "user") {
+      navigate("user/dashboard");
     }
   };
 

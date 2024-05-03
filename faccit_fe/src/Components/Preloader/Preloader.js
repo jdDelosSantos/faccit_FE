@@ -3,8 +3,6 @@ import { preLoaderAnim } from "../Animations";
 import "../Preloader/Preloader.css";
 
 const Preloader = ({ value1, value2 }) => {
-  console.log(value1);
-  console.log(value2);
   useEffect(() => {
     preLoaderAnim();
   }, []);
@@ -21,7 +19,7 @@ const Preloader = ({ value1, value2 }) => {
         />
       </div>
       <div className="texts-container ">
-        <h1 className="h1_size">WELCOME TO FACCIT</h1>
+        <h1 className="h1_size size_down">WELCOME TO FACCIT</h1>
       </div>
       <div className="texts-container my-3">
         <h1 className="h1_size">

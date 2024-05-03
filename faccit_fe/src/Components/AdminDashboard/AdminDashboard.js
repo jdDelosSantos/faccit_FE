@@ -1,33 +1,45 @@
-import React, { useState, useRef, useEffect } from "react";
-import "../AdminDashboard/AdminDashboard.css";
+import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import https from "../../https";
+import { Link } from "react-router-dom";
 import Preloader from "../Preloader/Preloader";
 
 function AdminDashboard() {
   const [tokenFirstname, setTokenFirstname] = useState("");
+  const [tokenLastname, setTokenLastname] = useState("");
+
+  const [tokenRole, setTokenRole] = useState("");
   const [component, setComponent] = useState(false);
+  const navigate = useNavigate();
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const sessionToken = sessionStorage.getItem("Token");
-  const [tokenRole, setTokenRole] = useState("");
   const [showPreloader, setShowPreloader] = useState(false);
-  const decoded = jwtDecode(sessionToken);
-  const tokenId = decoded.prof_id;
+  const sessionToken = sessionStorage.getItem("Token");
+
+  const goBackToLogin = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
+
+  if (sessionToken) {
+    const decoded = jwtDecode(sessionToken);
+    const tokenId = decoded.prof_id;
+  } else {
+    goBackToLogin();
+  }
 
   const [classCount, setClassCount] = useState([]);
-  const [classCountPL, setClassCountPL] = useState([]);
-  const [classCountML, setClassCountML] = useState([]);
-
-  const navigate = useNavigate();
+  const [studentsCount, setStudentsCount] = useState([]);
+  const [plCount, setPlCount] = useState([]);
+  const [mlCount, setMlCount] = useState([]);
 
   //Function for fetching Classes
-  const fetchProfClasses = () => {
+  const fetchAllClasses = () => {
     https
-      .get(`prof_all_classes/${tokenId}`, {
+      .get(`super_admin_all_classes`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
@@ -47,15 +59,15 @@ function AdminDashboard() {
       });
   };
 
-  const fetchProfClassesInPL = () => {
+  const fetchAllStudents = () => {
     https
-      .get(`prof_all_classes_pl/${tokenId}`, {
+      .get(`super_admin_all_students`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        setClassCountPL(result.data.class_count);
+        setStudentsCount(result.data.student_count);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -69,15 +81,37 @@ function AdminDashboard() {
       });
   };
 
-  const fetchProfClassesInML = () => {
+  const fetchAllPLClasses = () => {
     https
-      .get(`prof_all_classes_ml/${tokenId}`, {
+      .get(`super_admin_all_classes_pl`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
         },
       })
       .then((result) => {
-        setClassCountML(result.data.class_count);
+        setPlCount(result.data);
+      })
+      .catch((error) => {
+        if (error.response.data.message != "Unauthenticated.") {
+          setError(true);
+
+          setErrorMessage(error.response.data.message);
+          toast.error(error.response.data.message, { duration: 7000 });
+        } else {
+          goBackToLogin();
+        }
+      });
+  };
+
+  const fetchAllMLClasses = () => {
+    https
+      .get(`super_admin_all_classes_ml`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("Token")}`,
+        },
+      })
+      .then((result) => {
+        setMlCount(result.data);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -92,15 +126,11 @@ function AdminDashboard() {
   };
 
   useEffect(() => {
-    fetchProfClasses();
-    fetchProfClassesInPL();
-    fetchProfClassesInML();
+    fetchAllClasses();
+    fetchAllStudents();
+    fetchAllPLClasses();
+    fetchAllMLClasses();
   }, []);
-
-  const goBackToLogin = () => {
-    sessionStorage.clear();
-    navigate("/");
-  };
 
   useEffect(() => {
     const sessionToken = sessionStorage.getItem("Token");
@@ -116,6 +146,7 @@ function AdminDashboard() {
           navigate("/");
         } else {
           setTokenFirstname(decodedToken.user_firstname.toUpperCase());
+          setTokenLastname(decodedToken.user_lastname.toUpperCase());
           setTokenRole("ADMIN");
           setComponent(true);
         }
@@ -138,7 +169,7 @@ function AdminDashboard() {
       <>
         {showPreloader ? (
           <>
-            <Preloader value1={tokenRole} value2={tokenFirstname} />
+            <Preloader value1={tokenRole} value2={tokenLastname} />
             <div className="base_bg w-100 p-4">
               <h1 className="my-1">
                 <b>{tokenFirstname}'S DASHBOARD</b>
@@ -146,29 +177,35 @@ function AdminDashboard() {
 
               <div className="shadow upper_bg rounded container-fluid w-100 p-5 d-flex flex-column">
                 <div className="container-fluid w-100 d-flex justify-content-md-between mb-2 mt-3">
-                  <div className="bg-light rounded w-25 p-4 shadow">
+                  <div className="bg-light rounded w-25 p-4 shadow mx-3">
                     <h4 className="text-dark">
                       <b>CURRENT NUMBER OF CLASSES</b>
                     </h4>
                     <span className="text-dark fs-4">{classCount}</span>
                   </div>
-                  <div className="bg-light rounded w-25 p-4 shadow">
+                  <div className="bg-light rounded w-25 p-4 shadow mx-3">
                     <h4 className="text-dark">
-                      <b>CURRENT NUMBER OF CLASSES LOADED IN PL</b>
+                      <b>CURRENT NUMBER OF STUDENTS</b>
                     </h4>
-                    <span className="text-dark fs-4">{classCountPL}</span>
+                    <span className="text-dark fs-4">{studentsCount}</span>
                   </div>
-                  <div className="bg-light rounded w-25 p-4 shadow">
+                  <div className="bg-light rounded w-25 p-4 shadow mx-3">
                     <h4 className="text-dark">
-                      <b>CURRENT NUMBER OF CLASSES LOADED IN ML</b>
+                      <b>CURRENT NUMBER OF CLASSES IN PL</b>
                     </h4>
-                    <span className="text-dark fs-4">{classCountML}</span>
+                    <span className="text-dark fs-4">{plCount}</span>
+                  </div>
+                  <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                    <h4 className="text-dark">
+                      <b>CURRENT NUMBER OF CLASSES IN ML</b>
+                    </h4>
+                    <span className="text-dark fs-4">{mlCount}</span>
                   </div>
                 </div>
                 <div className="container-fluid w-100 mt-5 d-flex">
                   <div className="border container-fluid d-flex justify-content-between mb-3">
-                    <a
-                      href="/admin/labs/programming-lab"
+                    <Link
+                      to="/admin/labs/programming-lab"
                       className="bg-primary rounded w-25 p-4 mx-2"
                     >
                       <img
@@ -177,10 +214,10 @@ function AdminDashboard() {
                         alt="list"
                       />
                       <span className="text-white mx-1">Programming Lab</span>
-                    </a>
+                    </Link>
 
-                    <a
-                      href="/admin/labs/multimedia-lab"
+                    <Link
+                      to="/admin/labs/multimedia-lab"
                       className="bg-secondary rounded w-25 p-4 mx-2"
                     >
                       <img
@@ -189,10 +226,10 @@ function AdminDashboard() {
                         alt="list"
                       />
                       <span className="text-white mx-1">Multimedia Lab</span>
-                    </a>
+                    </Link>
 
-                    <a
-                      href="/admin/managements/attendances/students"
+                    <Link
+                      to="/admin/managements/students"
                       className="bg-success rounded w-25 p-4 mx-2"
                     >
                       <img
@@ -200,13 +237,11 @@ function AdminDashboard() {
                         className="dashboard_img mx-1"
                         alt="list"
                       />
-                      <span className="text-white mx-1">
-                        Student Attendances
-                      </span>
-                    </a>
+                      <span className="text-white mx-1">Students</span>
+                    </Link>
 
-                    <a
-                      href="/admin/managements/classes"
+                    <Link
+                      to="/admin/managements/classes"
                       className="bg-info rounded w-25 p-4 mx-2"
                     >
                       <img
@@ -214,8 +249,8 @@ function AdminDashboard() {
                         className="dashboard_img mx-1"
                         alt="list"
                       />
-                      <span className="text-white mx-1">Your Classes</span>
-                    </a>
+                      <span className="text-white mx-1">Classes</span>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -230,29 +265,35 @@ function AdminDashboard() {
 
             <div className="shadow upper_bg rounded container-fluid w-100 p-5 d-flex flex-column">
               <div className="container-fluid w-100 d-flex justify-content-md-between mb-2 mt-3">
-                <div className="bg-light rounded w-25 p-4 shadow">
+                <div className="bg-light rounded w-25 p-4 shadow mx-3">
                   <h4 className="text-dark">
                     <b>CURRENT NUMBER OF CLASSES</b>
                   </h4>
                   <span className="text-dark fs-4">{classCount}</span>
                 </div>
-                <div className="bg-light rounded w-25 p-4 shadow">
+                <div className="bg-light rounded w-25 p-4 shadow mx-3">
                   <h4 className="text-dark">
-                    <b>CURRENT NUMBER OF CLASSES LOADED IN PL</b>
+                    <b>CURRENT NUMBER OF STUDENTS</b>
                   </h4>
-                  <span className="text-dark fs-4">{classCountPL}</span>
+                  <span className="text-dark fs-4">{studentsCount}</span>
                 </div>
-                <div className="bg-light rounded w-25 p-4 shadow">
+                <div className="bg-light rounded w-25 p-4 shadow mx-3">
                   <h4 className="text-dark">
-                    <b>CURRENT NUMBER OF CLASSES LOADED IN ML</b>
+                    <b>CURRENT NUMBER OF CLASSES IN PL</b>
                   </h4>
-                  <span className="text-dark fs-4">{classCountML}</span>
+                  <span className="text-dark fs-4">{plCount}</span>
+                </div>
+                <div className="bg-light rounded w-25 p-4 shadow mx-3">
+                  <h4 className="text-dark">
+                    <b>CURRENT NUMBER OF CLASSES IN ML</b>
+                  </h4>
+                  <span className="text-dark fs-4">{mlCount}</span>
                 </div>
               </div>
               <div className="container-fluid w-100 mt-5 d-flex">
                 <div className="border container-fluid d-flex justify-content-between mb-3">
-                  <a
-                    href="/admin/labs/programming-lab"
+                  <Link
+                    to="/admin/labs/programming-lab"
                     className="bg-primary rounded w-25 p-4 mx-2"
                   >
                     <img
@@ -261,10 +302,10 @@ function AdminDashboard() {
                       alt="list"
                     />
                     <span className="text-white mx-1">Programming Lab</span>
-                  </a>
+                  </Link>
 
-                  <a
-                    href="/admin/labs/multimedia-lab"
+                  <Link
+                    to="/admin/labs/multimedia-lab"
                     className="bg-secondary rounded w-25 p-4 mx-2"
                   >
                     <img
@@ -273,10 +314,10 @@ function AdminDashboard() {
                       alt="list"
                     />
                     <span className="text-white mx-1">Multimedia Lab</span>
-                  </a>
+                  </Link>
 
-                  <a
-                    href="/admin/managements/attendances/students"
+                  <Link
+                    to="/admin/managements/students"
                     className="bg-success rounded w-25 p-4 mx-2"
                   >
                     <img
@@ -284,11 +325,11 @@ function AdminDashboard() {
                       className="dashboard_img mx-1"
                       alt="list"
                     />
-                    <span className="text-white mx-1">Student Attendances</span>
-                  </a>
+                    <span className="text-white mx-1">Students</span>
+                  </Link>
 
-                  <a
-                    href="/admin/managements/classes"
+                  <Link
+                    to="/admin/managements/classes"
                     className="bg-info rounded w-25 p-4 mx-2"
                   >
                     <img
@@ -296,8 +337,8 @@ function AdminDashboard() {
                       className="dashboard_img mx-1"
                       alt="list"
                     />
-                    <span className="text-white mx-1">Your Classes</span>
-                  </a>
+                    <span className="text-white mx-1">Classes</span>
+                  </Link>
                 </div>
               </div>
             </div>

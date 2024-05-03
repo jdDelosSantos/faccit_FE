@@ -103,7 +103,6 @@ function SuperAdminStudentAttendancePage() {
       })
       .then((result) => {
         setClasses(result.data);
-        console.log(classes);
       })
       .catch((error) => {
         if (error.response.data.message != "Unauthenticated.") {
@@ -155,8 +154,6 @@ function SuperAdminStudentAttendancePage() {
       status: "Present",
     };
 
-    console.log(data);
-
     try {
       https
         .post("add_manual_attendance", data, {
@@ -167,10 +164,8 @@ function SuperAdminStudentAttendancePage() {
         .then((result) => {
           handleAttendance();
           toast.success(result.data.message, { duration: 7000 });
-          console.log(result);
         })
         .catch((error) => {
-          console.log(error);
           if (error.response.data.message != "Unauthenticated.") {
             setError(true);
 
@@ -1045,4 +1040,5 @@ function SuperAdminStudentAttendancePage() {
     );
   }
 }
+
 export default SuperAdminStudentAttendancePage;

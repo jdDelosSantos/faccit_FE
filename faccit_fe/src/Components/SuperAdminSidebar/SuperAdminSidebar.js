@@ -105,9 +105,26 @@ function SuperAdminSidebar() {
                       Programming Lab
                     </Link>
                   </li>
+
                   <li className="sidebar-item">
                     <Link to="/labs/multimedia-lab" className="sidebar-link">
                       Multimedia Lab
+                    </Link>
+                  </li>
+                  <li className="sidebar-item">
+                    <Link
+                      to="/labs/attendance/programming-lab"
+                      className="sidebar-link"
+                    >
+                      Attendance Lab-Prog
+                    </Link>
+                  </li>
+                  <li className="sidebar-item">
+                    <Link
+                      to="/labs/attendance/multimedia-lab"
+                      className="sidebar-link"
+                    >
+                      Attendance Lab-Multi
                     </Link>
                   </li>
                 </ul>

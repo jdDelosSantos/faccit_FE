@@ -116,7 +116,7 @@ function SuperAdminSidebar() {
                       to="/labs/attendance/programming-lab"
                       className="sidebar-link"
                     >
-                      Attendance Lab-Prog
+                      PL Attendance
                     </Link>
                   </li>
                   <li className="sidebar-item">
@@ -124,7 +124,7 @@ function SuperAdminSidebar() {
                       to="/labs/attendance/multimedia-lab"
                       className="sidebar-link"
                     >
-                      Attendance Lab-Multi
+                      ML Attendance
                     </Link>
                   </li>
                 </ul>
@@ -208,7 +208,7 @@ function SuperAdminSidebar() {
                       to="/managements/classes/schedules"
                       className="sidebar-link"
                     >
-                      Schedules
+                      Class Schedules
                     </Link>
                   </li>
                   <li className="sidebar-item">
@@ -250,11 +250,6 @@ function SuperAdminSidebar() {
                       className="sidebar-link"
                     >
                       Cancel Requests
-                    </Link>
-                  </li>
-                  <li className="sidebar-item">
-                    <Link to="/testing" className="sidebar-link">
-                      Testing
                     </Link>
                   </li>
                 </ul>

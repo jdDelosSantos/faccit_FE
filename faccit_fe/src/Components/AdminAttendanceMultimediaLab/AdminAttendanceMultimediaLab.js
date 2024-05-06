@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../SuperAdminAttendanceProgrammingLab/SuperAdminAttendanceProgrammingLab.css";
+import "../AdminAttendanceMultimediaLab/AdminAttendanceMultimediaLab.css";
 import { jwtDecode } from "jwt-decode";
 import Webcam from "react-webcam";
 import AWS from "aws-sdk";
@@ -8,13 +8,14 @@ import { useNavigate } from "react-router-dom";
 import https from "../../https";
 import * as faceapi from "@vladmandic/face-api";
 
-function SuperAdminAttendanceProgrammingLab() {
+function AdminAttendanceMultimediaLab() {
   const navigate = useNavigate();
   const webcamRef = useRef(null);
 
   const [studentId, setStudentId] = useState("");
   const [name, setName] = useState("");
   const [course, setCourse] = useState("");
+
   const [className, setClassName] = useState("");
   const [timeIn, setTimeIn] = useState("");
   const [status, setStatus] = useState("");
@@ -113,7 +114,7 @@ function SuperAdminAttendanceProgrammingLab() {
                 id: currentLabel,
                 day: dayOfWeek,
                 time: time,
-                laboratory: "lab_programming",
+                laboratory: "lab_multimedia",
               };
 
               try {
@@ -138,7 +139,7 @@ function SuperAdminAttendanceProgrammingLab() {
                       "No class schedule found for the given day and/or laboratory!"
                     ) {
                       setStatus(
-                        `No class schedule found for ${dayOfWeek} at Programming Laboratory`
+                        `No class schedule found for ${dayOfWeek} at Multimedia Laboratory`
                       );
                     } else if (
                       (responseData.id !== null &&
@@ -218,7 +219,7 @@ function SuperAdminAttendanceProgrammingLab() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "super_admin") {
+        if (decodedToken.role !== "admin") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -256,7 +257,7 @@ function SuperAdminAttendanceProgrammingLab() {
     return (
       <div className="base_bg w-100 p-4">
         <h1 className="my-1">
-          <b>{tokenFirstname}'S ATTENDANCE PROGRAMMING LAB PAGE</b>
+          <b>{tokenFirstname}'S ATTENDANCE MULTIMEDIA LAB PAGE</b>
         </h1>
         <h4 className="">WEBCAM ATTENDANCE</h4>
 
@@ -375,4 +376,4 @@ function SuperAdminAttendanceProgrammingLab() {
   }
 }
 
-export default SuperAdminAttendanceProgrammingLab;
+export default AdminAttendanceMultimediaLab;

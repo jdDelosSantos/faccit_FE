@@ -49,6 +49,8 @@ import SuperAdminClassesManagement from "./Components/SuperAdminClassesManagemen
 import AdminClassesManagement from "./Components/AdminClassesManagement/AdminClassesManagement";
 import SuperAdminAttendanceProgrammingLab from "./Components/SuperAdminAttendanceProgrammingLab/SuperAdminAttendanceProgrammingLab";
 import SuperAdminAttendanceMultimediaLab from "./Components/SuperAdminAttendanceMultimediaLab/SuperAdminAttendanceMultimediaLab";
+import AdminAttendanceMultimediaLab from "./Components/AdminAttendanceMultimediaLab/AdminAttendanceMultimediaLab";
+import AdminAttendanceProgrammingLab from "./Components/AdminAttendanceProgrammingLab/AdminAttendanceProgrammingLab";
 
 function App() {
   const SuperAdminSidebarFunction = () => (
@@ -166,6 +168,14 @@ function App() {
             <Route
               path="/admin/labs/multimedia-lab"
               element={<AdminMultimediaLab />}
+            />
+            <Route
+              path="/admin/labs/attendance/programming-lab"
+              element={<AdminAttendanceProgrammingLab />}
+            />
+            <Route
+              path="/admin/labs/attendance/multimedia-lab"
+              element={<AdminAttendanceMultimediaLab />}
             />
             <Route
               path="/admin/managements/students"

@@ -486,6 +486,10 @@ function AdminStudentAttendancePage() {
                         <td className="p-2 text-success">
                           {attendance.status}
                         </td>
+                      ) : attendance.status === "Late" ? (
+                        <td className="p-2 text-warning">
+                          {attendance.status}
+                        </td>
                       ) : (
                         <td className="p-2 text-danger">{attendance.status}</td>
                       )}
@@ -505,6 +509,37 @@ function AdminStudentAttendancePage() {
                                 attendance.faith_id,
                                 attendance.date,
                                 attendance.time_in
+                              );
+                            }}
+                          >
+                            <img
+                              src={require("../../Assets/images/list.png")}
+                              width="25"
+                              height="25"
+                              style={{
+                                TopLeftRadius: ".3rem",
+                                TopRightRadius: ".3rem",
+                              }}
+                              alt="update_user"
+                            />
+                          </button>
+                        </td>
+                      ) : attendance.status === "Late" ? (
+                        <td className="p-2">
+                          <button
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop1"
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => {
+                              handleStudentAttendance(
+                                attendance.id,
+                                attendance.class_code,
+                                attendance.class_name,
+                                attendance.faith_id,
+                                attendance.date,
+                                attendance.time_in,
+                                attendance.status
                               );
                             }}
                           >
@@ -943,10 +978,11 @@ function AdminStudentAttendancePage() {
                       <table className="table table-striped table-hover table-bordered border-secondary table-secondary align-middle">
                         <thead className="table-light">
                           <tr>
-                            <th>CLASS NAME</th>
                             <th>FAITH ID</th>
                             <th>STUDENT NAME</th>
                             <th>LEVEL & SECTION</th>
+                            <th>ABSENT COUNT</th>
+                            <th>LATE COUNT</th>
                             <th>PRESENT COUNT</th>
                           </tr>
                         </thead>
@@ -955,9 +991,6 @@ function AdminStudentAttendancePage() {
                             currentMonthStudentAttendances.map(
                               (attendance, index) => (
                                 <tr className="table-light" key={index}>
-                                  <td className="p-2">
-                                    {attendance.class_name}
-                                  </td>
                                   <td className="p-2">{attendance.faith_id}</td>
                                   <td className="p-2">
                                     {attendance.std_lname},{" "}
@@ -967,6 +1000,14 @@ function AdminStudentAttendancePage() {
                                     {attendance.std_course} -{" "}
                                     {attendance.std_level}
                                     {attendance.std_section}
+                                  </td>
+                                  <td className="p-2">
+                                    {attendance.open_count -
+                                      attendance.late_count -
+                                      attendance.present_count}
+                                  </td>
+                                  <td className="p-2">
+                                    {attendance.late_count}
                                   </td>
                                   <td className="p-2">
                                     {attendance.present_count}

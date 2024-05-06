@@ -66,6 +66,20 @@ const generatePDF = (
   const absentStudents = formattedData.filter(
     (record) => record.status === "Absent"
   ).length;
+  const lateStudents = formattedData.filter(
+    (record) => record.status === "Late"
+  ).length;
+  const presentStudents = formattedData.filter(
+    (record) => record.status === "Present"
+  ).length;
+
+  const lateStudentsRow = {
+    faithId: "",
+    name: "",
+    courseDetails: "",
+    status: `TOTAL LATE: ${lateStudents}`,
+  };
+
   const absentStudentsRow = {
     faithId: "",
     name: "",
@@ -73,9 +87,18 @@ const generatePDF = (
     status: `TOTAL ABSENT: ${absentStudents}`,
   };
 
-  const formattedDataWithPresentStudentsRow = [
+  const presentStudentsRow = {
+    faithId: "",
+    name: "",
+    courseDetails: "",
+    status: `TOTAL PRESENT: ${presentStudents}`,
+  };
+
+  const formattedDataWithSummaryRows = [
     ...formattedData,
+    lateStudentsRow,
     absentStudentsRow,
+    presentStudentsRow,
   ];
 
   // Define the table settings
@@ -93,12 +116,14 @@ const generatePDF = (
   };
 
   // Create the table
-  doc.autoTable(columns, formattedDataWithPresentStudentsRow, tableSettings);
+  doc.autoTable(columns, formattedDataWithSummaryRows, tableSettings);
 
   const formatStartTime = startTime.padStart(5, "0").slice(0, 5); // Formats to "09.00"
   const formatEndTime = endTime.padStart(5, "0").slice(0, 5); // Formats to "09.00"
   // Save the PDF
-  doc.save(`${date} - ${className}_${formatStartTime}${formatEndTime}.pdf`);
+  doc.save(
+    `${dateString} - ${className}_${formatStartTime}${formatEndTime}.pdf`
+  );
 };
 
 export default generatePDF;

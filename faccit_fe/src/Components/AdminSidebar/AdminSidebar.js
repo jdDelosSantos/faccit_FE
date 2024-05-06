@@ -116,6 +116,22 @@ function AdminSidebar() {
                       Multimedia Lab
                     </Link>
                   </li>
+                  <li className="sidebar-item">
+                    <Link
+                      to="/admin/labs/attendance/programming-lab"
+                      className="sidebar-link"
+                    >
+                      PL Attendance
+                    </Link>
+                  </li>
+                  <li className="sidebar-item">
+                    <Link
+                      to="/admin/labs/attendance/multimedia-lab"
+                      className="sidebar-link"
+                    >
+                      ML Attendance
+                    </Link>
+                  </li>
                 </ul>
               </li>
 
@@ -210,7 +226,7 @@ function AdminSidebar() {
                       to="/admin/managements/classes/schedules"
                       className="sidebar-link"
                     >
-                      Schedules
+                      Class Schedules
                     </Link>
                   </li>
                   <li className="sidebar-item">

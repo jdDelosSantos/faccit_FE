@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "../SuperAdminAttendanceProgrammingLab/SuperAdminAttendanceProgrammingLab.css";
+import "../AdminAttendanceProgrammingLab/AdminAttendanceProgrammingLab.css";
 import { jwtDecode } from "jwt-decode";
 import Webcam from "react-webcam";
 import AWS from "aws-sdk";
@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import https from "../../https";
 import * as faceapi from "@vladmandic/face-api";
 
-function SuperAdminAttendanceProgrammingLab() {
+function AdminAttendanceProgrammingLab() {
   const navigate = useNavigate();
   const webcamRef = useRef(null);
 
@@ -218,7 +218,7 @@ function SuperAdminAttendanceProgrammingLab() {
       try {
         const decodedToken = jwtDecode(sessionToken);
         // Use the decoded token for role checks
-        if (decodedToken.role !== "super_admin") {
+        if (decodedToken.role !== "admin") {
           sessionStorage.clear();
           navigate("/");
         } else {
@@ -375,4 +375,4 @@ function SuperAdminAttendanceProgrammingLab() {
   }
 }
 
-export default SuperAdminAttendanceProgrammingLab;
+export default AdminAttendanceProgrammingLab;

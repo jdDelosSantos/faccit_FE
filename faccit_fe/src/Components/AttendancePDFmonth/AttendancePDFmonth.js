@@ -5,7 +5,7 @@ import FaithLogo from "../../Assets/images/FAITH LOGO.png";
 const getAcademicYear = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
-  if (month >= 6) {
+  if (month >= 8) {
     return `A.Y ${year} - ${year + 1}`;
   } else {
     return `A.Y ${year - 1} - ${year}`;

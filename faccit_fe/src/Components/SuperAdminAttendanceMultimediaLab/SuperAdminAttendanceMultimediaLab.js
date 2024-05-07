@@ -117,58 +117,81 @@ function SuperAdminAttendanceMultimediaLab() {
                 laboratory: "lab_multimedia",
               };
 
-              try {
-                https
-                  .post("attendance", dataToBeSent)
-                  .then(function (response) {
-                    const responseData = response.data.message;
+              if (dayOfWeek) {
+                try {
+                  https
+                    .post("attendance", dataToBeSent)
+                    .then(function (response) {
+                      const responseData = response.data.message;
 
-                    if (responseData.status === "Present") {
-                      toast.success(
-                        `${responseData.name} is Present for ${responseData.class_name}!`,
-                        { duration: 7000 }
-                      );
-                      setStudentId(responseData.id);
-                      setName(responseData.name);
-                      setCourse(responseData.courseYrSection);
-                      setClassName(responseData.class_name);
-                      setTimeIn(responseData.time_in);
-                      setStatus(responseData.status);
-                    } else if (
-                      responseData ===
-                      "No class schedule found for the given day and/or laboratory!"
-                    ) {
-                      setStatus(
-                        `No class schedule found for ${dayOfWeek} at Multimedia Laboratory`
-                      );
-                    } else if (
-                      (responseData.id !== null &&
-                        responseData.name !== null &&
-                        responseData.courseYrSection !== null &&
-                        responseData.class_name !== null &&
-                        (responseData.time_in !== null) &
-                          (responseData.status !== null)) ||
-                      responseData.status === "Already Present" ||
-                      responseData.status === "Late"
-                    ) {
-                      setStudentId(responseData.id);
-                      setName(responseData.name);
-                      setCourse(responseData.courseYrSection);
-                      setClassName(responseData.class_name);
-                      setTimeIn(responseData.time_in);
-                      setStatus(responseData.status);
-                    }
-                  })
-                  .catch(function (error) {
-                    console.error(error);
-                  });
-              } catch (error) {
-                console.error(error);
+                      if (responseData.status === "Present") {
+                        toast.success(
+                          `${responseData.name} is Present for ${responseData.class_name}!`,
+                          { duration: 7000 }
+                        );
+                        setStudentId(responseData.id);
+                        setName(responseData.name);
+                        setCourse(responseData.courseYrSection);
+                        setClassName(responseData.class_name);
+                        setTimeIn(responseData.time_in);
+                        setStatus(responseData.status);
+                      } else if (
+                        responseData.status === "Successfully opened class!"
+                      ) {
+                        toast.success(
+                          `${responseData.name} successfully opened ${responseData.class_name} for attendance!`,
+                          { duration: 7000 }
+                        );
+                        setStudentId(responseData.id);
+                        setName(responseData.name);
+                        setCourse("");
+                        setClassName(responseData.class_name);
+                        setTimeIn(responseData.time_in);
+                        setStatus(responseData.status);
+                      } else if (responseData.status === "Late") {
+                        toast.success(
+                          `${responseData.name} is ${responseData.status} for ${responseData.class_name}!`,
+                          { duration: 7000 }
+                        );
+                        setStudentId(responseData.id);
+                        setName(responseData.name);
+                        setCourse(responseData.courseYrSection);
+                        setClassName(responseData.class_name);
+                        setTimeIn(responseData.time_in);
+                        setStatus(responseData.status);
+                      } else if (
+                        responseData ===
+                        "No class schedule found for the given day and/or laboratory!"
+                      ) {
+                        setStatus(
+                          `No class schedule found for ${dayOfWeek} at Multimedia Laboratory`
+                        );
+                      } else if (
+                        (responseData.id !== null &&
+                          responseData.name !== null &&
+                          responseData.courseYrSection !== null &&
+                          responseData.class_name !== null &&
+                          (responseData.time_in !== null) &
+                            (responseData.status !== null)) ||
+                        responseData.status === "Already Present"
+                      ) {
+                        setStudentId(responseData.id);
+                        setName(responseData.name);
+                        setCourse(responseData.courseYrSection);
+                        setClassName(responseData.class_name);
+                        setTimeIn(responseData.time_in);
+                        setStatus(responseData.status);
+                      }
+                    })
+                    .catch(function (error) {
+                      console.error(error);
+                    });
+                } catch (error) {
+                  console.error(error);
+                }
               }
             }
             previousLabel = currentLabel;
-          } else {
-            //   toast.error("Unknown Face");
           }
         }
       }
